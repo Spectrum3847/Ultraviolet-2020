@@ -19,9 +19,14 @@ import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumLogger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.Tower;
+import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.drive.Drive;
 import frc.robot.commands.auto.*;
+import frc.robot.commands.ballpath.*;
 import frc.paths.*;
 
 /**
@@ -34,12 +39,16 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   public static Drivetrain Drivetrain = new Drivetrain();
+  public static Intake Intake = new Intake();
+  public static Tower Tower = new Tower();
+  public static Funnel Funnel = new Funnel();
   public static DriverStation DS;
 
   public static SpectrumLogger logger = SpectrumLogger.getInstance();
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
   SpectrumXboxController driverController = new SpectrumXboxController(0, .17, .05);
+  SpectrumXboxController operatorController = new SpectrumXboxController(1, .17, .05);
   
   public static AHRS navX;
 
@@ -60,10 +69,8 @@ public class RobotContainer {
     // Configure the button bindings
     DS = DriverStation.getInstance();
     initDebugger(); //Init Debugger
-		SpectrumLogger.getInstance().intialize();  //setup files for logging
 		printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
-    SpectrumLogger.getInstance().finalize();
     try {
       navX = new AHRS(SPI.Port.kMXP);
     } catch(RuntimeException ex) {
@@ -75,6 +82,18 @@ public class RobotContainer {
     
     Drivetrain.setDefaultCommand(
       new Drive(Drivetrain, driverController)
+    );
+
+    Intake.setDefaultCommand(
+      new InstantCommand(Intake::stop,Intake)
+    );
+
+    Funnel.setDefaultCommand(
+      new InstantCommand(Funnel::stop,Funnel)
+    );
+
+    Tower.setDefaultCommand(
+      new InstantCommand(Tower::stop,Tower)
     );
 
     configureButtonBindings();
@@ -89,7 +108,10 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(), Drivetrain));
+    //driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(), Drivetrain));
+    driverController.leftTriggerButton.whileHeld(new IntakeBalls());
+    driverController.aButton.whileHeld(new FunnelToTower());
+    driverController.bButton.whileHeld(new FunnelStore());
   }
 
 
