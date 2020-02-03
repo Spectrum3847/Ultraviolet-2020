@@ -22,9 +22,7 @@ public class FunnelToTower extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.Intake.down();
     RobotContainer.Tower.close();
-    RobotContainer.Intake.collect();
     RobotContainer.Funnel.intakeTower();
     RobotContainer.Tower.indexUp();
   }

@@ -22,8 +22,9 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.drive.Drive;
 import frc.robot.commands.auto.*;
 import frc.robot.commands.ballpath.*;
@@ -38,10 +39,11 @@ import frc.paths.*;
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  public static Drivetrain Drivetrain = new Drivetrain();
-  public static Intake Intake = new Intake();
-  public static Tower Tower = new Tower();
-  public static Funnel Funnel = new Funnel();
+  public static final Drivetrain Drivetrain = new Drivetrain();
+  public static final Intake Intake = new Intake();
+  public static final Tower Tower = new Tower();
+  public static final Funnel Funnel = new Funnel();
+  public static final Shooter Shooter = new Shooter();
   public static DriverStation DS;
 
   public static SpectrumLogger logger = SpectrumLogger.getInstance();
@@ -66,7 +68,6 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Configure the button bindings
     DS = DriverStation.getInstance();
     initDebugger(); //Init Debugger
 		printInfo("Start robotInit()");
@@ -85,17 +86,18 @@ public class RobotContainer {
     );
 
     Intake.setDefaultCommand(
-      new InstantCommand(Intake::stop,Intake)
+      new RunCommand(() -> Intake.stop(),Intake)
     );
 
     Funnel.setDefaultCommand(
-      new InstantCommand(Funnel::stop,Funnel)
+      new RunCommand(() -> Funnel.stop(),Funnel)
     );
 
     Tower.setDefaultCommand(
-      new InstantCommand(Tower::stop,Tower)
+      new RunCommand(() -> Tower.stop(),Tower)
     );
 
+    // Configure the button bindings
     configureButtonBindings();
     
     printInfo("End robotInit()");
@@ -109,7 +111,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(), Drivetrain));
-    driverController.leftTriggerButton.whileHeld(new IntakeBalls());
+    driverController.leftBumper.whileHeld(new IntakeBalls());
     driverController.aButton.whileHeld(new FunnelToTower());
     driverController.bButton.whileHeld(new FunnelStore());
   }

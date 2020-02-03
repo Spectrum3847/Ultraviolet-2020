@@ -16,14 +16,13 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int kDriverController = 0;
     public static int CANconfigTimeOut = 0;
 
     public static final class DriveConstants {
         public static final int kLeftFrontMotor = 10;
         public static final int kLeftRearMotor = 11;
-        public static final int kRightFrontMotor = 21;
-        public static final int kRightRearMotor = 22;
+        public static final int kRightFrontMotor = 20;
+        public static final int kRightRearMotor = 21;
 
         public static final int kShifter = 0;
     }
@@ -36,8 +35,8 @@ public final class Constants {
     public static final class IntakeConstants{
         public static final int kIntakeMotor = 40;
         
-        public static final int kIntakeUp = 1;
-        public static final int kIntakeDown = 2;
+        public static final int kIntakeUp = 7;
+        public static final int kIntakeDown = 6;
     }
 
     public static final class FunnelConstants{
@@ -48,7 +47,7 @@ public final class Constants {
     public static final class TowerConstants{
         public static final int kTowerMotor = 43;
 
-        public static final int kTowerGate = 4;
+        public static final int kTowerGate = 5;
     }
 
     public static final class RobotConstants {
