@@ -42,9 +42,16 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     followerTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
 
+    leaderTalonFX.config_kP(0, 0.05);
+    leaderTalonFX.config_kI(0, 0.001);   
+    leaderTalonFX.config_kD(0, 0.07);  
+    leaderTalonFX.config_kF(0, 0.0472);  
+    leaderTalonFX.config_IntegralZone(0, 150);
+
     leaderTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
     followerTalonFX.follow(leaderTalonFX);
+    SmartDashboard.putNumber("Shooter/Setpoint", 5000);
   }
 
   public void setPercentOutput(double output){
@@ -55,14 +62,22 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.set(ControlMode.Velocity, velocity);
   }
 
+  public void stop(){
+    leaderTalonFX.set(ControlMode.PercentOutput, 0);
+  }
+
   public void dashboardVelocity(){
     //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
 
-    double wheelRPM = SmartDashboard.getNumber("Shooter/Setpoint", 3000);
+    double wheelRPM = 5000; // SmartDashboard.getNumber("Shooter/Setpoint", 6000);
 
     //Motor Velocity in RPM / 600 (ms to min) * Sensor ticks per rev / Gear Ratio
     double motorVelocity = (wheelRPM / 600 * 2048) / 1.5;
     leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
+  }
+
+  public double getWheelRPM(){
+    return (leaderTalonFX.getSelectedSensorVelocity() * 600) / 2048 * 1.5;
   }
 
   @Override
@@ -72,6 +87,7 @@ public class Shooter extends SubsystemBase {
 
   public void dashboard() {
     SmartDashboard.putNumber("Shooter/Velocity", leaderTalonFX.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Shooter/WheelRPM", getWheelRPM());
     SmartDashboard.putNumber("Shooter/OutputPercentage", leaderTalonFX.getMotorOutputPercent());
     SmartDashboard.putNumber("Shooter/LeftCurrent", leaderTalonFX.getSupplyCurrent());
     SmartDashboard.putNumber("Shooter/RightCurrent", followerTalonFX.getSupplyCurrent());

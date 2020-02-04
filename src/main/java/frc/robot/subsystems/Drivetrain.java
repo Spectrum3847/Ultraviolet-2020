@@ -43,8 +43,8 @@ public class Drivetrain extends SubsystemBase {
 
     leftRearTalonFX.setInverted(true);
     leftFrontTalonFX.setInverted(true);
-    rightRearTalonFX.setInverted(false);
-    rightFrontTalonFX.setInverted(false);
+    rightRearTalonFX.setInverted(true);
+    rightFrontTalonFX.setInverted(true);
 
     SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 60, 65, 3);
     leftFrontTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
@@ -72,7 +72,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void arcadeDrive(double moveSpeed, double rotateSpeed) {
     rotateSpeed = Math.copySign(Math.pow(rotateSpeed,2), rotateSpeed);
-    rotateSpeed = limit(rotateSpeed) * 0.8;
+    rotateSpeed = limit(rotateSpeed) * 0.6;
     
     moveSpeed = limit(moveSpeed);
 
@@ -109,8 +109,8 @@ public class Drivetrain extends SubsystemBase {
       }
     }
 
-    leftFrontTalonFX.set(limit(leftMotorOutput) * 1.0);
-    rightFrontTalonFX.set(limit(rightMotorOutput) * 1.0);
+    leftFrontTalonFX.set(limit(leftMotorOutput));
+    rightFrontTalonFX.set(limit(rightMotorOutput));
   }
 
   public double getHeading() {

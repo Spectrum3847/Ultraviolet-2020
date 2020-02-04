@@ -16,13 +16,13 @@ public class FunnelStore extends CommandBase {
    */
   public FunnelStore() {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.addRequirements(RobotContainer.Funnel);
+    this.addRequirements(RobotContainer.funnel);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.Funnel.intakeHold();
+    RobotContainer.funnel.intakeHold();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

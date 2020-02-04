@@ -16,15 +16,15 @@ public class FunnelToTower extends CommandBase {
    */
   public FunnelToTower() {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.addRequirements(RobotContainer.Intake, RobotContainer.Funnel, RobotContainer.Tower);
+    this.addRequirements(RobotContainer.funnel, RobotContainer.tower);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.Tower.close();
-    RobotContainer.Funnel.intakeTower();
-    RobotContainer.Tower.indexUp();
+    RobotContainer.tower.close();
+    RobotContainer.funnel.intakeTower();
+    RobotContainer.tower.indexUp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,6 +35,7 @@ public class FunnelToTower extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    RobotContainer.tower.open();
   }
 
   // Returns true when the command should end.

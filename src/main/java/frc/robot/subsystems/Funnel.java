@@ -25,13 +25,13 @@ public class Funnel extends SubsystemBase {
     leftMotor = new CANSparkMax(Constants.FunnelConstants.kLeftMotor, MotorType.kBrushless);
     leftMotor.restoreFactoryDefaults();
     leftMotor.setSmartCurrentLimit(20);
-    leftMotor.setInverted(true);
+    leftMotor.setInverted(false);
     leftMotor.burnFlash();
 
     rightMotor = new CANSparkMax(Constants.FunnelConstants.kRightMotor, MotorType.kBrushless);
     rightMotor.restoreFactoryDefaults();
     rightMotor.setSmartCurrentLimit(20);
-    rightMotor.setInverted(false);
+    rightMotor.setInverted(true);
     rightMotor.burnFlash();
   }
 

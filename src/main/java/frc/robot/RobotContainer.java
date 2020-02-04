@@ -23,35 +23,40 @@ import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.Drive;
 import frc.robot.commands.auto.*;
 import frc.robot.commands.ballpath.*;
 import frc.paths.*;
 
 /**
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   public static final Drivetrain Drivetrain = new Drivetrain();
-  public static final Intake Intake = new Intake();
-  public static final Tower Tower = new Tower();
-  public static final Funnel Funnel = new Funnel();
-  public static final Shooter Shooter = new Shooter();
+  public static final Intake intake = new Intake();
+  public static final Tower tower = new Tower();
+  public static final Funnel funnel = new Funnel();
+  public static final Shooter shooter = new Shooter();
   public static DriverStation DS;
 
   public static SpectrumLogger logger = SpectrumLogger.getInstance();
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
-  SpectrumXboxController driverController = new SpectrumXboxController(0, .17, .05);
-  SpectrumXboxController operatorController = new SpectrumXboxController(1, .17, .05);
-  
+  SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
+  SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
+
   public static AHRS navX;
 
   public static Path drive6 = new DriveStraight6();
@@ -65,55 +70,57 @@ public class RobotContainer {
   public static final String _drive = "DRIVE";
 
   /**
-   * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     DS = DriverStation.getInstance();
-    initDebugger(); //Init Debugger
-		printInfo("Start robotInit()");
+    initDebugger(); // Init Debugger
+    printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
     try {
       navX = new AHRS(SPI.Port.kMXP);
-    } catch(RuntimeException ex) {
+    } catch (RuntimeException ex) {
       printInfo("Error instantiating navX-MXP");
     }
-    if(navX != null) {
+    if (navX != null) {
       navX.zeroYaw();
     }
-    
-    Drivetrain.setDefaultCommand(
-      new Drive(Drivetrain, driverController)
-    );
 
-    Intake.setDefaultCommand(
-      new RunCommand(() -> Intake.stop(),Intake)
-    );
+    Drivetrain.setDefaultCommand(new Drive(Drivetrain, driverController));
 
-    Funnel.setDefaultCommand(
-      new RunCommand(() -> Funnel.stop(),Funnel)
-    );
+    intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
 
-    Tower.setDefaultCommand(
-      new RunCommand(() -> Tower.stop(),Tower)
-    );
+    funnel.setDefaultCommand(new RunCommand(() -> funnel.stop(), funnel));
+
+    tower.setDefaultCommand(new RunCommand(() -> tower.stop(), tower));
+
+    shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
 
     // Configure the button bindings
     configureButtonBindings();
-    
+
     printInfo("End robotInit()");
   }
 
   /**
-   * Use this method to define your button->command mappings.  Buttons can be created by
-   * inst antiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-   * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by inst antiating a {@link GenericHID} or one of its subclasses
+   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(), Drivetrain));
+    // driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(),
+    // Drivetrain));
     driverController.leftBumper.whileHeld(new IntakeBalls());
     driverController.aButton.whileHeld(new FunnelToTower());
     driverController.bButton.whileHeld(new FunnelStore());
+    driverController.yButton.whileHeld(BallPathCommands.feedShooter);
+
+
+
+    //Set Shooter to the DashboardVelcoity when right bumper is pressed.
+    driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
+    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.setPercentOutput(0.5), shooter));
   }
 
 

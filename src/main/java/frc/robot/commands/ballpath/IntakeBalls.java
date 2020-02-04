@@ -16,14 +16,14 @@ public class IntakeBalls extends CommandBase {
    */
   public IntakeBalls() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.Intake);
+    addRequirements(RobotContainer.intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.Intake.down();
-    RobotContainer.Intake.collect();
+    RobotContainer.intake.down();
+    RobotContainer.intake.collect();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +34,7 @@ public class IntakeBalls extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.Intake.up();
+    RobotContainer.intake.up();
   }
 
   // Returns true when the command should end.
