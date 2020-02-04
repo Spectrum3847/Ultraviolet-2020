@@ -86,15 +86,8 @@ public class RobotContainer {
       navX.zeroYaw();
     }
 
-    Drivetrain.setDefaultCommand(new Drive(Drivetrain, driverController));
-
-    intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
-
-    funnel.setDefaultCommand(new RunCommand(() -> funnel.stop(), funnel));
-
-    tower.setDefaultCommand(new RunCommand(() -> tower.stop(), tower));
-
-    shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
+    //Setup Default Commands for Each Subsystem
+    setupDefaultCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -102,6 +95,17 @@ public class RobotContainer {
     printInfo("End robotInit()");
   }
 
+  /**
+   * Setup Default Commands for Each Subsystem
+   * Mostly these should be telling motors to stop or be run off a joystick axis.
+   */
+  private void setupDefaultCommands(){
+    Drivetrain.setDefaultCommand(new Drive(Drivetrain, driverController));
+    intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+    funnel.setDefaultCommand(new RunCommand(() -> funnel.stop(), funnel));
+    tower.setDefaultCommand(new RunCommand(() -> tower.stop(), tower));
+    shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
+  }
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by inst antiating a {@link GenericHID} or one of its subclasses
