@@ -18,6 +18,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
@@ -27,7 +28,18 @@ public class Shooter extends SubsystemBase {
   /**
    * Creates a new Shooter.
    */
+  private double kP, kI, kD, kF;
+  private int iZone;
+
   public Shooter() {
+    kP = SpectrumPreferences.getInstance().getNumber("Shooter kP",0.05);
+    kI = SpectrumPreferences.getInstance().getNumber("Shooter kI",0.001);
+    kD = SpectrumPreferences.getInstance().getNumber("Shooter kD",0.07);
+    kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.0472);
+    iZone = (int) SpectrumPreferences.getInstance().getNumber("Shooter I-Zone", 150;
+
+
+    
 
     leaderTalonFX = new TalonFX(Constants.ShooterConstants.kLeftlMotor);
     followerTalonFX = new TalonFX(Constants.ShooterConstants.kRightMotor);
@@ -42,11 +54,11 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     followerTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
 
-    leaderTalonFX.config_kP(0, 0.05);
-    leaderTalonFX.config_kI(0, 0.001);   
-    leaderTalonFX.config_kD(0, 0.07);  
-    leaderTalonFX.config_kF(0, 0.0472);  
-    leaderTalonFX.config_IntegralZone(0, 150);
+    leaderTalonFX.config_kP(0, kP);
+    leaderTalonFX.config_kI(0, kI);   
+    leaderTalonFX.config_kD(0, kD);  
+    leaderTalonFX.config_kF(0, kF);  
+    leaderTalonFX.config_IntegralZone(0, iZone);
 
     leaderTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
