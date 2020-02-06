@@ -17,6 +17,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -52,6 +53,9 @@ public class Shooter extends SubsystemBase {
 
     followerTalonFX.follow(leaderTalonFX);
     SmartDashboard.putNumber("Shooter/Setpoint", 5000);
+
+    //Establish Default Command for This Subsystem
+    this.setDefaultCommand(new RunCommand(() -> stop(), this));
   }
 
   public void setPercentOutput(double output){

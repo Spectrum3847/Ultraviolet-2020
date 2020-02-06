@@ -18,12 +18,20 @@ import frc.robot.RobotContainer;
  */
 public class BallPathCommands {
 
-    public static Command feedShooter = new ParallelCommandGroup(new RunCommand(() -> RobotContainer.tower.feed(), RobotContainer.tower),
-    new SequentialCommandGroup(
-        new RunCommand(() -> RobotContainer.funnel.intakeHold(), RobotContainer.funnel).withTimeout(.5),
-        new RunCommand(() -> RobotContainer.funnel.feed(), RobotContainer.funnel)
+    //Feed Shooter, feed the tower and reverse the belt for .25sec and then feed the funnel
+    public static Command feedShooter = new ParallelCommandGroup(
+        new RunCommand(() -> RobotContainer.tower.feed(), RobotContainer.tower),
+        new SequentialCommandGroup(
+            new RunCommand(() -> RobotContainer.funnel.intakeHold(), RobotContainer.funnel).withTimeout(.5),
+            new RunCommand(() -> RobotContainer.funnel.feed(), RobotContainer.funnel)
         )
     );
 
+    //funnel balls from the funnel to the tower
+    public static Command funnelToTower = new RunCommand(() -> RobotContainer.funnel.intakeTower(), RobotContainer.funnel).alongWith(
+        new RunCommand(() -> RobotContainer.tower.indexUp(), RobotContainer.tower)
+    );
 
+    //Reverse the funnel
+    public static Command funnelStore = new RunCommand(() -> RobotContainer.funnel.intakeHold(), RobotContainer.funnel);     
 }
