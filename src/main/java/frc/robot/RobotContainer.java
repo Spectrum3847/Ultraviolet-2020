@@ -26,7 +26,6 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.auto.PathFollower;
-import frc.robot.commands.ballpath.*;
 import frc.paths.*;
 import frc.robot.commands.ballpath.BallPathCommands;
 import frc.robot.commands.drive.DriveCommands;
@@ -100,7 +99,7 @@ public class RobotContainer {
     // Drivetrain));
     driverController.leftBumper.whileHeld(DriveCommands.highGear);
     
-    driverController.leftBumper.whileHeld(new IntakeBalls());
+    driverController.leftBumper.whileHeld(BallPathCommands.intakeBalls);
     driverController.aButton.whileHeld(BallPathCommands.funnelToTower);
     driverController.bButton.whileHeld(BallPathCommands.funnelStore);
     driverController.yButton.whileHeld(BallPathCommands.feedShooter);

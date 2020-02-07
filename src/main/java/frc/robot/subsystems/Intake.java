@@ -54,6 +54,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void collect(){
+    down();
     setSpeed(1.0);
   }
 
