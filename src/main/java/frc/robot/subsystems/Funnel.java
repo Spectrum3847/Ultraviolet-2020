@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -33,6 +34,9 @@ public class Funnel extends SubsystemBase {
     rightMotor.setSmartCurrentLimit(20);
     rightMotor.setInverted(true);
     rightMotor.burnFlash();
+
+    //Establish Default Command for This Subsystem
+    this.setDefaultCommand(new RunCommand(() -> stop(), this));
   }
 
   public void periodic() {

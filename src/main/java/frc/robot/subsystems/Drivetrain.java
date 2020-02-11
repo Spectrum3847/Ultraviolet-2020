@@ -12,12 +12,24 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import frc.robot.Constants;
+
+import frc.lib.drivers.SpectrumSolenoid;
 import frc.robot.RobotContainer;
+import frc.robot.commands.drive.Drive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
+
+  public static final class Constants {
+    public static final int kLeftFrontMotor = 10;
+    public static final int kLeftRearMotor = 11;
+    public static final int kRightFrontMotor = 20;
+    public static final int kRightRearMotor = 21;
+
+    public static final int kShifter = 0;
+  }
+
   /**
    * Creates a new Drivetrain.
    */
@@ -26,15 +38,16 @@ public class Drivetrain extends SubsystemBase {
   public final WPI_TalonFX leftFrontTalonFX;
   public final WPI_TalonFX rightRearTalonFX;
   public final WPI_TalonFX rightFrontTalonFX;
+  public final SpectrumSolenoid shifter;
 
   //public DifferentialDrive differentialDrive;
 
   public Drivetrain() {
 
-    leftRearTalonFX = new WPI_TalonFX(Constants.DriveConstants.kLeftRearMotor);
-    leftFrontTalonFX = new WPI_TalonFX(Constants.DriveConstants.kLeftFrontMotor);
-    rightRearTalonFX = new WPI_TalonFX(Constants.DriveConstants.kRightRearMotor);
-    rightFrontTalonFX = new WPI_TalonFX(Constants.DriveConstants.kRightFrontMotor);
+    leftRearTalonFX = new WPI_TalonFX(Constants.kLeftRearMotor);
+    leftFrontTalonFX = new WPI_TalonFX(Constants.kLeftFrontMotor);
+    rightRearTalonFX = new WPI_TalonFX(Constants.kRightRearMotor);
+    rightFrontTalonFX = new WPI_TalonFX(Constants.kRightFrontMotor);
 
     leftRearTalonFX.configFactoryDefault();
     leftFrontTalonFX.configFactoryDefault();
@@ -58,6 +71,11 @@ public class Drivetrain extends SubsystemBase {
     leftFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     rightFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
+    //Shifter Setup
+    shifter = new SpectrumSolenoid(Constants.kShifter);
+
+    //Set the Default Command for this subsystem
+    setDefaultCommand(new Drive(this, RobotContainer.driverController));
   }
 
   protected double limit(double value) {
@@ -71,8 +89,9 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void arcadeDrive(double moveSpeed, double rotateSpeed) {
-    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,2), rotateSpeed);
-    rotateSpeed = limit(rotateSpeed) * 0.6;
+    //Cube rotation speed to give us better low end performance espeically after deadzone
+    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,3), rotateSpeed);
+    //rotateSpeed = limit(rotateSpeed) * 0.6;
     
     moveSpeed = limit(moveSpeed);
 
@@ -127,6 +146,14 @@ public class Drivetrain extends SubsystemBase {
     rightFrontTalonFX.set(TalonFXControlMode.Velocity, rightVelocity);
   }
 
+  public void highGear(){
+    shifter.set(true);
+  }
+
+  public void lowGear(){
+    shifter.set(false);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -139,5 +166,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drive/LeftStator", leftFrontTalonFX.getStatorCurrent());
     SmartDashboard.putNumber("Drive/RightVel", rightFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putNumber("Drive/LeftVel", leftFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
+    SmartDashboard.putBoolean("Drive/HighGear", shifter.get());
   }
 }
