@@ -7,37 +7,36 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.SpectrumSolenoid;
+import frc.robot.Constants;
 
 public class Tower extends SubsystemBase {
 
-  public static final class Constants{
-    public static final int kTowerMotor = 43;
-    public static final int kTowerGate = 5;
-  }
-
-  public final CANSparkMax motor;
+  public final TalonFX motor;
   public final SpectrumSolenoid gate;
+
+  public final DigitalInput TowerTop = new DigitalInput(0);
+  public final DigitalInput TowerBot = new DigitalInput(1);
 
   /**
    * Creates a new Intake.
    */
   public Tower() {
-    motor = new CANSparkMax(Constants.kTowerMotor, MotorType.kBrushed);
-    motor.restoreFactoryDefaults();
-    motor.setSmartCurrentLimit(30);
-    motor.setInverted(false);
-    motor.burnFlash();
+    motor = new TalonFX(Constants.TowerConstants.kTowerMotor);
+    motor.setInverted(true);
+    SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 40, 45, 0.5);
+    motor.configSupplyCurrentLimit(supplyCurrentLimit);
+    motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
-    gate = new SpectrumSolenoid(Constants.kTowerGate);
-
-    //Establish Default Command for This Subsystem
-    this.setDefaultCommand(new RunCommand(() -> stop(), this));
+    gate = new SpectrumSolenoid(Constants.TowerConstants.kTowerGate);
   }
 
   public void periodic() {
@@ -45,11 +44,10 @@ public class Tower extends SubsystemBase {
   }
 
   public void setSpeed(double speed){
-    motor.set(speed);
+    motor.set(ControlMode.PercentOutput, speed);
   }
 
   public void feed(){
-    open();
     setSpeed(1.0);
   }
 
@@ -58,7 +56,6 @@ public class Tower extends SubsystemBase {
   }
 
   public void indexUp(){
-    close();
     setSpeed(0.5);
   }
 
@@ -67,7 +64,7 @@ public class Tower extends SubsystemBase {
   }
 
   public void stop(){
-    motor.stopMotor();
+    motor.set(ControlMode.PercentOutput,0);
   }
 
   public void close(){
@@ -77,4 +74,21 @@ public class Tower extends SubsystemBase {
   public void open(){
     gate.set(false);
   }
+
+  public void slowDown(){
+    setSpeed(-0.25);
+  }
+
+  public void SmartDash() {
+  SmartDashboard.putBoolean("TopSensorTower", TowerTop.get());
+  SmartDashboard.putBoolean("BotSensorTower", TowerBot.get());
+  }
+
+  public Boolean getTop(){
+    return !TowerTop.get();
+  }
+  public Boolean getBot(){
+    return !TowerBot.get();
+  }
+
 }

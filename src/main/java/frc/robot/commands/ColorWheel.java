@@ -5,27 +5,19 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.drive;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drivetrain;
-import frc.lib.controllers.SpectrumXboxController;
+import frc.robot.subsystems.DJ;
 
-
-public class Drive extends CommandBase {
+public class ColorWheel extends CommandBase {
   /**
-   * Creates a new Drive.
+   * Creates a new ColorWheel.
    */
-
-  private final Drivetrain m_drive;
-
-  private final SpectrumXboxController driverController;
-  
-  public Drive(Drivetrain subsystem, SpectrumXboxController controller) {
+  DJ m_dj = new DJ();
+  public ColorWheel() {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_drive = subsystem;
-    driverController = controller;
-    addRequirements(m_drive);
+    addRequirements(m_dj);
   }
 
   // Called when the command is initially scheduled.
@@ -36,7 +28,9 @@ public class Drive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //m_drive.arcadeDrive(driverController.leftStick.getX(), driverController.triggers.getTwist());
+    m_dj.findColor();
+    m_dj.spin();
+
   }
 
   // Called once the command ends or is interrupted.

@@ -10,40 +10,28 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.SpectrumSolenoid;
+import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-  
-  public static final class Constants{
-    public static final int kIntakeMotor = 40;
-    
-    public static final int kIntakeUp = 7;
-    public static final int kIntakeDown = 6;
-  }
 
   public final CANSparkMax motor;
   public final SpectrumSolenoid solUp;
   public final SpectrumSolenoid solDown;
-
   /**
    * Creates a new Intake.
    */
   public Intake() {
-    motor = new CANSparkMax(Constants.kIntakeMotor, MotorType.kBrushless);
+    motor = new CANSparkMax(Constants.IntakeConstants.kIntakeMotor, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(30);
     motor.setInverted(false);
     motor.burnFlash();
 
-    solUp = new SpectrumSolenoid(Constants.kIntakeUp);
-    solDown = new SpectrumSolenoid(Constants.kIntakeDown);
-
-    //Establish Default Command for This Subsystem
-    this.setDefaultCommand(new RunCommand(() -> stop(), this));
+    solUp = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeUp);
+    solDown = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeDown);
   }
-
 
   public void periodic() {
     // This method will be called once per scheduler run
@@ -54,8 +42,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void collect(){
-    down();
-    setSpeed(1.0);
+    setSpeed(0.75);
   }
 
   public void reverse(){
@@ -77,4 +64,3 @@ public class Intake extends SubsystemBase {
   }
 
 }
-

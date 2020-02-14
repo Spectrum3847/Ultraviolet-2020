@@ -25,10 +25,12 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.auto.PathFollower;
-import frc.paths.*;
-import frc.robot.commands.ballpath.BallPathCommands;
+import frc.robot.commands.drive.Drive;
 import frc.robot.commands.drive.DriveCommands;
+import frc.robot.commands.ColorWheel;
+import frc.robot.commands.auto.*;
+import frc.robot.commands.ballpath.*;
+import frc.paths.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -51,7 +53,7 @@ public class RobotContainer {
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
   public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
-  public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .1, .05);
+  //SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
   public static AHRS navX;
 
@@ -82,12 +84,26 @@ public class RobotContainer {
       navX.zeroYaw();
     }
 
+    //Setup Default Commands for Each Subsystem
+    setupDefaultCommands();
+
     // Configure the button bindings
     configureButtonBindings();
 
     printInfo("End robotInit()");
   }
 
+  /**
+   * Setup Default Commands for Each Subsystem
+   * Mostly these should be telling motors to stop or be run off a joystick axis.
+   */
+  private void setupDefaultCommands(){
+    Drivetrain.setDefaultCommand(new Drive(Drivetrain, driverController));
+    intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+    funnel.setDefaultCommand(new RunCommand(() -> funnel.stop(), funnel));
+    tower.setDefaultCommand(new RunCommand(() -> tower.stop(), tower));
+    shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
+  }
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by inst antiating a {@link GenericHID} or one of its subclasses
@@ -97,13 +113,17 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(),
     // Drivetrain));
-    driverController.leftBumper.whileHeld(DriveCommands.highGear);
-    
-    driverController.leftBumper.whileHeld(BallPathCommands.intakeBalls);
-    driverController.aButton.whileHeld(BallPathCommands.funnelToTower);
-    driverController.bButton.whileHeld(BallPathCommands.funnelStore);
-    driverController.yButton.whileHeld(BallPathCommands.feedShooter);
+    //driverController.rightBumper.whileHeld(DriveCommands.highGear);
 
+    driverController.leftBumper.whileHeld(new IntakeBalls());
+    driverController.aButton.whileHeld(new FunnelToTower());
+    driverController.bButton.whileHeld(new FunnelStore());
+    driverController.yButton.whileHeld(BallPathCommands.feedShooter);
+    //driverController.xButton.whileHeld(new ColorWheel());
+
+    driverController.Dpad.Down.whileHeld(new IntakeDown());
+    driverController.Dpad.Up.whileHeld(new TowerPneumatic());
+    driverController.Dpad.Right.whileHeld(new TowerBack());
     //Set Shooter to the DashboardVelcoity when right bumper is pressed.
     driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
     driverController.selectButton.whileHeld(new RunCommand(()-> shooter.setPercentOutput(0.5), shooter));

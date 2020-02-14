@@ -25,7 +25,9 @@ import frc.robot.Constants;
 public class Shooter extends SubsystemBase {
 
   public final TalonFX leaderTalonFX;
-  public final TalonFX followerTalonFX;
+  //public final TalonFX followerTalonFX;
+  public final TalonFX follower2TalonFX;
+  public final TalonFX acceleratorTalonFX;
   /**
    * Creates a new Shooter.
    */
@@ -37,23 +39,29 @@ public class Shooter extends SubsystemBase {
     kI = SpectrumPreferences.getInstance().getNumber("Shooter kI",0.001);
     kD = SpectrumPreferences.getInstance().getNumber("Shooter kD",0.07);
     kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.0472);
-    iZone = (int) SpectrumPreferences.getInstance().getNumber("Shooter I-Zone", 150;
+    iZone = (int) SpectrumPreferences.getInstance().getNumber("Shooter I-Zone", 150);
 
 
     
 
     leaderTalonFX = new TalonFX(Constants.ShooterConstants.kLeftlMotor);
-    followerTalonFX = new TalonFX(Constants.ShooterConstants.kRightMotor);
+    //followerTalonFX = new TalonFX(Constants.ShooterConstants.kRightMotor);
+    follower2TalonFX = new TalonFX(Constants.ShooterConstants.kRightBotMotor);
+    acceleratorTalonFX = new TalonFX(Constants.ShooterConstants.kAcceleratorMotor);
 
     //leftTalonFX.configFactoryDefault();
     //rightTalonFX.configFactoryDefault();
     
     leaderTalonFX.setInverted(false);
-    followerTalonFX.setInverted(true);
+    //followerTalonFX.setInverted(true);
+    follower2TalonFX.setInverted(true);
+    acceleratorTalonFX.setInverted(true);
     
     SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 40, 45, 0.5);
     leaderTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
-    followerTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
+    //followerTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
+    follower2TalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
+    acceleratorTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
 
     leaderTalonFX.config_kP(0, kP);
     leaderTalonFX.config_kI(0, kI);   
@@ -63,7 +71,10 @@ public class Shooter extends SubsystemBase {
 
     leaderTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
-    followerTalonFX.follow(leaderTalonFX);
+    //followerTalonFX.follow(leaderTalonFX);
+    follower2TalonFX.follow(leaderTalonFX);
+    acceleratorTalonFX.follow(leaderTalonFX);
+    
     SmartDashboard.putNumber("Shooter/Setpoint", 5000);
 
     //Establish Default Command for This Subsystem
@@ -106,6 +117,6 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/WheelRPM", getWheelRPM());
     SmartDashboard.putNumber("Shooter/OutputPercentage", leaderTalonFX.getMotorOutputPercent());
     SmartDashboard.putNumber("Shooter/LeftCurrent", leaderTalonFX.getSupplyCurrent());
-    SmartDashboard.putNumber("Shooter/RightCurrent", followerTalonFX.getSupplyCurrent());
+    SmartDashboard.putNumber("Shooter/RightCurrent", follower2TalonFX.getSupplyCurrent());
   }
 }
