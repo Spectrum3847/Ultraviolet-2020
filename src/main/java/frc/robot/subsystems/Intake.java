@@ -42,7 +42,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void collect(){
-    setSpeed(0.75);
+    setSpeed(1.0);
   }
 
   public void reverse(){

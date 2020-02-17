@@ -24,7 +24,9 @@ import frc.robot.subsystems.Tower;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.Drive;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.ColorWheel;
@@ -113,20 +115,25 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(),
     // Drivetrain));
-    //driverController.rightBumper.whileHeld(DriveCommands.highGear);
-
-    driverController.leftBumper.whileHeld(new IntakeBalls());
-    driverController.aButton.whileHeld(new FunnelToTower());
+    driverController.rightBumper.whileHeld(DriveCommands.highGear);
+    driverController.leftBumper.whileHeld(new ParallelCommandGroup(
+      new SequentialCommandGroup(
+        new TowerBack(), 
+        new FunnelStore()), 
+      new IntakeBalls()));
+    
+    driverController.Dpad.Left.whileHeld(new IntakeBalls());
+    //driverController.Dpad.Right.whileHeld(new FunnelToTower());
     driverController.bButton.whileHeld(new FunnelStore());
     driverController.yButton.whileHeld(BallPathCommands.feedShooter);
     //driverController.xButton.whileHeld(new ColorWheel());
-
+    driverController.Dpad.Right.whileHeld(new IntakeUpRunning());
     driverController.Dpad.Down.whileHeld(new IntakeDown());
     driverController.Dpad.Up.whileHeld(new TowerPneumatic());
-    driverController.Dpad.Right.whileHeld(new TowerBack());
-    //Set Shooter to the DashboardVelcoity when right bumper is pressed.
+    driverController.aButton.whileHeld(new TowerBack());
+    //Set Shooter to the DashboardVelocity when right bumper is pressed.
     driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.setPercentOutput(0.5), shooter));
+    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
   }
 
 

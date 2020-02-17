@@ -56,11 +56,11 @@ public class Tower extends SubsystemBase {
   }
 
   public void indexUp(){
-    setSpeed(0.5);
+    setSpeed(0.15);
   }
 
   public void indexDown(){
-    setSpeed(-0.5);
+    setSpeed(-0.15);
   }
 
   public void stop(){
@@ -80,8 +80,8 @@ public class Tower extends SubsystemBase {
   }
 
   public void SmartDash() {
-  SmartDashboard.putBoolean("TopSensorTower", TowerTop.get());
-  SmartDashboard.putBoolean("BotSensorTower", TowerBot.get());
+  SmartDashboard.putBoolean("TopSensorTower", !TowerTop.get());
+  SmartDashboard.putBoolean("BotSensorTower", !TowerBot.get());
   }
 
   public Boolean getTop(){

@@ -16,11 +16,12 @@ public class TowerBack extends CommandBase {
    * Creates a new TowerBack.
    */
   private Boolean trip;
+  private Boolean isFinished;
 
     
   public TowerBack() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.tower);
+    addRequirements(RobotContainer.tower, RobotContainer.funnel);
   }
 
   // Called when the command is initially scheduled.
@@ -32,18 +33,22 @@ public class TowerBack extends CommandBase {
     RobotContainer.tower.close();
     RobotContainer.funnel.intakeTower();
     RobotContainer.tower.indexUp();
+    isFinished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
   RobotContainer.tower.SmartDash();
-  if(RobotContainer.tower.getTop()){
+  if(RobotContainer.tower.getTop() && RobotContainer.tower.getBot()){
     trip = true;
     RobotContainer.tower.slowDown();
     }
   else if (trip){
   RobotContainer.tower.stop();
+  RobotContainer.funnel.stop();
+  RobotContainer.tower.open();
+  isFinished = true;
   }
   
   }
@@ -58,6 +63,6 @@ public class TowerBack extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return isFinished;
   }
 }
