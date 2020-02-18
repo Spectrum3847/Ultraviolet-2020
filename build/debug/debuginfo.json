@@ -12,5 +12,12 @@
     "debugfile": "frcJava_roborio.debugconfig",
     "project": "Starlight-2020",
     "language": "java"
+  },
+  {
+    "artifact": "frcJava (in project Ultraviolet-2020)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "Ultraviolet-2020",
+    "language": "java"
   }
 ]

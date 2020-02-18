@@ -49,7 +49,9 @@ public class SpectrumThumbStick {
 		if (input > -deadband && input < deadband) {
 			return 0;
 		}else {
-			return input;
+			//Rescale the input to remove deadband but keep are low end control.
+			//deadband to 1 becomes 0 to 1.
+			return Math.copySign((Math.abs(input)-deadband)/(1-deadband) ,input);
 		}
 	}
 	
