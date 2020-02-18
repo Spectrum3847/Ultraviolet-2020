@@ -14,6 +14,7 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.SpectrumSolenoid;
 import frc.robot.Constants;
@@ -75,6 +76,9 @@ public class Intake extends SubsystemBase {
 
     solUp = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeUp);
     solDown = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeDown);
+
+    this.setDefaultCommand(new RunCommand(() -> stop(), this));
+
   }
 
   public void periodic() {

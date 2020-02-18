@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import frc.lib.drivers.SpectrumSolenoid;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drive.Drive;
+import frc.team2363.logger.HelixLogger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -39,8 +40,6 @@ public class Drivetrain extends SubsystemBase {
   public final WPI_TalonFX rightRearTalonFX;
   public final WPI_TalonFX rightFrontTalonFX;
   public final SpectrumSolenoid shifter;
-
-  //public DifferentialDrive differentialDrive;
 
   public Drivetrain() {
 
@@ -74,8 +73,11 @@ public class Drivetrain extends SubsystemBase {
     //Shifter Setup
     shifter = new SpectrumSolenoid(Constants.kShifter);
 
+    //HelixLogger Setup
+    setupLogs();
+
     //Set the Default Command for this subsystem
-    setDefaultCommand(new Drive(this, RobotContainer.driverController));
+    setDefaultCommand(new Drive());
   }
 
   protected double limit(double value) {
@@ -157,6 +159,19 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  private void setupLogs() {
+    HelixLogger.getInstance().addSource("DRIVE HighGear", shifter::get);
+
+    HelixLogger.getInstance().addSource("DRIVE LeftVel", leftFrontTalonFX.getSensorCollection()::getIntegratedSensorVelocity);
+    HelixLogger.getInstance().addSource("DRIVE RightVel", rightFrontTalonFX.getSensorCollection()::getIntegratedSensorVelocity);
+
+    HelixLogger.getInstance().addSource("DRIVE LeftStator", leftFrontTalonFX::getStatorCurrent);
+    HelixLogger.getInstance().addSource("DRIVE RightStator", rightFrontTalonFX::getStatorCurrent);
+
+    HelixLogger.getInstance().addSource("DRIVE LeftSupply", leftFrontTalonFX::getSupplyCurrent);
+    HelixLogger.getInstance().addSource("DRIVE RightSupply", rightFrontTalonFX::getSupplyCurrent);
   }
 
   public void dashboard() {
