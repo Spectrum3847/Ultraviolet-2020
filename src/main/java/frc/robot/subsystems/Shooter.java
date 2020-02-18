@@ -49,7 +49,7 @@ public class Shooter extends SubsystemBase {
     AkF = SpectrumPreferences.getInstance().getNumber("Accelerator kF",0.0472);
     AiZone = (int) SpectrumPreferences.getInstance().getNumber("Accelerator I-Zone", 150);
     
-
+        
     leaderTalonFX = new TalonFX(Constants.ShooterConstants.kLeftlMotor);
     follower2TalonFX = new TalonFX(Constants.ShooterConstants.kRightBotMotor);
     acceleratorTalonFX = new TalonFX(Constants.ShooterConstants.kAcceleratorMotor);
@@ -82,8 +82,8 @@ public class Shooter extends SubsystemBase {
 
     follower2TalonFX.follow(leaderTalonFX);
     
-    SmartDashboard.putNumber("Shooter/Setpoint", 5000);
-    SmartDashboard.putNumber("Acceerator/Setpoint", 5000);
+    //SmartDashboard.putNumber("Shooter/Setpoint", 5000);
+    //SmartDashboard.putNumber("Acceerator/Setpoint", 5000);
 
     //Establish Default Command for This Subsystem
     this.setDefaultCommand(new RunCommand(() -> stop(), this));
@@ -114,8 +114,8 @@ public class Shooter extends SubsystemBase {
   public void dashboardVelocity(){
     //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
 
-    double wheelRPM = 5000; // SmartDashboard.getNumber("Shooter/Setpoint", 6000);
-    double AwheelRPM = 5000;
+    double wheelRPM = SpectrumPreferences.getInstance().getNumber("Shooter Setpoint",5000);
+    double AwheelRPM = SpectrumPreferences.getInstance().getNumber("Accelerator Setpoint",5000);
     //Motor Velocity in RPM / 600 (ms to min) * Sensor ticks per rev / Gear Ratio
     double motorVelocity = (wheelRPM / 600 * 2048) / 1.5;
     double AmotorVelocity = (AwheelRPM / 600 * 2048) / 1.5;

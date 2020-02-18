@@ -29,8 +29,7 @@ public final class Constants {
 
     public static final class ShooterConstants{
         public static final int kLeftlMotor = 30;
-        public static final int kRightMotor = 31;
-        public static final int kRightBotMotor = 32;
+        public static final int kRightBotMotor = 31;
         public static final int kAcceleratorMotor = 33;
     } 
 

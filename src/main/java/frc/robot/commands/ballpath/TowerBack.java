@@ -42,7 +42,7 @@ public class TowerBack extends CommandBase {
   RobotContainer.tower.SmartDash();
   if(RobotContainer.tower.getTop() && RobotContainer.tower.getBot()){
     trip = true;
-    RobotContainer.tower.slowDown();
+    RobotContainer.tower.indexDown();
     }
   else if (trip){
   RobotContainer.tower.stop();
