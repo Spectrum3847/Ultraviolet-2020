@@ -31,6 +31,7 @@ import frc.robot.commands.ColorWheel;
 import frc.robot.commands.auto.*;
 import frc.robot.commands.ballpath.*;
 import frc.paths.*;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -42,12 +43,13 @@ import frc.paths.*;
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  public static final Drivetrain Drivetrain = new Drivetrain();
+  public static final Drivetrain drivetrain = new Drivetrain();
   public static final Intake intake = new Intake();
   public static final Tower tower = new Tower();
   public static final Funnel funnel = new Funnel();
   public static final Shooter shooter = new Shooter();
   public static DriverStation DS;
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
@@ -97,8 +99,6 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(),
-    // Drivetrain));
     driverController.rightBumper.whileHeld(DriveCommands.highGear);
     driverController.leftBumper.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(

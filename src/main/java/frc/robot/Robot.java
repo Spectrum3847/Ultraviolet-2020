@@ -53,18 +53,6 @@ public class Robot extends TimedRobot {
     s_robot_state = state;
   }
 
-  public static void printDebug(String msg) {
-    Debugger.println(msg, _general, Debugger.debug2);
-  }
-
-  public static void printInfo(String msg) {
-    Debugger.println(msg, _general, Debugger.info3);
-  }
-
-  public static void printWarning(String msg) {
-    Debugger.println(msg, _general, Debugger.warning4);
-  }
-
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -117,6 +105,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = robotContainer.getAutonomousCommand();
+    initDebugger();//Used to set debug level lower when FMS attached.
     printInfo("Start autonomousInit()");
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
@@ -143,7 +132,6 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     
-    initDebugger();//Used to set debug level lower when FMS attached.
     printInfo("Start teleopInit()");
     CommandScheduler.getInstance().cancelAll();
 		LiveWindow.setEnabled(false);
@@ -193,4 +181,17 @@ public class Robot extends TimedRobot {
     Debugger.flagOn(_shooter);
     Debugger.flagOn(_tower);
   }
+
+  public static void printDebug(String msg) {
+    Debugger.println(msg, _general, Debugger.debug2);
+  }
+
+  public static void printInfo(String msg) {
+    Debugger.println(msg, _general, Debugger.info3);
+  }
+
+  public static void printWarning(String msg) {
+    Debugger.println(msg, _general, Debugger.warning4);
+  }
+
 }

@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.SpectrumSolenoid;
+import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Tower extends SubsystemBase {
 
@@ -60,6 +62,9 @@ public class Tower extends SubsystemBase {
     gate = new SpectrumSolenoid(Constants.TowerConstants.kTowerGate);
 
     SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 1000);
+
+    //Helixlogger setup
+    setupLogs();
 
     this.setDefaultCommand(new RunCommand(() -> stop(), this));
   }
@@ -113,6 +118,17 @@ public class Tower extends SubsystemBase {
     gate.set(false);
   }
 
+  public Boolean getTop(){
+    return !TowerTop.get();
+  }
+  public Boolean getBot(){
+    return !TowerBot.get();
+  }
+
+  //Set up Helixlogger sources here
+  private void setupLogs() {
+
+  }
 
   public void SmartDash() {
   SmartDashboard.putBoolean("TopSensorTower", !TowerTop.get());
@@ -123,11 +139,15 @@ public class Tower extends SubsystemBase {
   SmartDashboard.putNumber("Tower/LeftCurrent", motor.getSupplyCurrent());
   }
 
-  public Boolean getTop(){
-    return !TowerTop.get();
+  public static void printDebug(String msg){
+    Debugger.println(msg, Robot._tower, Debugger.debug2);
   }
-  public Boolean getBot(){
-    return !TowerBot.get();
+  
+  public static void printInfo(String msg){
+    Debugger.println(msg, Robot._tower, Debugger.info3);
   }
-
+  
+  public static void printWarning(String msg) {
+    Debugger.println(msg, Robot._tower, Debugger.warning4);
+  }
 }
