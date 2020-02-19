@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.util.Debugger;
+import frc.team2363.logger.HelixLogger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,20 +28,16 @@ public class Robot extends TimedRobot {
 
   public static int brownOutCtn = 0;
 
-
-  
-
-  
-
-
-
   // Add Debug flags
   // You can have a flag for each subsystem, etc
   public static final String _controls = "CONTROL";
   public static final String _general = "GENERAL";
   public static final String _auton = "AUTON";
-  public static final String _commands = "COMMAND";
   public static final String _drive = "DRIVE";
+  public static final String _funnel = "FUNNEL";
+  public static final String _intake = "INTAKE";
+  public static final String _shooter = "SHOOTER";
+  public static final String _tower = "TOWER";
 
   public enum RobotState {
     DISABLED, AUTONOMOUS, TELEOP, TEST
@@ -95,8 +92,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     //  block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-   
   }
 
   /**
@@ -109,12 +104,11 @@ public class Robot extends TimedRobot {
     LiveWindow.setEnabled(false);
 		LiveWindow.disableAllTelemetry();
     setState(RobotState.DISABLED);
-    printInfo("End disableInit()");
+    printInfo("End disabledInit()");
   }
 
   @Override
   public void disabledPeriodic() {
-    //Disabled.periodic;
   }
 
   /**
@@ -139,8 +133,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    //Autonomous.periodic(); 
-
+    HelixLogger.getInstance().saveLogs();
   }
 
   @Override
@@ -160,8 +153,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     printInfo("End teleopInit()");
-      
-    
   }
 
   /**
@@ -169,6 +160,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    HelixLogger.getInstance().saveLogs();
     /*if (RobotController.isBrownedOut()){
 			brownOutCtn++;
 		} */
@@ -188,11 +180,17 @@ public class Robot extends TimedRobot {
   }
 
   private static void initDebugger(){
-    Debugger.setLevel(Debugger.info3);
+    if(RobotContainer.DS.isFMSAttached()) {
+      Debugger.setLevel(Debugger.warning4);
+    } else {
+      Debugger.setLevel(Debugger.info3);
+    }
     Debugger.flagOn(_general); //Set all the flags on, comment out ones you want off
-    Debugger.flagOn(_controls);
     Debugger.flagOn(_auton);
-    Debugger.flagOn(_commands);
     Debugger.flagOn(_drive);
+    Debugger.flagOn(_funnel);
+    Debugger.flagOn(_intake);
+    Debugger.flagOn(_shooter);
+    Debugger.flagOn(_tower);
   }
 }

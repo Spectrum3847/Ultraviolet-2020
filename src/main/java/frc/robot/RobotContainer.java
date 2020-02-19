@@ -8,7 +8,6 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.team319.trajectory.Path;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -16,18 +15,17 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.controllers.SpectrumXboxController;
 import frc.lib.util.Debugger;
-import frc.lib.util.SpectrumLogger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
+import frc.team2363.logger.HelixEvents;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.drive.Drive;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.ColorWheel;
 import frc.robot.commands.auto.*;
@@ -51,7 +49,6 @@ public class RobotContainer {
   public static final Shooter shooter = new Shooter();
   public static DriverStation DS;
 
-  public static SpectrumLogger logger = SpectrumLogger.getInstance();
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
   public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
@@ -59,35 +56,33 @@ public class RobotContainer {
 
   public static AHRS navX;
 
-  public static Path drive6 = new DriveStraight6();
-
   // Add Debug flags
   // You can have a flag for each subsystem, etc
   public static final String _controls = "CONTROL";
   public static final String _general = "GENERAL";
   public static final String _auton = "AUTON";
-  public static final String _commands = "COMMAND";
   public static final String _drive = "DRIVE";
-
+  public static final String _funnel = "FUNNEL";
+  public static final String _intake = "INTAKE";
+  public static final String _shooter = "SHOOTER";
+  public static final String _tower = "TOWER";
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     DS = DriverStation.getInstance();
     initDebugger(); // Init Debugger
+    HelixEvents.getInstance().startLogging();
     printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
     try {
       navX = new AHRS(SPI.Port.kMXP);
     } catch (RuntimeException ex) {
-      printInfo("Error instantiating navX-MXP");
+      printWarning("Error instantiating navX-MXP");
     }
     if (navX != null) {
       navX.zeroYaw();
     }
-
-    //Setup Default Commands for Each Subsystem
-    setupDefaultCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -95,17 +90,6 @@ public class RobotContainer {
     printInfo("End robotInit()");
   }
 
-  /**
-   * Setup Default Commands for Each Subsystem
-   * Mostly these should be telling motors to stop or be run off a joystick axis.
-   */
-  private void setupDefaultCommands(){
-    Drivetrain.setDefaultCommand(new Drive(Drivetrain, driverController));
-    intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
-    funnel.setDefaultCommand(new RunCommand(() -> funnel.stop(), funnel));
-    tower.setDefaultCommand(new RunCommand(() -> tower.stop(), tower));
-    shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
-  }
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by inst antiating a {@link GenericHID} or one of its subclasses
@@ -144,16 +128,23 @@ public class RobotContainer {
    */
   public CommandBase getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new PathFollower(new DriveStraight6(), Drivetrain);
+    //return new PathFollower(new DriveStraight6(), Drivetrain);
+    return null;
   }
 
   private static void initDebugger(){
-    Debugger.setLevel(Debugger.debug2); //Set the initial Debugger Level
+    if(DS.isFMSAttached()) {
+      Debugger.setLevel(Debugger.warning4);
+    } else {
+      Debugger.setLevel(Debugger.info3);
+    }
     Debugger.flagOn(_general); //Set all the flags on, comment out ones you want off
-    Debugger.flagOn(_controls);
     Debugger.flagOn(_auton);
-    Debugger.flagOn(_commands);
     Debugger.flagOn(_drive);
+    Debugger.flagOn(_funnel);
+    Debugger.flagOn(_intake);
+    Debugger.flagOn(_shooter);
+    Debugger.flagOn(_tower);
   }
 
   public static void printDebug(String msg){

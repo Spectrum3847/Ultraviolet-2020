@@ -123,14 +123,15 @@ public abstract class HelixFollower extends CommandBase {
     return isFinished;
   }
 
-  public void end() {
+  @Override
+  public void end(boolean interrupted) {
     pathNotifier.stop();
     pidNotifier.stop();
     HelixEvents.getInstance().addEvent("HelixFollower", "Finished path: " + trajectory.getClass().getSimpleName());
   }
 
   public void interrupted() {
-    end();
+    end(true);
   }
 
 

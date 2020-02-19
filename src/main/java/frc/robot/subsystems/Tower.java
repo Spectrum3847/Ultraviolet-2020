@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.SpectrumSolenoid;
 import frc.lib.util.SpectrumPreferences;
@@ -59,6 +60,8 @@ public class Tower extends SubsystemBase {
     gate = new SpectrumSolenoid(Constants.TowerConstants.kTowerGate);
 
     SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 1000);
+
+    this.setDefaultCommand(new RunCommand(() -> stop(), this));
   }
 
   public void periodic() {
