@@ -31,6 +31,7 @@ import frc.robot.commands.ColorWheel;
 import frc.robot.commands.auto.*;
 import frc.robot.commands.ballpath.*;
 import frc.paths.*;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -48,6 +49,7 @@ public class RobotContainer {
   public static final Funnel funnel = new Funnel();
   public static final Shooter shooter = new Shooter();
   public static DriverStation DS;
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 

@@ -69,8 +69,12 @@ public class PathFollower extends HelixFollower {
 
   @Override
   public double getCurrentDistance() {
-    return ((m_Drivetrain.rightFrontTalonFX.getSensorCollection().getIntegratedSensorPosition() / 13757)
-        + (m_Drivetrain.leftFrontTalonFX.getSensorCollection().getIntegratedSensorPosition() / 13757)) / 2;
+    return (
+              ticksToFeet(m_Drivetrain.rightFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
+              + ticksToFeet(m_Drivetrain.leftFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
+          )
+          / 2;
+
   }
 
   @Override
@@ -82,4 +86,10 @@ public class PathFollower extends HelixFollower {
   public void useOutputs(double left, double right) {
     m_Drivetrain.setSetpoint(left, right);
   }
+
+  //ticks * wheel circumference(feet) / encoder ticks / low gear ratio
+  private double ticksToFeet(double ticks) {
+    return ticks * (9 * Math.PI / 12) / 2048 / 16;
+  }
+
 }

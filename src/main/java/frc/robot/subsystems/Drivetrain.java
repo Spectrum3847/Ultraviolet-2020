@@ -79,7 +79,7 @@ public class Drivetrain extends SubsystemBase {
     setupLogs();
 
     //Set the Default Command for this subsystem
-    setDefaultCommand(new Drive());
+    setDefaultCommand(new Drive(this));
   }
 
   protected double limit(double value) {
@@ -142,7 +142,12 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void setSetpoint(final double left, final double right) {
-    setVelocityOutput(left * 1375.7, right * 1375.7);
+    setVelocityOutput(fpsToTicksPer100ms(left), fpsToTicksPer100ms(right));
+  }
+
+  // fps * (ft to wheel rev) * ticks per shaft rev / 10 100ms
+  private double fpsToTicksPer100ms(double fps) {
+    return fps * (12 / 9 * Math.PI) * 2048 / 10;
   }
 
   private void setVelocityOutput(final double leftVelocity, final double rightVelocity) {
