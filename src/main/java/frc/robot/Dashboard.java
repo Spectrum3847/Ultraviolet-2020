@@ -32,7 +32,7 @@ public class Dashboard {
 
     //Check each subsystems dashboard values and update them
     private static void updatePutShort() {
-        RobotContainer.Drivetrain.dashboard();
+        RobotContainer.drivetrain.dashboard();
         RobotContainer.shooter.dashboard();
         //SmartDashboard.putBoolean("OperatorButtonPushed", HW.oi.isOperatorButtonPushed());
         //SmartDashboard.putBoolean("DriverButtonPushed", HW.oi.isDriverButtonPushed());

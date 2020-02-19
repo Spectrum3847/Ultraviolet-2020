@@ -145,9 +145,10 @@ public class Drivetrain extends SubsystemBase {
     setVelocityOutput(fpsToTicksPer100ms(left), fpsToTicksPer100ms(right));
   }
 
-  // fps * (ft to wheel rev) * ticks per shaft rev / 10 100ms
+  //CHECK AGAIN
+  // fps * (ft per wheel rotation) * low gear ratio * ticks per shaft rev / 100ms per second
   private double fpsToTicksPer100ms(double fps) {
-    return fps * (12 / 9 * Math.PI) * 2048 / 10;
+    return fps * (12 / 9 * Math.PI) * 16 * 2048 / 10;
   }
 
   private void setVelocityOutput(final double leftVelocity, final double rightVelocity) {
@@ -162,7 +163,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void lowGear(){
     shifter.set(false);
-    printDebug("LowGear Engaged");
+    printDebug("HighGear Disengaged");
   }
 
   @Override
@@ -170,6 +171,7 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  //Set up Helixlogger sources here
   private void setupLogs() {
     HelixLogger.getInstance().addSource("DRIVE HighGear", shifter::get);
 

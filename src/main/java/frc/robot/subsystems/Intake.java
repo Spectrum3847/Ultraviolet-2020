@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.SpectrumSolenoid;
+import frc.lib.util.Debugger;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Intake extends SubsystemBase {
 
@@ -76,6 +78,9 @@ public class Intake extends SubsystemBase {
 
     solUp = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeUp);
     solDown = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeDown);
+
+    //Helixlogger setup
+    setupLogs();
 
     this.setDefaultCommand(new RunCommand(() -> stop(), this));
 
@@ -150,6 +155,23 @@ public class Intake extends SubsystemBase {
   public void down(){
     solDown.set(true);
     solUp.set(false);
+  }
+
+  //Set up helixlogger sources here
+  private void setupLogs() {
+
+  }
+
+  public static void printDebug(String msg){
+    Debugger.println(msg, Robot._intake, Debugger.debug2);
+  }
+  
+  public static void printInfo(String msg){
+    Debugger.println(msg, Robot._intake, Debugger.info3);
+  }
+  
+  public static void printWarning(String msg) {
+    Debugger.println(msg, Robot._intake, Debugger.warning4);
   }
 
 }

@@ -43,7 +43,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  public static final Drivetrain Drivetrain = new Drivetrain();
+  public static final Drivetrain drivetrain = new Drivetrain();
   public static final Intake intake = new Intake();
   public static final Tower tower = new Tower();
   public static final Funnel funnel = new Funnel();
@@ -99,8 +99,6 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(),
-    // Drivetrain));
     driverController.rightBumper.whileHeld(DriveCommands.highGear);
     driverController.leftBumper.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(

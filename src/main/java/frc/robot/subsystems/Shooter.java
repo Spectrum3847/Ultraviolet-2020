@@ -19,8 +19,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Shooter extends SubsystemBase {
 
@@ -84,6 +86,9 @@ public class Shooter extends SubsystemBase {
     
     //SmartDashboard.putNumber("Shooter/Setpoint", 5000);
     //SmartDashboard.putNumber("Acceerator/Setpoint", 5000);
+
+    //Helixlogger setup
+    setupLogs();
 
     //Establish Default Command for This Subsystem
     this.setDefaultCommand(new RunCommand(() -> stop(), this));
@@ -156,6 +161,11 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  //Set up helixlogger sources here
+  private void setupLogs() {
+
+  }
+
   public void dashboard() {
     SmartDashboard.putNumber("Shooter/Velocity", leaderTalonFX.getSelectedSensorVelocity());
     SmartDashboard.putNumber("Shooter/WheelRPM", getWheelRPM());
@@ -167,5 +177,17 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Accelerator/WheelRPM", getAWheelRPM());
     SmartDashboard.putNumber("Accelerator/OutputPercentage", acceleratorTalonFX.getMotorOutputPercent());
     SmartDashboard.putNumber("Accelerator/LeftCurrent", acceleratorTalonFX.getSupplyCurrent());
+  }
+
+  public static void printDebug(String msg){
+    Debugger.println(msg, Robot._shooter, Debugger.debug2);
+  }
+  
+  public static void printInfo(String msg){
+    Debugger.println(msg, Robot._shooter, Debugger.info3);
+  }
+  
+  public static void printWarning(String msg) {
+    Debugger.println(msg, Robot._shooter, Debugger.warning4);
   }
 }

@@ -87,9 +87,9 @@ public class PathFollower extends HelixFollower {
     m_Drivetrain.setSetpoint(left, right);
   }
 
-  //ticks * wheel circumference(feet) / encoder ticks / low gear ratio
+  //Motor encoder ticks(2048) / encoder ticks per motor rotation / low gear ratio * wheel circumference(feet) per wheel rotation 
   private double ticksToFeet(double ticks) {
-    return ticks * (9 * Math.PI / 12) / 2048 / 16;
+    return ticks / 2048  / 16 * (9 * Math.PI / 12);
   }
 
 }
