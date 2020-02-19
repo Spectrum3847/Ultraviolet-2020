@@ -14,6 +14,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import frc.lib.drivers.SpectrumSolenoid;
+import frc.lib.util.Debugger;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drive.Drive;
 import frc.team2363.logger.HelixLogger;
@@ -150,10 +152,12 @@ public class Drivetrain extends SubsystemBase {
 
   public void highGear(){
     shifter.set(true);
+    printDebug("HighGear Engaged");
   }
 
   public void lowGear(){
     shifter.set(false);
+    printDebug("LowGear Engaged");
   }
 
   @Override
@@ -182,5 +186,17 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drive/RightVel", rightFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putNumber("Drive/LeftVel", leftFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putBoolean("Drive/HighGear", shifter.get());
+  }
+
+  public static void printDebug(String msg){
+    Debugger.println(msg, Robot._drive, Debugger.debug2);
+  }
+  
+  public static void printInfo(String msg){
+    Debugger.println(msg, Robot._drive, Debugger.info3);
+  }
+  
+  public static void printWarning(String msg) {
+    Debugger.println(msg, Robot._drive, Debugger.warning4);
   }
 }

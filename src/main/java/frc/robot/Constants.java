@@ -18,15 +18,6 @@ package frc.robot;
 public final class Constants {
     public static int CANconfigTimeOut = 0;
 
-    public static final class DriveConstants {
-        public static final int kLeftFrontMotor = 10;
-        public static final int kLeftRearMotor = 11;
-        public static final int kRightFrontMotor = 20;
-        public static final int kRightRearMotor = 21;
-
-        public static final int kShifter = 1;
-    }
-
     public static final class ShooterConstants{
         public static final int kLeftlMotor = 30;
         public static final int kRightBotMotor = 31;

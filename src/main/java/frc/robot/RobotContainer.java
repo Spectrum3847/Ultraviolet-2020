@@ -61,7 +61,6 @@ public class RobotContainer {
   public static final String _controls = "CONTROL";
   public static final String _general = "GENERAL";
   public static final String _auton = "AUTON";
-  public static final String _commands = "COMMAND";
   public static final String _drive = "DRIVE";
   public static final String _funnel = "FUNNEL";
   public static final String _intake = "INTAKE";

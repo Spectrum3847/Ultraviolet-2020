@@ -11,8 +11,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.team2363.commands.HelixFollower;
 import frc.team2363.controller.PIDController;
 import com.team319.trajectory.Path;
-
-import edu.wpi.first.wpilibj.DriverStation;
+import java.lang.Math;
 
 public class PathFollower extends HelixFollower {
 
@@ -42,9 +41,9 @@ public class PathFollower extends HelixFollower {
   }
 
   // Called once the command ends or is interrupted.
-  /*@Override
+  @Override
   public void end(boolean interrupted) {
-  } */
+  }
 
   // Returns true when the command should end.
   @Override
@@ -82,8 +81,5 @@ public class PathFollower extends HelixFollower {
   @Override
   public void useOutputs(double left, double right) {
     m_Drivetrain.setSetpoint(left, right);
-    System.out.print("running thing");
-
-    DriverStation.reportError("boom", false);
   }
 }
