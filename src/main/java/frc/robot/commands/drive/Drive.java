@@ -7,6 +7,9 @@
 
 package frc.robot.commands.drive;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Drivetrain;
@@ -34,6 +37,7 @@ public class Drive extends CommandBase {
   @Override
   public void execute() {
     RobotContainer.drivetrain.arcadeDrive(RobotContainer.driverController.leftStick.getX(), RobotContainer.driverController.triggers.getTwist());
+    //RobotContainer.drivetrain.rightFrontTalonFX.set(TalonFXControlMode.Velocity, RobotContainer.driverController.getTwist()*10000);
   }
 
   // Called once the command ends or is interrupted.

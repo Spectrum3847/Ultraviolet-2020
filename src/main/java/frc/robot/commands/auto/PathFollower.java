@@ -72,9 +72,7 @@ public class PathFollower extends HelixFollower {
     return (
               ticksToFeet(m_Drivetrain.rightFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
               + ticksToFeet(m_Drivetrain.leftFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
-          )
-          / 2;
-
+          ) / 2;
   }
 
   @Override

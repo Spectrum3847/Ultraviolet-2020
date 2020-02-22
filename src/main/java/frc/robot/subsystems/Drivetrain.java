@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 //import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -43,12 +44,21 @@ public class Drivetrain extends SubsystemBase {
   public final WPI_TalonFX rightFrontTalonFX;
   public final SpectrumSolenoid shifter;
 
+  private double kP, kI, kD, kF, kIz;
+
   public Drivetrain() {
 
     leftRearTalonFX = new WPI_TalonFX(Constants.kLeftRearMotor);
     leftFrontTalonFX = new WPI_TalonFX(Constants.kLeftFrontMotor);
     rightRearTalonFX = new WPI_TalonFX(Constants.kRightRearMotor);
     rightFrontTalonFX = new WPI_TalonFX(Constants.kRightFrontMotor);
+
+    //PID Coefficients
+    kP = 0.042;
+    kI = 0;
+    kD = 0;
+    kF = 0.0452;
+    kIz = 0;
 
     leftRearTalonFX.configFactoryDefault();
     leftFrontTalonFX.configFactoryDefault();
@@ -66,11 +76,16 @@ public class Drivetrain extends SubsystemBase {
     leftRearTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     rightRearTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
 
+    leftFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    rightFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+    setPIDFValues();
+
     leftRearTalonFX.follow(leftFrontTalonFX);
     rightRearTalonFX.follow(rightFrontTalonFX);
 
-    leftFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    rightFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    leftFrontTalonFX.setNeutralMode(NeutralMode.Brake);
+    rightFrontTalonFX.setNeutralMode(NeutralMode.Brake);
 
     //Shifter Setup
     shifter = new SpectrumSolenoid(Constants.kShifter);
@@ -80,6 +95,32 @@ public class Drivetrain extends SubsystemBase {
 
     //Set the Default Command for this subsystem
     setDefaultCommand(new Drive(this));
+  }
+
+  private void setPIDFValues() {
+    leftFrontTalonFX.config_kP(0, kP);
+    leftFrontTalonFX.config_kI(0, kI);
+    leftFrontTalonFX.config_kD(0, kD);
+    leftFrontTalonFX.config_kF(0, kF);
+    leftFrontTalonFX.config_IntegralZone(0, (int) kIz);
+
+    leftRearTalonFX.config_kP(0, kP);
+    leftRearTalonFX.config_kI(0, kI);
+    leftRearTalonFX.config_kD(0, kD);
+    leftRearTalonFX.config_kF(0, kF);
+    leftRearTalonFX.config_IntegralZone(0, (int) kIz);
+
+    rightFrontTalonFX.config_kP(0, kP);
+    rightFrontTalonFX.config_kI(0, kI);
+    rightFrontTalonFX.config_kD(0, kD);
+    rightFrontTalonFX.config_kF(0, kF);
+    rightFrontTalonFX.config_IntegralZone(0, (int) kIz);
+
+    rightRearTalonFX.config_kP(0, kP);
+    rightRearTalonFX.config_kI(0, kI);
+    rightRearTalonFX.config_kD(0, kD);
+    rightRearTalonFX.config_kF(0, kF);
+    rightRearTalonFX.config_IntegralZone(0, (int) kIz);
   }
 
   protected double limit(double value) {
@@ -134,10 +175,13 @@ public class Drivetrain extends SubsystemBase {
 
     leftFrontTalonFX.set(limit(leftMotorOutput));
     rightFrontTalonFX.set(limit(rightMotorOutput));
+
+    //leftFrontTalonFX.set(TalonFXControlMode.Velocity, leftMotorOutput * 15000);
+    //rightFrontTalonFX.set(TalonFXControlMode.Velocity, rightMotorOutput * 15000);
   }
 
   public double getHeading() {
-    final double yaw = RobotContainer.navX.getYaw();
+    final double yaw = RobotContainer.adis16470.getAngle();
     return yaw;
   }
 

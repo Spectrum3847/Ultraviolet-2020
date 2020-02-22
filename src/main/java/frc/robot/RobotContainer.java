@@ -7,18 +7,19 @@
 
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.analog.adis16470.frc.ADIS16470_IMU;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.controllers.SpectrumXboxController;
+import frc.lib.drivers.EForwardableConnections;
 import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
+import frc.robot.subsystems.VisionLL;
 import frc.team2363.logger.HelixEvents;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
+import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.ColorWheel;
 import frc.robot.commands.auto.*;
 import frc.robot.commands.ballpath.*;
@@ -48,6 +50,8 @@ public class RobotContainer {
   public static final Tower tower = new Tower();
   public static final Funnel funnel = new Funnel();
   public static final Shooter shooter = new Shooter();
+  public static final VisionLL visionLL = new VisionLL(); 
+
   public static DriverStation DS;
   public static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
@@ -56,7 +60,7 @@ public class RobotContainer {
   public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
   //SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
-  public static AHRS navX;
+  public static ADIS16470_IMU adis16470;
 
   // Add Debug flags
   // You can have a flag for each subsystem, etc
@@ -68,22 +72,25 @@ public class RobotContainer {
   public static final String _intake = "INTAKE";
   public static final String _shooter = "SHOOTER";
   public static final String _tower = "TOWER";
+  public static final String _climber = "CLIMBER";
+  public static final String _visionLL = "LIMELIGHT";
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     DS = DriverStation.getInstance();
+    portForwarding();
     initDebugger(); // Init Debugger
     HelixEvents.getInstance().startLogging();
     printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
+    
+    //Gyro constructor auto calibrates and auto zeros
     try {
-      navX = new AHRS(SPI.Port.kMXP);
+      adis16470 = new ADIS16470_IMU();
     } catch (RuntimeException ex) {
       printWarning("Error instantiating navX-MXP");
-    }
-    if (navX != null) {
-      navX.zeroYaw();
     }
 
     // Configure the button bindings
@@ -111,6 +118,7 @@ public class RobotContainer {
     driverController.bButton.whileHeld(new FunnelStore());
     driverController.yButton.whileHeld(BallPathCommands.feedShooter);
     //driverController.xButton.whileHeld(new ColorWheel());
+    driverController.xButton.whenHeld(new LLAim());
     driverController.Dpad.Right.whileHeld(new IntakeUpRunning());
     driverController.Dpad.Down.whileHeld(new IntakeDown());
     driverController.Dpad.Up.whileHeld(new TowerPneumatic());
@@ -118,6 +126,11 @@ public class RobotContainer {
     //Set Shooter to the DashboardVelocity when right bumper is pressed.
     driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
     driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+  }
+
+  private void portForwarding() {
+    EForwardableConnections.addPortForwarding(EForwardableConnections.LIMELIGHT_CAMERA_FEED);
+    EForwardableConnections.addPortForwarding(EForwardableConnections.LIMELIGHT_WEB_VIEW);
   }
 
 
@@ -145,6 +158,8 @@ public class RobotContainer {
     Debugger.flagOn(_intake);
     Debugger.flagOn(_shooter);
     Debugger.flagOn(_tower);
+    Debugger.flagOn(_climber);
+    Debugger.flagOn(_visionLL);
   }
 
   public static void printDebug(String msg){
