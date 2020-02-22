@@ -104,23 +104,11 @@ public class Drivetrain extends SubsystemBase {
     leftFrontTalonFX.config_kF(0, kF);
     leftFrontTalonFX.config_IntegralZone(0, (int) kIz);
 
-    leftRearTalonFX.config_kP(0, kP);
-    leftRearTalonFX.config_kI(0, kI);
-    leftRearTalonFX.config_kD(0, kD);
-    leftRearTalonFX.config_kF(0, kF);
-    leftRearTalonFX.config_IntegralZone(0, (int) kIz);
-
     rightFrontTalonFX.config_kP(0, kP);
     rightFrontTalonFX.config_kI(0, kI);
     rightFrontTalonFX.config_kD(0, kD);
     rightFrontTalonFX.config_kF(0, kF);
     rightFrontTalonFX.config_IntegralZone(0, (int) kIz);
-
-    rightRearTalonFX.config_kP(0, kP);
-    rightRearTalonFX.config_kI(0, kI);
-    rightRearTalonFX.config_kD(0, kD);
-    rightRearTalonFX.config_kF(0, kF);
-    rightRearTalonFX.config_IntegralZone(0, (int) kIz);
   }
 
   protected double limit(double value) {

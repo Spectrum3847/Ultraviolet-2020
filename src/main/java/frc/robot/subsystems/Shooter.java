@@ -23,6 +23,7 @@ import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.team2363.logger.HelixLogger;
 
 public class Shooter extends SubsystemBase {
 
@@ -163,7 +164,16 @@ public class Shooter extends SubsystemBase {
 
   //Set up helixlogger sources here
   private void setupLogs() {
+    HelixLogger.getInstance().addSource("SHOOTER Vel", leaderTalonFX::getSelectedSensorVelocity);
+    HelixLogger.getInstance().addSource("SHOOTER RPM", this::getWheelRPM);
+    HelixLogger.getInstance().addSource("SHOOTER Output%", leaderTalonFX::getMotorOutputPercent);
+    HelixLogger.getInstance().addSource("LEADER Current", leaderTalonFX::getSupplyCurrent);
+    HelixLogger.getInstance().addSource("FOLLOWER Current", follower2TalonFX::getSupplyCurrent);
 
+    HelixLogger.getInstance().addSource("ACCEL Vel", acceleratorTalonFX::getSelectedSensorVelocity);
+    HelixLogger.getInstance().addSource("ACCEL RPM", this::getAWheelRPM);
+    HelixLogger.getInstance().addSource("ACCEL Output%", acceleratorTalonFX::getMotorOutputPercent);
+    HelixLogger.getInstance().addSource("ACCEL Current", acceleratorTalonFX::getSupplyCurrent);
   }
 
   public void dashboard() {

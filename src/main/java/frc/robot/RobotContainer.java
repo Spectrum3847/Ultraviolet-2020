@@ -60,7 +60,7 @@ public class RobotContainer {
   public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
   //SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
-  public static ADIS16470_IMU adis16470;
+  public static ADIS16470_IMU adis16470 = new ADIS16470_IMU();
 
   // Add Debug flags
   // You can have a flag for each subsystem, etc
@@ -85,13 +85,6 @@ public class RobotContainer {
     HelixEvents.getInstance().startLogging();
     printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
-    
-    //Gyro constructor auto calibrates and auto zeros
-    try {
-      adis16470 = new ADIS16470_IMU();
-    } catch (RuntimeException ex) {
-      printWarning("Error instantiating navX-MXP");
-    }
 
     // Configure the button bindings
     configureButtonBindings();
