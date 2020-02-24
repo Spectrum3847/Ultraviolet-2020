@@ -7,28 +7,29 @@
 
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.analog.adis16470.frc.ADIS16470_IMU;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.controllers.SpectrumXboxController;
+import frc.lib.drivers.EForwardableConnections;
 import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
+import frc.robot.subsystems.VisionLL;
 import frc.team2363.logger.HelixEvents;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
+import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.ColorWheel;
-import frc.robot.commands.auto.*;
 import frc.robot.commands.ballpath.*;
 import frc.paths.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -48,15 +49,17 @@ public class RobotContainer {
   public static final Tower tower = new Tower();
   public static final Funnel funnel = new Funnel();
   public static final Shooter shooter = new Shooter();
+  public static final VisionLL visionLL = new VisionLL(); 
+
   public static DriverStation DS;
   public static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
   public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
-  //SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
+  public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
-  public static AHRS navX;
+  public static ADIS16470_IMU adis16470 = new ADIS16470_IMU();
 
   // Add Debug flags
   // You can have a flag for each subsystem, etc
@@ -68,23 +71,19 @@ public class RobotContainer {
   public static final String _intake = "INTAKE";
   public static final String _shooter = "SHOOTER";
   public static final String _tower = "TOWER";
+  public static final String _climber = "CLIMBER";
+  public static final String _visionLL = "LIMELIGHT";
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     DS = DriverStation.getInstance();
+    portForwarding();
     initDebugger(); // Init Debugger
     HelixEvents.getInstance().startLogging();
     printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
-    try {
-      navX = new AHRS(SPI.Port.kMXP);
-    } catch (RuntimeException ex) {
-      printWarning("Error instantiating navX-MXP");
-    }
-    if (navX != null) {
-      navX.zeroYaw();
-    }
 
     // Configure the button bindings
     configureButtonBindings();
@@ -99,25 +98,48 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    // Driver Controller
     driverController.rightBumper.whileHeld(DriveCommands.highGear);
-    driverController.leftBumper.whileHeld(new ParallelCommandGroup(
+    /* driverController.leftBumper.whileHeld(new ParallelCommandGroup(
+      new SequentialCommandGroup(
+        new TowerBack(), 
+        new FunnelStore()), 
+      new IntakeBalls())); */
+    
+    //driverController.Dpad.Left.whileHeld(new IntakeBalls());
+    //driverController.Dpad.Right.whileHeld(new FunnelToTower());
+    //driverController.bButton.whileHeld(new FunnelStore());
+    //driverController.yButton.whileHeld(BallPathCommands.feedShooter);
+    //driverController.xButton.whileHeld(new ColorWheel());
+    driverController.aButton.whileHeld(new LLAim());
+    //driverController.Dpad.Right.whileHeld(new IntakeUpRunning());
+    //driverController.Dpad.Down.whileHeld(new IntakeDown());
+    //driverController.Dpad.Up.whileHeld(new TowerPneumatic());
+    //driverController.aButton.whileHeld(new TowerBack());
+    //Set Shooter to the DashboardVelocity when right bumper is pressed.
+    driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
+    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+
+    //Operator Controller
+    operatorController.rightTriggerButton.whileHeld(new TowerBack());
+    operatorController.leftTriggerButton.whileHeld(new IntakeBalls());
+    operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
+    operatorController.Dpad.Up.whileHeld(new RunCommand(() -> intake.reverse(), intake));
+    operatorController.rightBumper.whileHeld(BallPathCommands.feedShooter);
+    operatorController.aButton.whileHeld(new FunnelToTower());
+    operatorController.leftBumper.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
         new TowerBack(), 
         new FunnelStore()), 
       new IntakeBalls()));
-    
-    driverController.Dpad.Left.whileHeld(new IntakeBalls());
-    //driverController.Dpad.Right.whileHeld(new FunnelToTower());
-    driverController.bButton.whileHeld(new FunnelStore());
-    driverController.yButton.whileHeld(BallPathCommands.feedShooter);
-    //driverController.xButton.whileHeld(new ColorWheel());
-    driverController.Dpad.Right.whileHeld(new IntakeUpRunning());
-    driverController.Dpad.Down.whileHeld(new IntakeDown());
-    driverController.Dpad.Up.whileHeld(new TowerPneumatic());
-    driverController.aButton.whileHeld(new TowerBack());
-    //Set Shooter to the DashboardVelocity when right bumper is pressed.
-    driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+    operatorController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
+    operatorController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+  }
+
+  private void portForwarding() {
+    EForwardableConnections.addPortForwarding(EForwardableConnections.LIMELIGHT_CAMERA_FEED);
+    EForwardableConnections.addPortForwarding(EForwardableConnections.LIMELIGHT_WEB_VIEW);
   }
 
 
@@ -126,9 +148,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public CommandBase getAutonomousCommand() {
+  public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    //return new PathFollower(new DriveStraight6(), Drivetrain);
     return null;
   }
 
@@ -145,6 +166,8 @@ public class RobotContainer {
     Debugger.flagOn(_intake);
     Debugger.flagOn(_shooter);
     Debugger.flagOn(_tower);
+    Debugger.flagOn(_climber);
+    Debugger.flagOn(_visionLL);
   }
 
   public static void printDebug(String msg){

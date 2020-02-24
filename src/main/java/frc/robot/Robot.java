@@ -9,7 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.util.Debugger;
 import frc.team2363.logger.HelixLogger;
@@ -22,7 +22,7 @@ import frc.team2363.logger.HelixLogger;
  * project.
  */
 public class Robot extends TimedRobot {
-  private CommandBase m_autonomousCommand;
+  private Command m_autonomousCommand;
 
   private RobotContainer robotContainer;
 
@@ -38,6 +38,8 @@ public class Robot extends TimedRobot {
   public static final String _intake = "INTAKE";
   public static final String _shooter = "SHOOTER";
   public static final String _tower = "TOWER";
+  public static final String _climber = "CLIMBER";
+  public static final String _visionLL = "LIMELIGHT";
 
   public enum RobotState {
     DISABLED, AUTONOMOUS, TELEOP, TEST
@@ -180,6 +182,8 @@ public class Robot extends TimedRobot {
     Debugger.flagOn(_intake);
     Debugger.flagOn(_shooter);
     Debugger.flagOn(_tower);
+    Debugger.flagOn(_climber);
+    Debugger.flagOn(_visionLL);
   }
 
   public static void printDebug(String msg) {
