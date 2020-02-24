@@ -67,13 +67,13 @@ public class Intake extends SubsystemBase {
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
     // display PID coefficients on SmartDashboard
-    SmartDashboard.putNumber("P Gain", kP);
-    SmartDashboard.putNumber("I Gain", kI);
-    SmartDashboard.putNumber("D Gain", kD);
-    SmartDashboard.putNumber("I Zone", kIz);
-    SmartDashboard.putNumber("Feed Forward", kFF);
-    SmartDashboard.putNumber("Max Output", kMaxOutput);
-    SmartDashboard.putNumber("Min Output", kMinOutput);
+    SmartDashboard.putNumber("Intake/P Gain", kP);
+    SmartDashboard.putNumber("Intake/I Gain", kI);
+    SmartDashboard.putNumber("Intake/D Gain", kD);
+    SmartDashboard.putNumber("Intake/I Zone", kIz);
+    SmartDashboard.putNumber("Intake/Feed Forward", kFF);
+    SmartDashboard.putNumber("Intake/Max Output", kMaxOutput);
+    SmartDashboard.putNumber("Intake/Min Output", kMinOutput);
     motor.burnFlash();
 
     solUp = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeUp);
@@ -92,13 +92,13 @@ public class Intake extends SubsystemBase {
 
   public void setVelocity(double velocity){
         // read PID coefficients from SmartDashboard
-        double p = SmartDashboard.getNumber("P Gain", 0);
-        double i = SmartDashboard.getNumber("I Gain", 0);
-        double d = SmartDashboard.getNumber("D Gain", 0);
-        double iz = SmartDashboard.getNumber("I Zone", 0);
-        double ff = SmartDashboard.getNumber("Feed Forward", 0);
-        double max = SmartDashboard.getNumber("Max Output", 0);
-        double min = SmartDashboard.getNumber("Min Output", 0);
+        double p = SmartDashboard.getNumber("Intake/P Gain", 0);
+        double i = SmartDashboard.getNumber("Intake/I Gain", 0);
+        double d = SmartDashboard.getNumber("Intake/D Gain", 0);
+        double iz = SmartDashboard.getNumber("Intake/I Zone", 0);
+        double ff = SmartDashboard.getNumber("Intake/Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Intake/Max Output", 0);
+        double min = SmartDashboard.getNumber("Intake/Min Output", 0);
     
         // if PID coefficients on SmartDashboard have changed, write new values to controller
         if((p != kP)) { m_pidController.setP(p); kP = p; }
@@ -127,8 +127,8 @@ public class Intake extends SubsystemBase {
          */
         m_pidController.setReference(velocity, ControlType.kVelocity);
         
-        SmartDashboard.putNumber("Intake/ Setpoint", velocity);
-        SmartDashboard.putNumber("Intake/ Velocity", m_encoder.getVelocity());
+        SmartDashboard.putNumber("Intake/Setpoint", velocity);
+        SmartDashboard.putNumber("Intake/Velocity", m_encoder.getVelocity());
   }
 
   public void setSpeed(double speed){
@@ -136,11 +136,13 @@ public class Intake extends SubsystemBase {
   }
 
   public void collect(){
-    setVelocity(1000);
+    //setVelocity(1000);
+    setSpeed(0.75);
   }
 
   public void reverse(){
-    setVelocity(-1000);
+    //setVelocity(-1000);
+    setSpeed(-0.75);
   }
 
   public void stop(){

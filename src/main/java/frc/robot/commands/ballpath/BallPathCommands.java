@@ -21,7 +21,7 @@ public class BallPathCommands {
     public static Command feedShooter = new ParallelCommandGroup(
         new RunCommand(() -> RobotContainer.tower.feed(), RobotContainer.tower),
         new SequentialCommandGroup(
-        new RunCommand(() -> RobotContainer.funnel.intakeHold(), RobotContainer.funnel).withTimeout(.5),
+        new RunCommand(() -> RobotContainer.funnel.intakeTower(), RobotContainer.funnel).withTimeout(.5),
         new RunCommand(() -> RobotContainer.funnel.feed(), RobotContainer.funnel)
         )
     );

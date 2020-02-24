@@ -21,6 +21,7 @@ import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.team2363.logger.HelixLogger;
 
 public class Tower extends SubsystemBase {
 
@@ -99,11 +100,13 @@ public class Tower extends SubsystemBase {
   }
 
   public void indexUp(){
-    setVelocity(500);
+    //setVelocity(500);
+    setPercentModeOutput(0.4);
   }
 
   public void indexDown(){
-    setVelocity(500);
+    //setVelocity(500);
+    setPercentModeOutput(-0.4);
   }
 
   public void stop(){
@@ -127,7 +130,10 @@ public class Tower extends SubsystemBase {
 
   //Set up Helixlogger sources here
   private void setupLogs() {
-
+    HelixLogger.getInstance().addSource("TOWER Vel", motor::getSelectedSensorVelocity);
+    HelixLogger.getInstance().addSource("TOWER RPM", this::getWheelRPM);
+    HelixLogger.getInstance().addSource("TOWER Output%", motor::getMotorOutputPercent);
+    HelixLogger.getInstance().addSource("TOWER Current", motor::getSupplyCurrent);
   }
 
   public void SmartDash() {
