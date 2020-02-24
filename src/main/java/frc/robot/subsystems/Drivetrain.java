@@ -31,7 +31,7 @@ public class Drivetrain extends SubsystemBase {
     public static final int kRightFrontMotor = 20;
     public static final int kRightRearMotor = 21;
 
-    public static final int kShifter = 0;
+    public static final int kShifter = 1;
   }
 
   /**
@@ -86,6 +86,8 @@ public class Drivetrain extends SubsystemBase {
 
     leftFrontTalonFX.setNeutralMode(NeutralMode.Brake);
     rightFrontTalonFX.setNeutralMode(NeutralMode.Brake);
+    leftRearTalonFX.setNeutralMode(NeutralMode.Coast);
+    rightRearTalonFX.setNeutralMode(NeutralMode.Coast);
 
     //Shifter Setup
     shifter = new SpectrumSolenoid(Constants.kShifter);
@@ -225,6 +227,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drive/RightVel", rightFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putNumber("Drive/LeftVel", leftFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putBoolean("Drive/HighGear", shifter.get());
+    SmartDashboard.putBoolean("Limelight-LED Toggle", false);
   }
 
   public static void printDebug(String msg){

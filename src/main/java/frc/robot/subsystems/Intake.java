@@ -136,11 +136,13 @@ public class Intake extends SubsystemBase {
   }
 
   public void collect(){
-    setVelocity(1000);
+    //setVelocity(1000);
+    setSpeed(0.75);
   }
 
   public void reverse(){
-    setVelocity(-1000);
+    //setVelocity(-1000);
+    setSpeed(-0.75);
   }
 
   public void stop(){

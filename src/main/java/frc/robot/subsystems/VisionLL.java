@@ -26,7 +26,6 @@ public class VisionLL extends SubsystemBase {
    */
   public VisionLL() {
     limelight = new LimeLight();
-    SmartDashboard.putBoolean("Limelight-LED Toggle", false);
   }
 
   @Override
@@ -76,6 +75,10 @@ public double getLLTargetArea(){
 
 public boolean getLimelightHasValidTarget(){
     return limelight.getIsTargetFound();
+}
+
+public void setLimeLightPipeline(int i) {
+  setLimeLightPipeline(i);
 }
 
   public static void printDebug(String msg) {

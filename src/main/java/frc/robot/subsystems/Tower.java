@@ -100,11 +100,13 @@ public class Tower extends SubsystemBase {
   }
 
   public void indexUp(){
-    setVelocity(500);
+    //setVelocity(500);
+    setPercentModeOutput(0.4);
   }
 
   public void indexDown(){
-    setVelocity(500);
+    //setVelocity(500);
+    setPercentModeOutput(-0.4);
   }
 
   public void stop(){

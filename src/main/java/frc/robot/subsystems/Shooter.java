@@ -40,16 +40,16 @@ public class Shooter extends SubsystemBase {
   private double AkP, AkI, AkD, AkF;
   private int AiZone;
   public Shooter() {
-    kP = SpectrumPreferences.getInstance().getNumber("Shooter kP",0.05);
-    kI = SpectrumPreferences.getInstance().getNumber("Shooter kI",0.001);
-    kD = SpectrumPreferences.getInstance().getNumber("Shooter kD",0.07);
-    kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.0472);
+    kP = SpectrumPreferences.getInstance().getNumber("Shooter kP",0.0465);
+    kI = SpectrumPreferences.getInstance().getNumber("Shooter kI",0.0005);
+    kD = SpectrumPreferences.getInstance().getNumber("Shooter kD",0.0);
+    kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.048);
     iZone = (int) SpectrumPreferences.getInstance().getNumber("Shooter I-Zone", 150);
 
-    AkP = SpectrumPreferences.getInstance().getNumber("Accelerator kP",0.05);
-    AkI = SpectrumPreferences.getInstance().getNumber("Accelerator kI",0.001);
-    AkD = SpectrumPreferences.getInstance().getNumber("Accelerator kD",0.07);
-    AkF = SpectrumPreferences.getInstance().getNumber("Accelerator kF",0.0472);
+    AkP = SpectrumPreferences.getInstance().getNumber("Accelerator kP",0.045);
+    AkI = SpectrumPreferences.getInstance().getNumber("Accelerator kI",0.0005);
+    AkD = SpectrumPreferences.getInstance().getNumber("Accelerator kD",0.0);
+    AkF = SpectrumPreferences.getInstance().getNumber("Accelerator kF",0.05);
     AiZone = (int) SpectrumPreferences.getInstance().getNumber("Accelerator I-Zone", 150);
     
         
@@ -67,6 +67,11 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     follower2TalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     acceleratorTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
+
+    leaderTalonFX.configClosedloopRamp(0.2);
+    follower2TalonFX.configClosedloopRamp(0.2);
+    acceleratorTalonFX.configClosedloopRamp(0.2);
+
 
     leaderTalonFX.config_kP(0, kP);
     leaderTalonFX.config_kI(0, kI);   
