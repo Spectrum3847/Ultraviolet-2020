@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -99,6 +100,10 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.set(ControlMode.PercentOutput, output);
   }
 
+  public void setPercentOutput(double output){
+    leaderTalonFX.set(ControlMode.PercentOutput, output);
+  }
+
   public void setAcceleratorPercentOutput(double output){
     acceleratorTalonFX.set(ControlMode.PercentOutput, output);
   }
@@ -159,6 +164,55 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public void checkAcceleratorMotor(){
+
+  }
+  public void checkMotors(){
+    String result = "";
+    double kCurrentThresh = 3;
+    double kVelocityThresh = 50;
+    stop();
+    follower2TalonFX.follow(follower2TalonFX);
+    double testSpeed = 0.2;
+    double testTime = 0.5;
+
+    //test leader
+    leaderTalonFX.set(ControlMode.PercentOutput, testSpeed);
+    Timer.delay(testTime);
+    final double currentLeader = leaderTalonFX.getMotorOutputVoltage();
+    final double velocityLeader = leaderTalonFX.getSelectedSensorVelocity();
+    
+    //test leader
+    follower2TalonFX.set(ControlMode.PercentOutput, testSpeed);
+    Timer.delay(testTime);
+    final double currentFollower = follower2TalonFX.getMotorOutputVoltage();
+    final double velocityFollower = follower2TalonFX.getSelectedSensorVelocity();
+
+    if(currentLeader >= kCurrentThresh){
+      result = result + "!!!!!LeftShooterFalcon Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Shooter/MotorL", false);
+    }
+
+    if(currentFollower >= kCurrentThresh){
+      result = result + "!!!!!RightShooterFalcon Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Shooter/MotorR", false);
+    }
+
+    if(velocityLeader >= kVelocityThresh){
+      result = result + "!!!!!LeftShooterFalcon Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Shooter/MotorL", false);
+    }
+
+    if(velocityFollower >= kVelocityThresh){
+      result = result + "!!!!!RightShooterFalcon Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Shooter/MotorR", false);
+    }
+
+    
+    follower2TalonFX.follow(leaderTalonFX);
+    stop();
   }
 
   //Set up helixlogger sources here

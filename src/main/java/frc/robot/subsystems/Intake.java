@@ -174,4 +174,8 @@ public class Intake extends SubsystemBase {
     Debugger.println(msg, Robot._intake, Debugger.warning4);
   }
 
+  public static void checkMotor(){
+    
+  }
+
 }

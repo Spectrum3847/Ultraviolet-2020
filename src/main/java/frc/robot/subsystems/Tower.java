@@ -125,18 +125,22 @@ public class Tower extends SubsystemBase {
     return !TowerBot.get();
   }
 
+  public void SmartDash() {
+    SmartDashboard.putBoolean("TopSensorTower", !TowerTop.get());
+    SmartDashboard.putBoolean("BotSensorTower", !TowerBot.get());
+    SmartDashboard.putNumber("Tower/Velocity", motor.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Tower/WheelRPM", getWheelRPM());
+    SmartDashboard.putNumber("Tower/OutputPercentage", motor.getMotorOutputPercent());
+    SmartDashboard.putNumber("Tower/LeftCurrent", motor.getSupplyCurrent());
+    }
+    
+    public static void checkMotor(){
+      
+    }
+    
   //Set up Helixlogger sources here
   private void setupLogs() {
 
-  }
-
-  public void SmartDash() {
-  SmartDashboard.putBoolean("TopSensorTower", !TowerTop.get());
-  SmartDashboard.putBoolean("BotSensorTower", !TowerBot.get());
-  SmartDashboard.putNumber("Tower/Velocity", motor.getSelectedSensorVelocity());
-  SmartDashboard.putNumber("Tower/WheelRPM", getWheelRPM());
-  SmartDashboard.putNumber("Tower/OutputPercentage", motor.getMotorOutputPercent());
-  SmartDashboard.putNumber("Tower/LeftCurrent", motor.getSupplyCurrent());
   }
 
   public static void printDebug(String msg){
@@ -150,4 +154,5 @@ public class Tower extends SubsystemBase {
   public static void printWarning(String msg) {
     Debugger.println(msg, Robot._tower, Debugger.warning4);
   }
+
 }

@@ -85,6 +85,10 @@ public class Funnel extends SubsystemBase {
     rightMotor.stopMotor();
   }
 
+  public static void checkMotor(){
+    
+  }
+
   //Set up HelixLogger sources here
   private void setupLogs() {
 
@@ -101,5 +105,7 @@ public class Funnel extends SubsystemBase {
   public static void printWarning(String msg) {
     Debugger.println(msg, Robot._funnel, Debugger.warning4);
   }
+
+
 
 }
