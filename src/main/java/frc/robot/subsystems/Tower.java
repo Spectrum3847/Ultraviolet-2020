@@ -38,12 +38,13 @@ public class Tower extends SubsystemBase {
    * Creates a new Intake.
    */
   public Tower() {
+    
     //Pid
 
-    kP = SpectrumPreferences.getInstance().getNumber("Tower kP",0.05);
-    kI = SpectrumPreferences.getInstance().getNumber("Tower kI",0.001);
-    kD = SpectrumPreferences.getInstance().getNumber("Tower kD",0.07);
-    kF = SpectrumPreferences.getInstance().getNumber("Tower kF",0.0472);
+    kP = SpectrumPreferences.getInstance().getNumber("Tower kP",0.001);
+    kI = SpectrumPreferences.getInstance().getNumber("Tower kI",0);
+    kD = SpectrumPreferences.getInstance().getNumber("Tower kD",0);
+    kF = SpectrumPreferences.getInstance().getNumber("Tower kF",0.06);
     iZone = (int) SpectrumPreferences.getInstance().getNumber("Tower I-Zone", 150);
 
     
@@ -68,10 +69,13 @@ public class Tower extends SubsystemBase {
     setupLogs();
 
     this.setDefaultCommand(new RunCommand(() -> stop(), this));
+
+    SmartDash();
   }
 
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDash();
   }
 
   public void setPercentModeOutput(double speed){
@@ -83,7 +87,7 @@ public class Tower extends SubsystemBase {
   }
 
   public void DashboardVelocity(){
-    double wheelRpm = SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 1000);
+    double wheelRpm = SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 5000);
     double motorVelocity = (wheelRpm * 30 / 8);
     motor.set(ControlMode.Velocity, motorVelocity);
   }
@@ -100,13 +104,11 @@ public class Tower extends SubsystemBase {
   }
 
   public void indexUp(){
-    //setVelocity(500);
-    setPercentModeOutput(0.4);
+    setVelocity(5000);
   }
 
   public void indexDown(){
-    //setVelocity(500);
-    setPercentModeOutput(-0.4);
+    setVelocity(5000);
   }
 
   public void stop(){
@@ -129,8 +131,8 @@ public class Tower extends SubsystemBase {
   }
 
   public void SmartDash() {
-    SmartDashboard.putBoolean("TopSensorTower", !TowerTop.get());
-    SmartDashboard.putBoolean("BotSensorTower", !TowerBot.get());
+    SmartDashboard.putBoolean("Tower/TopSensorTower", getTop());
+    SmartDashboard.putBoolean("Tower/BotSensorTower", getBot());
     SmartDashboard.putNumber("Tower/Velocity", motor.getSelectedSensorVelocity());
     SmartDashboard.putNumber("Tower/WheelRPM", getWheelRPM());
     SmartDashboard.putNumber("Tower/OutputPercentage", motor.getMotorOutputPercent());
