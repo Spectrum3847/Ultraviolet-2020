@@ -101,22 +101,8 @@ public class RobotContainer {
 
     // Driver Controller
     driverController.rightBumper.whileHeld(DriveCommands.highGear);
-    /* driverController.leftBumper.whileHeld(new ParallelCommandGroup(
-      new SequentialCommandGroup(
-        new TowerBack(), 
-        new FunnelStore()), 
-      new IntakeBalls())); */
-    
-    //driverController.Dpad.Left.whileHeld(new IntakeBalls());
-    //driverController.Dpad.Right.whileHeld(new FunnelToTower());
-    //driverController.bButton.whileHeld(new FunnelStore());
-    //driverController.yButton.whileHeld(BallPathCommands.feedShooter);
     //driverController.xButton.whileHeld(new ColorWheel());
     driverController.aButton.whileHeld(new LLAim());
-    //driverController.Dpad.Right.whileHeld(new IntakeUpRunning());
-    //driverController.Dpad.Down.whileHeld(new IntakeDown());
-    //driverController.Dpad.Up.whileHeld(new TowerPneumatic());
-    //driverController.aButton.whileHeld(new TowerBack());
     //Set Shooter to the DashboardVelocity when right bumper is pressed.
     driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
     driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));

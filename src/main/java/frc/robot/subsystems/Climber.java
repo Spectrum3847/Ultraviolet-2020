@@ -70,8 +70,6 @@ public class Climber extends SubsystemBase {
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
-    
-
     //HelixLogger Setup
     setupLogs();
   }
@@ -83,6 +81,10 @@ public class Climber extends SubsystemBase {
 
   //Set up HelixLogger sources here
   private void setupLogs() {
+
+  }
+
+  private void dashboard() {
 
   }
 

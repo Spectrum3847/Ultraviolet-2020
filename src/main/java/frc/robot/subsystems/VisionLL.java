@@ -7,32 +7,33 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.LimeLight;
 import frc.lib.drivers.LimeLightControlModes.LedMode;
 import frc.lib.util.Debugger;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Robot.RobotState;
 
 public class VisionLL extends SubsystemBase {
 
   public final LimeLight limelight;
-  private boolean LEDState = true;
+  private boolean LEDState;
 
   /**
    * Creates a new VisionLL.
    */
   public VisionLL() {
     limelight = new LimeLight();
+    setLimeLightLED(false);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     //If disabled and LED-Toggle is false, than leave lights off, else they should be on
-    if(Robot.s_robot_state == RobotState.DISABLED && !SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !DriverStation.getInstance().isFMSAttached()){
+    if(!SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !(RobotContainer.driverController.aButton.get() && (Robot.s_robot_state == RobotState.TELEOP))){
       if (LEDState == true) {
         limeLightLEDOff();
         LEDState = false;
@@ -45,19 +46,21 @@ public class VisionLL extends SubsystemBase {
     }
   }
 
-  public void limeLightLEDOff(){
+  private void limeLightLEDOff(){
     limelight.setLEDMode(LedMode.kforceOff);
   }
 
-  public void limeLightLEDOn(){
+  private void limeLightLEDOn(){
     limelight.setLEDMode(LedMode.kforceOn);
   }
 
   public void setLimeLightLED(boolean b){
     if (b){
         limeLightLEDOn();
+        LEDState = true;
     } else{
         limeLightLEDOff();
+        LEDState = false;
     }
   }
 

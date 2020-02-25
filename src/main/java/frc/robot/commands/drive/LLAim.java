@@ -9,12 +9,10 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.RumbleController;
-import frc.robot.subsystems.VisionLL;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -44,7 +42,7 @@ public class LLAim extends ProfiledPIDCommand {
         RobotContainer.drivetrain);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(1);
+    getController().setTolerance(0.5);
   }
 
   @Override
@@ -60,10 +58,12 @@ public class LLAim extends ProfiledPIDCommand {
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
-    new ParallelCommandGroup(
-      new RumbleController(RobotContainer.operatorController, 0.5),
-      new RumbleController(RobotContainer.driverController, 0.5)
-    ).schedule();
+    if (hasTarget) {
+      new ParallelCommandGroup(
+        new RumbleController(RobotContainer.operatorController, 0.5),
+        new RumbleController(RobotContainer.driverController, 0.5)
+      ).schedule();
+    }
   }
 
   // Returns true when the command should end.

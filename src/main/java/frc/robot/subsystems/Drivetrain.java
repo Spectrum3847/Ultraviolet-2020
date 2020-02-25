@@ -20,6 +20,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drive.Drive;
 import frc.team2363.logger.HelixLogger;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -43,6 +44,8 @@ public class Drivetrain extends SubsystemBase {
   public final WPI_TalonFX rightRearTalonFX;
   public final WPI_TalonFX rightFrontTalonFX;
   public final SpectrumSolenoid shifter;
+
+  //public final DifferentialDrive differentialDrive;
 
   private double kP, kI, kD, kF, kIz;
 
@@ -83,6 +86,8 @@ public class Drivetrain extends SubsystemBase {
 
     leftRearTalonFX.follow(leftFrontTalonFX);
     rightRearTalonFX.follow(rightFrontTalonFX);
+
+    //differentialDrive = new DifferentialDrive(leftFrontTalonFX, rightFrontTalonFX);
 
     leftFrontTalonFX.setNeutralMode(NeutralMode.Brake);
     rightFrontTalonFX.setNeutralMode(NeutralMode.Brake);
@@ -125,13 +130,13 @@ public class Drivetrain extends SubsystemBase {
 
   public void arcadeDrive(double moveSpeed, double rotateSpeed) {
     //Cube rotation speed to give us better low end performance espeically after deadzone
-    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,3), rotateSpeed);
-    //rotateSpeed = limit(rotateSpeed) * 0.6;
-    
-    moveSpeed = limit(moveSpeed);
+    //rotateSpeed = Math.copySign(Math.pow(rotateSpeed,2), rotateSpeed);
+    rotateSpeed = limit(rotateSpeed);
+
+    moveSpeed = limit(moveSpeed) * 0.55;
 
     //Make the deadzone bigger if we are driving fwd or backwards and not turning in place
-    if (Math.abs(moveSpeed) > 0.1 && Math.abs(rotateSpeed)< 0.05){
+    if (Math.abs(moveSpeed) > 0.15 && Math.abs(rotateSpeed)< 0.1){
       rotateSpeed = 0;
     }
     double leftMotorOutput;
@@ -165,10 +170,11 @@ public class Drivetrain extends SubsystemBase {
 
     leftFrontTalonFX.set(limit(leftMotorOutput));
     rightFrontTalonFX.set(limit(rightMotorOutput));
-
-    //leftFrontTalonFX.set(TalonFXControlMode.Velocity, leftMotorOutput * 15000);
-    //rightFrontTalonFX.set(TalonFXControlMode.Velocity, rightMotorOutput * 15000);
   }
+
+  /*public void arcadeDrive(double moveSpeed, double rotateSpeed) {
+      differentialDrive.arcadeDrive(moveSpeed, rotateSpeed);
+    } */
 
   public double getHeading() {
     final double yaw = RobotContainer.adis16470.getAngle();
@@ -227,7 +233,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drive/RightVel", rightFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putNumber("Drive/LeftVel", leftFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putBoolean("Drive/HighGear", shifter.get());
-    SmartDashboard.putBoolean("Limelight-LED Toggle", false);
   }
 
   public static void printDebug(String msg){

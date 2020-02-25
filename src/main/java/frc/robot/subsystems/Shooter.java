@@ -26,19 +26,20 @@ import frc.robot.Robot;
 import frc.team2363.logger.HelixLogger;
 
 public class Shooter extends SubsystemBase {
-
-  public final TalonFX leaderTalonFX;
-
-  public final TalonFX follower2TalonFX;
-  public final TalonFX acceleratorTalonFX;
   /**
    * Creates a new Shooter.
    */
+
+  public final TalonFX leaderTalonFX;
+  public final TalonFX followerTalonFX;
+  public final TalonFX acceleratorTalonFX;
+  
   private double kP, kI, kD, kF;
   private int iZone;
 
   private double AkP, AkI, AkD, AkF;
   private int AiZone;
+  
   public Shooter() {
     kP = SpectrumPreferences.getInstance().getNumber("Shooter kP",0.0465);
     kI = SpectrumPreferences.getInstance().getNumber("Shooter kI",0.0005);
@@ -52,26 +53,22 @@ public class Shooter extends SubsystemBase {
     AkF = SpectrumPreferences.getInstance().getNumber("Accelerator kF",0.05);
     AiZone = (int) SpectrumPreferences.getInstance().getNumber("Accelerator I-Zone", 150);
     
-        
-    leaderTalonFX = new TalonFX(Constants.ShooterConstants.kLeftlMotor);
-    follower2TalonFX = new TalonFX(Constants.ShooterConstants.kRightBotMotor);
+    leaderTalonFX = new TalonFX(Constants.ShooterConstants.kShooterMotor);
+    followerTalonFX = new TalonFX(Constants.ShooterConstants.kFollowerMotor);
     acceleratorTalonFX = new TalonFX(Constants.ShooterConstants.kAcceleratorMotor);
-
-
     
     leaderTalonFX.setInverted(false);
-    follower2TalonFX.setInverted(true);
+    followerTalonFX.setInverted(true);
     acceleratorTalonFX.setInverted(true);
     
     SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 40, 45, 0.5);
     leaderTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
-    follower2TalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
+    followerTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     acceleratorTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
 
     leaderTalonFX.configClosedloopRamp(0.2);
-    follower2TalonFX.configClosedloopRamp(0.2);
+    followerTalonFX.configClosedloopRamp(0.2);
     acceleratorTalonFX.configClosedloopRamp(0.2);
-
 
     leaderTalonFX.config_kP(0, kP);
     leaderTalonFX.config_kI(0, kI);   
@@ -88,7 +85,7 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     acceleratorTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
-    follower2TalonFX.follow(leaderTalonFX);
+    followerTalonFX.follow(leaderTalonFX);
     
     //SmartDashboard.putNumber("Shooter/Setpoint", 5000);
     //SmartDashboard.putNumber("Acceerator/Setpoint", 5000);
@@ -173,7 +170,7 @@ public class Shooter extends SubsystemBase {
     HelixLogger.getInstance().addSource("SHOOTER RPM", this::getWheelRPM);
     HelixLogger.getInstance().addSource("SHOOTER Output%", leaderTalonFX::getMotorOutputPercent);
     HelixLogger.getInstance().addSource("LEADER Current", leaderTalonFX::getSupplyCurrent);
-    HelixLogger.getInstance().addSource("FOLLOWER Current", follower2TalonFX::getSupplyCurrent);
+    HelixLogger.getInstance().addSource("FOLLOWER Current", followerTalonFX::getSupplyCurrent);
 
     HelixLogger.getInstance().addSource("ACCEL Vel", acceleratorTalonFX::getSelectedSensorVelocity);
     HelixLogger.getInstance().addSource("ACCEL RPM", this::getAWheelRPM);
@@ -186,7 +183,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/WheelRPM", getWheelRPM());
     SmartDashboard.putNumber("Shooter/OutputPercentage", leaderTalonFX.getMotorOutputPercent());
     SmartDashboard.putNumber("Shooter/LeftCurrent", leaderTalonFX.getSupplyCurrent());
-    SmartDashboard.putNumber("Shooter/RightCurrent", follower2TalonFX.getSupplyCurrent());
+    SmartDashboard.putNumber("Shooter/RightCurrent", followerTalonFX.getSupplyCurrent());
 
     SmartDashboard.putNumber("Accelerator/Velocity", acceleratorTalonFX.getSelectedSensorVelocity());
     SmartDashboard.putNumber("Accelerator/WheelRPM", getAWheelRPM());

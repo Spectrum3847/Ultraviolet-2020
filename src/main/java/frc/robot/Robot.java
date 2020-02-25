@@ -92,7 +92,8 @@ public class Robot extends TimedRobot {
     printInfo("Start disabledInit()");
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
-		LiveWindow.disableAllTelemetry();
+    LiveWindow.disableAllTelemetry();
+    RobotContainer.visionLL.setLimeLightLED(false);
     setState(RobotState.DISABLED);
     printInfo("End disabledInit()");
   }
@@ -125,6 +126,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     HelixLogger.getInstance().saveLogs();
+    //RobotContainer.drivetrain.differentialDrive.feed();
   }
 
   @Override
