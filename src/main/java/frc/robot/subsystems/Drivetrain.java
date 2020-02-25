@@ -20,7 +20,6 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drive.Drive;
 import frc.team2363.logger.HelixLogger;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -33,6 +32,8 @@ public class Drivetrain extends SubsystemBase {
     public static final int kRightRearMotor = 21;
 
     public static final int kShifter = 1;
+
+    public static final double minCommand = 0.05;
   }
 
   /**
@@ -44,8 +45,6 @@ public class Drivetrain extends SubsystemBase {
   public final WPI_TalonFX rightRearTalonFX;
   public final WPI_TalonFX rightFrontTalonFX;
   public final SpectrumSolenoid shifter;
-
-  //public final DifferentialDrive differentialDrive;
 
   private double kP, kI, kD, kF, kIz;
 
@@ -87,8 +86,6 @@ public class Drivetrain extends SubsystemBase {
     leftRearTalonFX.follow(leftFrontTalonFX);
     rightRearTalonFX.follow(rightFrontTalonFX);
 
-    //differentialDrive = new DifferentialDrive(leftFrontTalonFX, rightFrontTalonFX);
-
     leftFrontTalonFX.setNeutralMode(NeutralMode.Brake);
     rightFrontTalonFX.setNeutralMode(NeutralMode.Brake);
     leftRearTalonFX.setNeutralMode(NeutralMode.Coast);
@@ -128,42 +125,43 @@ public class Drivetrain extends SubsystemBase {
     return value;
   }
 
-  public void arcadeDrive(double moveSpeed, double rotateSpeed) {
+  public void arcadeDrive(double rotateSpeed, double moveSpeed) {
     //Cube rotation speed to give us better low end performance espeically after deadzone
     //rotateSpeed = Math.copySign(Math.pow(rotateSpeed,2), rotateSpeed);
-    rotateSpeed = limit(rotateSpeed);
 
-    moveSpeed = limit(moveSpeed) * 0.55;
+    moveSpeed = limit(moveSpeed);
+
+    rotateSpeed = limit(rotateSpeed) * 0.55;
 
     //Make the deadzone bigger if we are driving fwd or backwards and not turning in place
-    if (Math.abs(moveSpeed) > 0.15 && Math.abs(rotateSpeed)< 0.1){
-      rotateSpeed = 0;
+    if (Math.abs(rotateSpeed) > 0.15 && Math.abs(moveSpeed)< 0.1){
+      moveSpeed = 0;
     }
     double leftMotorOutput;
     double rightMotorOutput;
 
-    double maxInput = Math.copySign(Math.max(Math.abs(moveSpeed), Math.abs(rotateSpeed)), moveSpeed);
-    if (moveSpeed == 0){
-      leftMotorOutput = rotateSpeed;
-      rightMotorOutput = -rotateSpeed; 
+    double maxInput = Math.copySign(Math.max(Math.abs(rotateSpeed), Math.abs(moveSpeed)), rotateSpeed);
+    if (rotateSpeed == 0){
+      leftMotorOutput = moveSpeed;
+      rightMotorOutput = -moveSpeed; 
     } else {
-      if (moveSpeed >= 0.0) {
+      if (rotateSpeed >= 0.0) {
         // First quadrant, else second quadrant
-        if (rotateSpeed >= 0.0) {
+        if (moveSpeed >= 0.0) {
           leftMotorOutput = maxInput;
-          rightMotorOutput = moveSpeed - rotateSpeed;
+          rightMotorOutput = rotateSpeed - moveSpeed;
         } else {
-          leftMotorOutput = moveSpeed + rotateSpeed;
+          leftMotorOutput = rotateSpeed + moveSpeed;
           rightMotorOutput = maxInput;
         }
       } else {
         // Third quadrant, else fourth quadrant
-        if (rotateSpeed >= 0.0) {
-          leftMotorOutput = moveSpeed + rotateSpeed;
+        if (moveSpeed >= 0.0) {
+          leftMotorOutput = rotateSpeed + moveSpeed;
           rightMotorOutput = maxInput;
         } else {
           leftMotorOutput = maxInput;
-          rightMotorOutput = moveSpeed - rotateSpeed;
+          rightMotorOutput = rotateSpeed - moveSpeed;
         }
       }
     }
@@ -172,9 +170,47 @@ public class Drivetrain extends SubsystemBase {
     rightFrontTalonFX.set(limit(rightMotorOutput));
   }
 
-  /*public void arcadeDrive(double moveSpeed, double rotateSpeed) {
-      differentialDrive.arcadeDrive(moveSpeed, rotateSpeed);
-    } */
+  public void autoArcadeDrive(double moveSpeed, double rotateSpeed) {
+    double leftMotorOutput;
+    double rightMotorOutput;
+
+    double maxInput = Math.copySign(Math.max(Math.abs(rotateSpeed), Math.abs(moveSpeed)), rotateSpeed);
+    if (rotateSpeed == 0){
+      leftMotorOutput = moveSpeed;
+      rightMotorOutput = -moveSpeed; 
+    } else {
+      if (rotateSpeed >= 0.0) {
+        // First quadrant, else second quadrant
+        if (moveSpeed >= 0.0) {
+          leftMotorOutput = maxInput;
+          rightMotorOutput = rotateSpeed - moveSpeed;
+        } else {
+          leftMotorOutput = rotateSpeed + moveSpeed;
+          rightMotorOutput = maxInput;
+        }
+      } else {
+        // Third quadrant, else fourth quadrant
+        if (moveSpeed >= 0.0) {
+          leftMotorOutput = rotateSpeed + moveSpeed;
+          rightMotorOutput = maxInput;
+        } else {
+          leftMotorOutput = maxInput;
+          rightMotorOutput = rotateSpeed - moveSpeed;
+        }
+      }
+    }
+
+    leftFrontTalonFX.set(limit(leftMotorOutput));
+    rightFrontTalonFX.set(limit(rightMotorOutput));
+  }
+
+  public void useOutput(double output) {
+    if(RobotContainer.visionLL.getLLDegToTarget() > 3) {
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output - 0.05);
+    } else if(RobotContainer.visionLL.getLLDegToTarget() < -3) {
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output + 0.05);
+    }
+  }
 
   public double getHeading() {
     final double yaw = RobotContainer.adis16470.getAngle();
