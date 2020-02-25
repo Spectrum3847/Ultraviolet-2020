@@ -20,6 +20,7 @@ import frc.lib.drivers.SpectrumSolenoid;
 import frc.lib.util.Debugger;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class Intake extends SubsystemBase {
 
@@ -49,14 +50,14 @@ public class Intake extends SubsystemBase {
     m_encoder = motor.getEncoder();
 
     // PID coefficients
-    kP = 6e-5; 
+    kP = 0.00015; 
     kI = 0;
-    kD = 0; 
+    kD = 0.001; 
     kIz = 0; 
-    kFF = 0.000015; 
+    kFF = 0.000175; 
     kMaxOutput = 1; 
     kMinOutput = -1;
-    maxRPM = 5700;
+    maxRPM = 500;
 
     // set PID coefficients
     m_pidController.setP(kP);
@@ -76,8 +77,10 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Intake/Min Output", kMinOutput);
     motor.burnFlash();
 
-    solUp = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeUp);
+    solUp = new SpectrumSolenoid(Constants.IntakeConstants.
+    kIntakeUp);
     solDown = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeDown);
+
 
     //Helixlogger setup
     setupLogs();
@@ -88,6 +91,7 @@ public class Intake extends SubsystemBase {
 
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Intake/Velocity", m_encoder.getVelocity());
   }
 
   public void setVelocity(double velocity){
@@ -109,6 +113,7 @@ public class Intake extends SubsystemBase {
         if((max != kMaxOutput) || (min != kMinOutput)) { 
           m_pidController.setOutputRange(min, max); 
           kMinOutput = min; kMaxOutput = max; 
+          
         }
     
         /**
@@ -117,8 +122,8 @@ public class Intake extends SubsystemBase {
          * 
          * The first parameter is the value of the set point, whose units vary
          * depending on the control type set in the second parameter.
-         * 
-         * The second parameter is the control type can be set to one of four 
+         * .
+         *       * The second parameter is the control type can be set to one of four 
          * parameters:
          *  com.revrobotics.ControlType.kDutyCycle
          *  com.revrobotics.ControlType.kPosition
@@ -126,9 +131,10 @@ public class Intake extends SubsystemBase {
          *  com.revrobotics.ControlType.kVoltage
          */
         m_pidController.setReference(velocity, ControlType.kVelocity);
-        
         SmartDashboard.putNumber("Intake/Setpoint", velocity);
-        SmartDashboard.putNumber("Intake/Velocity", m_encoder.getVelocity());
+
+        
+
   }
 
   public void setSpeed(double speed){
@@ -136,13 +142,11 @@ public class Intake extends SubsystemBase {
   }
 
   public void collect(){
-    //setVelocity(1000);
-    setSpeed(0.75);
+    setVelocity(5000);
   }
 
   public void reverse(){
-    //setVelocity(-1000);
-    setSpeed(-0.75);
+    setVelocity(-5000);
   }
 
   public void stop(){
