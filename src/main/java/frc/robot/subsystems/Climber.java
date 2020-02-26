@@ -12,10 +12,13 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Debugger;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class Climber extends SubsystemBase {
 
@@ -24,7 +27,7 @@ public class Climber extends SubsystemBase {
     public static final int kFollowerMotor = 51;
   }
 
-  public final CANSparkMax masterMotor;
+  public final CANSparkMax leaderMotor;
   public final CANSparkMax followerMotor;
   private CANEncoder m_encoder;
   private CANPIDController m_pidController;
@@ -34,23 +37,24 @@ public class Climber extends SubsystemBase {
    * Creates a new CLimbe.
    */
   public Climber() {
-    masterMotor = new CANSparkMax(Constants.kMasterMotor, MotorType.kBrushless);
-    masterMotor.restoreFactoryDefaults();
-    masterMotor.setSmartCurrentLimit(40);
+    leaderMotor = new CANSparkMax(Constants.kMasterMotor, MotorType.kBrushless);
+    leaderMotor.restoreFactoryDefaults();
+    leaderMotor.setSmartCurrentLimit(40);
+    leaderMotor.setIdleMode(IdleMode.kBrake);
     //masterMotor.setInverted();
-    masterMotor.burnFlash();
+    leaderMotor.burnFlash();
 
     followerMotor = new CANSparkMax(Constants.kFollowerMotor, MotorType.kBrushless);
     followerMotor.restoreFactoryDefaults();
     followerMotor.setSmartCurrentLimit(40);
+    followerMotor.setIdleMode(IdleMode.kBrake);
     //followerMotor.setInverted();
+    followerMotor.follow(leaderMotor);
     followerMotor.burnFlash();
 
-    followerMotor.follow(masterMotor);
+    m_pidController = leaderMotor.getPIDController();
 
-    m_pidController = masterMotor.getPIDController();
-
-    m_encoder = masterMotor.getEncoder();
+    m_encoder = leaderMotor.getEncoder();
 
     //PID coefficients
     kP = 0;
@@ -72,11 +76,22 @@ public class Climber extends SubsystemBase {
 
     //HelixLogger Setup
     setupLogs();
+
+    //Setup Default Command
+    this.setDefaultCommand(new RunCommand(() -> setManualOutput(RobotContainer.operatorController.leftStick.getY()), this));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public void setManualOutput(double speed){
+    leaderMotor.set(speed);
+  }
+
+  public void stop(){
+    leaderMotor.stopMotor();
   }
 
   //Set up HelixLogger sources here

@@ -16,6 +16,7 @@ import frc.lib.controllers.SpectrumXboxController;
 import frc.lib.drivers.EForwardableConnections;
 import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
@@ -29,9 +30,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
-import frc.robot.commands.ColorWheel;
 import frc.robot.commands.ballpath.*;
-import frc.paths.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
@@ -42,6 +41,9 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  //Create Joysticks first so they can be used in defaultCommands
+  public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
+  public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
   // The robot's subsystems and commands are defined here...
   public static final Drivetrain drivetrain = new Drivetrain();
@@ -50,14 +52,13 @@ public class RobotContainer {
   public static final Funnel funnel = new Funnel();
   public static final Shooter shooter = new Shooter();
   public static final VisionLL visionLL = new VisionLL(); 
+  public static final Climber climber = new Climber();
 
   public static DriverStation DS;
   public static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
-  public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
-  public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
   public static ADIS16470_IMU adis16470 = new ADIS16470_IMU();
 
