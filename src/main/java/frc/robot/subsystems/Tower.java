@@ -16,20 +16,22 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.drivers.SpectrumDigitalInput;
 import frc.lib.drivers.SpectrumSolenoid;
 import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.team2363.logger.HelixLogger;
 
 public class Tower extends SubsystemBase {
 
   public final TalonFX motor;
-  public final SpectrumSolenoid gate;
+  public final SpectrumSolenoid compress;
 
-  public final DigitalInput TowerTop = new DigitalInput(0);
-  public final DigitalInput TowerBot = new DigitalInput(1);
+  public final DigitalInput TowerTop = new SpectrumDigitalInput(0);
+  public final DigitalInput TowerBottom = new SpectrumDigitalInput(1);
 
   private double kP, kI, kD, kF;
   private int iZone;
@@ -60,14 +62,15 @@ public class Tower extends SubsystemBase {
 
     motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
-    gate = new SpectrumSolenoid(Constants.TowerConstants.kTowerGate);
+    compress = new SpectrumSolenoid(Constants.TowerConstants.kTowerGate);
 
     SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 1000);
 
     //Helixlogger setup
     setupLogs();
 
-    this.setDefaultCommand(new RunCommand(() -> stop(), this));
+    //Set Dafault Command to be driven by the operator left stick and divide by 1.75 to reduce speed
+    this.setDefaultCommand(new RunCommand(() -> setPercentModeOutput(RobotContainer.operatorController.leftStick.getY() /1.75) , this));
   }
 
   public void periodic() {
@@ -114,18 +117,18 @@ public class Tower extends SubsystemBase {
   }
 
   public void close(){
-    gate.set(true);
+    compress.set(false);
   }
 
   public void open(){
-    gate.set(false);
+    compress.set(true);
   }
 
-  public Boolean getTop(){
+  public Boolean getTopBall(){
     return !TowerTop.get();
   }
-  public Boolean getBot(){
-    return !TowerBot.get();
+  public Boolean getBottomBall(){
+    return !TowerBottom.get();
   }
 
   //Set up Helixlogger sources here
@@ -136,9 +139,9 @@ public class Tower extends SubsystemBase {
     HelixLogger.getInstance().addSource("TOWER Current", motor::getSupplyCurrent);
   }
 
-  public void SmartDash() {
-  SmartDashboard.putBoolean("TopSensorTower", !TowerTop.get());
-  SmartDashboard.putBoolean("BotSensorTower", !TowerBot.get());
+  public void Dashboard() {
+  SmartDashboard.putBoolean("isTowerTopBall", getTopBall());
+  SmartDashboard.putBoolean("isTowerBottomBall", getBottomBall());
   SmartDashboard.putNumber("Tower/Velocity", motor.getSelectedSensorVelocity());
   SmartDashboard.putNumber("Tower/WheelRPM", getWheelRPM());
   SmartDashboard.putNumber("Tower/OutputPercentage", motor.getMotorOutputPercent());

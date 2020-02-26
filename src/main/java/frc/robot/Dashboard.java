@@ -33,6 +33,7 @@ public class Dashboard {
     private static void updatePutShort() {
         RobotContainer.drivetrain.dashboard();
         RobotContainer.shooter.dashboard();
+        RobotContainer.tower.Dashboard();
         //RobotContainer.climber.dashboard();
     }
 

@@ -11,7 +11,6 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -78,7 +77,7 @@ public class Climber extends SubsystemBase {
     setupLogs();
 
     //Setup Default Command
-    this.setDefaultCommand(new RunCommand(() -> setManualOutput(RobotContainer.operatorController.leftStick.getY()), this));
+    this.setDefaultCommand(new RunCommand(() -> setManualOutput(RobotContainer.operatorController.rightStick.getY()), this));
   }
 
   @Override

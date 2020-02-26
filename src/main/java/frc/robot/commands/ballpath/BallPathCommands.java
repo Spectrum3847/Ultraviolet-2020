@@ -18,7 +18,7 @@ import frc.robot.RobotContainer;
  */
 public class BallPathCommands {
 
-    public static Command feedShooter = new ParallelCommandGroup(
+    public static Command oldFeedShooter = new ParallelCommandGroup(
         new RunCommand(() -> RobotContainer.tower.feed(), RobotContainer.tower),
         new SequentialCommandGroup(
         new RunCommand(() -> RobotContainer.funnel.intakeTower(), RobotContainer.funnel).withTimeout(.5),
