@@ -18,8 +18,8 @@ public class DriveCommands {
 
     //Switch to high gear while running, go to low gear when cancelled
     public static Command highGear = new StartEndCommand(
-        () -> RobotContainer.Drivetrain.highGear(), 
-        () -> RobotContainer.Drivetrain.lowGear()
+        () -> RobotContainer.drivetrain.highGear(), 
+        () -> RobotContainer.drivetrain.lowGear()
     );
 
 }

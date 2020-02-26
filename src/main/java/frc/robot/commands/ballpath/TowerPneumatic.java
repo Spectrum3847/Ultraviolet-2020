@@ -23,6 +23,7 @@ public class TowerPneumatic extends CommandBase {
   @Override
   public void initialize() {
     RobotContainer.tower.close();
+    RobotContainer.tower.open();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

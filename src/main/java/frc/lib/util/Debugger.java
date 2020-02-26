@@ -6,6 +6,8 @@ package frc.lib.util;
 
 import java.util.ArrayList;
 
+import frc.team2363.logger.HelixEvents;
+
 /**
  * Based on Team 1114 code from 2015
  * 
@@ -46,6 +48,7 @@ public class Debugger {
      * @param level
      */
     public static void println(String msg, String flag, int level) {
+        HelixEvents.getInstance().addEvent(flag, msg);
         if(meetsCurrRequirements(flag, level)) {
             System.out.println(level + ": [" + flag + "] " + msg);
         }

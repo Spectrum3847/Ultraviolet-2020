@@ -8,14 +8,18 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 //import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import frc.lib.drivers.SpectrumSolenoid;
+import frc.lib.util.Debugger;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drive.Drive;
+import frc.team2363.logger.HelixLogger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -27,7 +31,9 @@ public class Drivetrain extends SubsystemBase {
     public static final int kRightFrontMotor = 20;
     public static final int kRightRearMotor = 21;
 
-    public static final int kShifter = 0;
+    public static final int kShifter = 1;
+
+    public static final double minCommand = 0.05;
   }
 
   /**
@@ -40,7 +46,7 @@ public class Drivetrain extends SubsystemBase {
   public final WPI_TalonFX rightFrontTalonFX;
   public final SpectrumSolenoid shifter;
 
-  //public DifferentialDrive differentialDrive;
+  private double kP, kI, kD, kF, kIz;
 
   public Drivetrain() {
 
@@ -48,6 +54,13 @@ public class Drivetrain extends SubsystemBase {
     leftFrontTalonFX = new WPI_TalonFX(Constants.kLeftFrontMotor);
     rightRearTalonFX = new WPI_TalonFX(Constants.kRightRearMotor);
     rightFrontTalonFX = new WPI_TalonFX(Constants.kRightFrontMotor);
+
+    //PID Coefficients
+    kP = 0.042;
+    kI = 0;
+    kD = 0;
+    kF = 0.0452;
+    kIz = 0;
 
     leftRearTalonFX.configFactoryDefault();
     leftFrontTalonFX.configFactoryDefault();
@@ -65,17 +78,41 @@ public class Drivetrain extends SubsystemBase {
     leftRearTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     rightRearTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
 
+    leftFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    rightFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+    setPIDFValues();
+
     leftRearTalonFX.follow(leftFrontTalonFX);
     rightRearTalonFX.follow(rightFrontTalonFX);
 
-    leftFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    rightFrontTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    leftFrontTalonFX.setNeutralMode(NeutralMode.Brake);
+    rightFrontTalonFX.setNeutralMode(NeutralMode.Brake);
+    leftRearTalonFX.setNeutralMode(NeutralMode.Coast);
+    rightRearTalonFX.setNeutralMode(NeutralMode.Coast);
 
     //Shifter Setup
     shifter = new SpectrumSolenoid(Constants.kShifter);
 
+    //HelixLogger Setup
+    setupLogs();
+
     //Set the Default Command for this subsystem
-    setDefaultCommand(new Drive(this, RobotContainer.driverController));
+    setDefaultCommand(new Drive(this));
+  }
+
+  private void setPIDFValues() {
+    leftFrontTalonFX.config_kP(0, kP);
+    leftFrontTalonFX.config_kI(0, kI);
+    leftFrontTalonFX.config_kD(0, kD);
+    leftFrontTalonFX.config_kF(0, kF);
+    leftFrontTalonFX.config_IntegralZone(0, (int) kIz);
+
+    rightFrontTalonFX.config_kP(0, kP);
+    rightFrontTalonFX.config_kI(0, kI);
+    rightFrontTalonFX.config_kD(0, kD);
+    rightFrontTalonFX.config_kF(0, kF);
+    rightFrontTalonFX.config_IntegralZone(0, (int) kIz);
   }
 
   protected double limit(double value) {
@@ -88,42 +125,43 @@ public class Drivetrain extends SubsystemBase {
     return value;
   }
 
-  public void arcadeDrive(double moveSpeed, double rotateSpeed) {
+  public void arcadeDrive(double rotateSpeed, double moveSpeed) {
     //Cube rotation speed to give us better low end performance espeically after deadzone
-    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,3), rotateSpeed);
-    //rotateSpeed = limit(rotateSpeed) * 0.6;
-    
+    //rotateSpeed = Math.copySign(Math.pow(rotateSpeed,2), rotateSpeed);
+
     moveSpeed = limit(moveSpeed);
 
+    rotateSpeed = limit(rotateSpeed) * 0.55;
+
     //Make the deadzone bigger if we are driving fwd or backwards and not turning in place
-    if (Math.abs(moveSpeed) > 0.1 && Math.abs(rotateSpeed)< 0.05){
-      rotateSpeed = 0;
+    if (Math.abs(rotateSpeed) > 0.15 && Math.abs(moveSpeed)< 0.1){
+      moveSpeed = 0;
     }
     double leftMotorOutput;
     double rightMotorOutput;
 
-    double maxInput = Math.copySign(Math.max(Math.abs(moveSpeed), Math.abs(rotateSpeed)), moveSpeed);
-    if (moveSpeed == 0){
-      leftMotorOutput = rotateSpeed;
-      rightMotorOutput = -rotateSpeed; 
+    double maxInput = Math.copySign(Math.max(Math.abs(rotateSpeed), Math.abs(moveSpeed)), rotateSpeed);
+    if (rotateSpeed == 0){
+      leftMotorOutput = moveSpeed;
+      rightMotorOutput = -moveSpeed; 
     } else {
-      if (moveSpeed >= 0.0) {
+      if (rotateSpeed >= 0.0) {
         // First quadrant, else second quadrant
-        if (rotateSpeed >= 0.0) {
+        if (moveSpeed >= 0.0) {
           leftMotorOutput = maxInput;
-          rightMotorOutput = moveSpeed - rotateSpeed;
+          rightMotorOutput = rotateSpeed - moveSpeed;
         } else {
-          leftMotorOutput = moveSpeed + rotateSpeed;
+          leftMotorOutput = rotateSpeed + moveSpeed;
           rightMotorOutput = maxInput;
         }
       } else {
         // Third quadrant, else fourth quadrant
-        if (rotateSpeed >= 0.0) {
-          leftMotorOutput = moveSpeed + rotateSpeed;
+        if (moveSpeed >= 0.0) {
+          leftMotorOutput = rotateSpeed + moveSpeed;
           rightMotorOutput = maxInput;
         } else {
           leftMotorOutput = maxInput;
-          rightMotorOutput = moveSpeed - rotateSpeed;
+          rightMotorOutput = rotateSpeed - moveSpeed;
         }
       }
     }
@@ -132,13 +170,61 @@ public class Drivetrain extends SubsystemBase {
     rightFrontTalonFX.set(limit(rightMotorOutput));
   }
 
+  public void autoArcadeDrive(double moveSpeed, double rotateSpeed) {
+    double leftMotorOutput;
+    double rightMotorOutput;
+
+    double maxInput = Math.copySign(Math.max(Math.abs(rotateSpeed), Math.abs(moveSpeed)), rotateSpeed);
+    if (rotateSpeed == 0){
+      leftMotorOutput = moveSpeed;
+      rightMotorOutput = -moveSpeed; 
+    } else {
+      if (rotateSpeed >= 0.0) {
+        // First quadrant, else second quadrant
+        if (moveSpeed >= 0.0) {
+          leftMotorOutput = maxInput;
+          rightMotorOutput = rotateSpeed - moveSpeed;
+        } else {
+          leftMotorOutput = rotateSpeed + moveSpeed;
+          rightMotorOutput = maxInput;
+        }
+      } else {
+        // Third quadrant, else fourth quadrant
+        if (moveSpeed >= 0.0) {
+          leftMotorOutput = rotateSpeed + moveSpeed;
+          rightMotorOutput = maxInput;
+        } else {
+          leftMotorOutput = maxInput;
+          rightMotorOutput = rotateSpeed - moveSpeed;
+        }
+      }
+    }
+
+    leftFrontTalonFX.set(limit(leftMotorOutput));
+    rightFrontTalonFX.set(limit(rightMotorOutput));
+  }
+
+  public void useOutput(double output) {
+    if(RobotContainer.visionLL.getLLDegToTarget() > 0.2) {
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output + 0.055);
+    } else if(RobotContainer.visionLL.getLLDegToTarget() < 0.2) {
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output - 0.055);
+    }
+  }
+
   public double getHeading() {
-    final double yaw = RobotContainer.navX.getYaw();
+    final double yaw = RobotContainer.adis16470.getAngle();
     return yaw;
   }
 
   public void setSetpoint(final double left, final double right) {
-    setVelocityOutput(left * 1375.7, right * 1375.7);
+    setVelocityOutput(fpsToTicksPer100ms(left), fpsToTicksPer100ms(right));
+  }
+
+  //CHECK AGAIN
+  // fps * (ft per wheel rotation) * low gear ratio * ticks per shaft rev / 100ms per second
+  private double fpsToTicksPer100ms(double fps) {
+    return fps * (12 / 9 * Math.PI) * 16 * 2048 / 10;
   }
 
   private void setVelocityOutput(final double leftVelocity, final double rightVelocity) {
@@ -148,15 +234,31 @@ public class Drivetrain extends SubsystemBase {
 
   public void highGear(){
     shifter.set(true);
+    printDebug("HighGear Engaged");
   }
 
   public void lowGear(){
     shifter.set(false);
+    printDebug("HighGear Disengaged");
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  //Set up Helixlogger sources here
+  private void setupLogs() {
+    HelixLogger.getInstance().addSource("DRIVE HighGear", shifter::get);
+
+    HelixLogger.getInstance().addSource("DRIVE LeftVel", leftFrontTalonFX.getSensorCollection()::getIntegratedSensorVelocity);
+    HelixLogger.getInstance().addSource("DRIVE RightVel", rightFrontTalonFX.getSensorCollection()::getIntegratedSensorVelocity);
+
+    HelixLogger.getInstance().addSource("DRIVE LeftStator", leftFrontTalonFX::getStatorCurrent);
+    HelixLogger.getInstance().addSource("DRIVE RightStator", rightFrontTalonFX::getStatorCurrent);
+
+    HelixLogger.getInstance().addSource("DRIVE LeftSupply", leftFrontTalonFX::getSupplyCurrent);
+    HelixLogger.getInstance().addSource("DRIVE RightSupply", rightFrontTalonFX::getSupplyCurrent);
   }
 
   public void dashboard() {
@@ -167,5 +269,17 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drive/RightVel", rightFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putNumber("Drive/LeftVel", leftFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putBoolean("Drive/HighGear", shifter.get());
+  }
+
+  public static void printDebug(String msg){
+    Debugger.println(msg, Robot._drive, Debugger.debug2);
+  }
+  
+  public static void printInfo(String msg){
+    Debugger.println(msg, Robot._drive, Debugger.info3);
+  }
+  
+  public static void printWarning(String msg) {
+    Debugger.println(msg, Robot._drive, Debugger.warning4);
   }
 }

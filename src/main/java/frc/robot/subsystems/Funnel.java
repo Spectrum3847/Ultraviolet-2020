@@ -10,8 +10,11 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.Debugger;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Funnel extends SubsystemBase {
 
@@ -33,6 +36,11 @@ public class Funnel extends SubsystemBase {
     rightMotor.setSmartCurrentLimit(20);
     rightMotor.setInverted(true);
     rightMotor.burnFlash();
+
+    //Helixlogger setup
+    setupLogs();
+
+    this.setDefaultCommand(new RunCommand(() -> stop(), this));
   }
 
   public void periodic() {
@@ -75,6 +83,23 @@ public class Funnel extends SubsystemBase {
   public void stop(){
     leftMotor.stopMotor();
     rightMotor.stopMotor();
+  }
+
+  //Set up HelixLogger sources here
+  private void setupLogs() {
+
+  }
+
+  public static void printDebug(String msg){
+    Debugger.println(msg, Robot._funnel, Debugger.debug2);
+  }
+  
+  public static void printInfo(String msg){
+    Debugger.println(msg, Robot._funnel, Debugger.info3);
+  }
+  
+  public static void printWarning(String msg) {
+    Debugger.println(msg, Robot._funnel, Debugger.warning4);
   }
 
 }

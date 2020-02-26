@@ -7,30 +7,32 @@
 
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
-import com.team319.trajectory.Path;
+import com.analog.adis16470.frc.ADIS16470_IMU;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.controllers.SpectrumXboxController;
+import frc.lib.drivers.EForwardableConnections;
 import frc.lib.util.Debugger;
-import frc.lib.util.SpectrumLogger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
+import frc.robot.subsystems.VisionLL;
+import frc.team2363.logger.HelixEvents;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.drive.Drive;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
+import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.ColorWheel;
-import frc.robot.commands.auto.*;
 import frc.robot.commands.ballpath.*;
 import frc.paths.*;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -42,50 +44,46 @@ import frc.paths.*;
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  public static final Drivetrain Drivetrain = new Drivetrain();
+  public static final Drivetrain drivetrain = new Drivetrain();
   public static final Intake intake = new Intake();
   public static final Tower tower = new Tower();
   public static final Funnel funnel = new Funnel();
   public static final Shooter shooter = new Shooter();
-  public static DriverStation DS;
+  public static final VisionLL visionLL = new VisionLL(); 
 
-  public static SpectrumLogger logger = SpectrumLogger.getInstance();
+  public static DriverStation DS;
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel();
+
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
   public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
-  //SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
+  public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
-  public static AHRS navX;
-
-  public static Path drive6 = new DriveStraight6();
+  public static ADIS16470_IMU adis16470 = new ADIS16470_IMU();
 
   // Add Debug flags
   // You can have a flag for each subsystem, etc
   public static final String _controls = "CONTROL";
   public static final String _general = "GENERAL";
   public static final String _auton = "AUTON";
-  public static final String _commands = "COMMAND";
   public static final String _drive = "DRIVE";
+  public static final String _funnel = "FUNNEL";
+  public static final String _intake = "INTAKE";
+  public static final String _shooter = "SHOOTER";
+  public static final String _tower = "TOWER";
+  public static final String _climber = "CLIMBER";
+  public static final String _visionLL = "LIMELIGHT";
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     DS = DriverStation.getInstance();
+    portForwarding();
     initDebugger(); // Init Debugger
+    HelixEvents.getInstance().startLogging();
     printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
-    try {
-      navX = new AHRS(SPI.Port.kMXP);
-    } catch (RuntimeException ex) {
-      printInfo("Error instantiating navX-MXP");
-    }
-    if (navX != null) {
-      navX.zeroYaw();
-    }
-
-    //Setup Default Commands for Each Subsystem
-    setupDefaultCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -94,39 +92,40 @@ public class RobotContainer {
   }
 
   /**
-   * Setup Default Commands for Each Subsystem
-   * Mostly these should be telling motors to stop or be run off a joystick axis.
-   */
-  private void setupDefaultCommands(){
-    Drivetrain.setDefaultCommand(new Drive(Drivetrain, driverController));
-    intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
-    funnel.setDefaultCommand(new RunCommand(() -> funnel.stop(), funnel));
-    tower.setDefaultCommand(new RunCommand(() -> tower.stop(), tower));
-    shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
-  }
-  /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by inst antiating a {@link GenericHID} or one of its subclasses
    * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // driverController.aButton.whenPressed(new PathFollower(new DriveStraight6(),
-    // Drivetrain));
-    //driverController.rightBumper.whileHeld(DriveCommands.highGear);
 
-    driverController.leftBumper.whileHeld(new IntakeBalls());
-    driverController.aButton.whileHeld(new FunnelToTower());
-    driverController.bButton.whileHeld(new FunnelStore());
-    driverController.yButton.whileHeld(BallPathCommands.feedShooter);
+    // Driver Controller
+    driverController.rightBumper.whileHeld(DriveCommands.highGear);
     //driverController.xButton.whileHeld(new ColorWheel());
-
-    driverController.Dpad.Down.whileHeld(new IntakeDown());
-    driverController.Dpad.Up.whileHeld(new TowerPneumatic());
-    driverController.Dpad.Right.whileHeld(new TowerBack());
-    //Set Shooter to the DashboardVelcoity when right bumper is pressed.
+    driverController.aButton.whileHeld(new LLAim());
+    //Set Shooter to the DashboardVelocity when right bumper is pressed.
     driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.setPercentOutput(0.5), shooter));
+    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+
+    //Operator Controller
+    operatorController.rightTriggerButton.whileHeld(new TowerBack());
+    operatorController.leftTriggerButton.whileHeld(new IntakeBalls());
+    operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
+    operatorController.Dpad.Up.whileHeld(new RunCommand(() -> intake.reverse(), intake));
+    operatorController.rightBumper.whileHeld(BallPathCommands.feedShooter);
+    operatorController.aButton.whileHeld(new FunnelToTower());
+    operatorController.leftBumper.whileHeld(new ParallelCommandGroup(
+      new SequentialCommandGroup(
+        new TowerBack(), 
+        new FunnelStore()), 
+      new IntakeBalls()));
+    operatorController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
+    operatorController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+  }
+
+  private void portForwarding() {
+    EForwardableConnections.addPortForwarding(EForwardableConnections.LIMELIGHT_CAMERA_FEED);
+    EForwardableConnections.addPortForwarding(EForwardableConnections.LIMELIGHT_WEB_VIEW);
   }
 
 
@@ -135,18 +134,26 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public CommandBase getAutonomousCommand() {
+  public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new PathFollower(new DriveStraight6(), Drivetrain);
+    return null;
   }
 
   private static void initDebugger(){
-    Debugger.setLevel(Debugger.debug2); //Set the initial Debugger Level
+    if(DS.isFMSAttached()) {
+      Debugger.setLevel(Debugger.warning4);
+    } else {
+      Debugger.setLevel(Debugger.info3);
+    }
     Debugger.flagOn(_general); //Set all the flags on, comment out ones you want off
-    Debugger.flagOn(_controls);
     Debugger.flagOn(_auton);
-    Debugger.flagOn(_commands);
     Debugger.flagOn(_drive);
+    Debugger.flagOn(_funnel);
+    Debugger.flagOn(_intake);
+    Debugger.flagOn(_shooter);
+    Debugger.flagOn(_tower);
+    Debugger.flagOn(_climber);
+    Debugger.flagOn(_visionLL);
   }
 
   public static void printDebug(String msg){
