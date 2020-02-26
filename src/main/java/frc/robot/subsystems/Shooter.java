@@ -178,7 +178,7 @@ public class Shooter extends SubsystemBase {
   public void checkMotors(){
     String result = "";
     double kCurrentThresh = 3;
-    double kVelocityThresh = 50;
+    double kVelocityThresh = 1000;
     stop();
     follower2TalonFX.follow(follower2TalonFX);
     double testSpeed = 0.2;
