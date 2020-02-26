@@ -31,8 +31,8 @@ public class LLAim extends ProfiledPIDCommand {
     super(
         // The ProfiledPIDController used by the command
         new ProfiledPIDController(
-            // The PID gains
-            0.014, 0, 0,
+            // The PID gainss
+            0.01, 0, 0,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(360, 360)),
         // This should return the measurement
@@ -45,7 +45,7 @@ public class LLAim extends ProfiledPIDCommand {
         RobotContainer.drivetrain);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(0.1);
+    getController().setTolerance(0.2);
   }
 
   @Override
@@ -56,11 +56,11 @@ public class LLAim extends ProfiledPIDCommand {
       hasTarget = false;
     }
 
-    if(RobotContainer.visionLL.getLLTargetArea() < 0.5) {
+    /*if(RobotContainer.visionLL.getLLTargetArea() < 0.5) {
       RobotContainer.visionLL.setLimeLightPipeline(1);
     } else {
       RobotContainer.visionLL.setLimeLightPipeline(0);
-    }
+    } */
     
     super.initialize();
   }
