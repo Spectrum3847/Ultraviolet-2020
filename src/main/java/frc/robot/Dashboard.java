@@ -24,17 +24,17 @@ public class Dashboard {
     public static void intializeDashboard() {
     	if(ENABLE_DASHBOARD){
             //SmartDashboard.putBoolean("Compressor ENABLE", true);
-            //SmartDashboard.putBoolean("Limelight-LED Toggle", false);
-            //SmartDashboard.putBoolean("Drive/BRAKEMODE", true);
+            SmartDashboard.putBoolean("Limelight-LED Toggle", false);
         }
         dashThread.startPeriodic(0.02);
     }
 
     //Check each subsystems dashboard values and update them
     private static void updatePutShort() {
-    	RobotContainer.Drivetrain.dashboard();
-        //SmartDashboard.putBoolean("OperatorButtonPushed", HW.oi.isOperatorButtonPushed());
-        //SmartDashboard.putBoolean("DriverButtonPushed", HW.oi.isDriverButtonPushed());
+        RobotContainer.drivetrain.dashboard();
+        RobotContainer.shooter.dashboard();
+        RobotContainer.tower.Dashboard();
+        //RobotContainer.climber.dashboard();
     }
 
     //Things that don't need to be sent out each cycle

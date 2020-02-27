@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2020.1.2"
+    id "edu.wpi.first.GradleRIO" version "2020.3.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -65,8 +65,8 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 
     //Custom stuff
-    compile "com.github.dominikWin:badlog:master-SNAPSHOT"
-    compile "com.github.dominikWin:badlog:v0.1.1"
+    //compile "com.github.dominikWin:badlog:master-SNAPSHOT"
+    //compile "com.github.dominikWin:badlog:v0.1.1"
 
     compile 'com.github.Team319:BobTrajectory:v2.1.0'
 

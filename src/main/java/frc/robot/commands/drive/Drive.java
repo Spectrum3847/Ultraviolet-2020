@@ -8,8 +8,8 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Drivetrain;
-import frc.lib.controllers.SpectrumXboxController;
 
 
 public class Drive extends CommandBase {
@@ -17,15 +17,12 @@ public class Drive extends CommandBase {
    * Creates a new Drive.
    */
 
-  private final Drivetrain m_drive;
-
-  private final SpectrumXboxController driverController;
+   Drivetrain m_drivetrain;
   
-  public Drive(Drivetrain subsystem, SpectrumXboxController controller) {
+  public Drive(Drivetrain drivetrain) {
+    m_drivetrain = drivetrain;
     // Use addRequirements() here to declare subsystem dependencies.
-    m_drive = subsystem;
-    driverController = controller;
-    addRequirements(m_drive);
+    addRequirements(drivetrain);
   }
 
   // Called when the command is initially scheduled.
@@ -36,7 +33,7 @@ public class Drive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.arcadeDrive(driverController.leftStick.getX(), driverController.triggers.getTwist());
+    RobotContainer.drivetrain.arcadeDrive(RobotContainer.driverController.triggers.getTwist(), RobotContainer.driverController.leftStick.getX());
   }
 
   // Called once the command ends or is interrupted.

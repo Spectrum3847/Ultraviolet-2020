@@ -9,18 +9,20 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.util.Debugger;
+import frc.team2363.logger.HelixLogger;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the TimedRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
-  private CommandBase m_autonomousCommand;
+  private Command m_autonomousCommand;
 
   private RobotContainer robotContainer;
 
@@ -31,8 +33,13 @@ public class Robot extends TimedRobot {
   public static final String _controls = "CONTROL";
   public static final String _general = "GENERAL";
   public static final String _auton = "AUTON";
-  public static final String _commands = "COMMAND";
   public static final String _drive = "DRIVE";
+  public static final String _funnel = "FUNNEL";
+  public static final String _intake = "INTAKE";
+  public static final String _shooter = "SHOOTER";
+  public static final String _tower = "TOWER";
+  public static final String _climber = "CLIMBER";
+  public static final String _visionLL = "LIMELIGHT";
 
   public enum RobotState {
     DISABLED, AUTONOMOUS, TELEOP, TEST
@@ -48,27 +55,17 @@ public class Robot extends TimedRobot {
     s_robot_state = state;
   }
 
-  public static void printDebug(String msg){
-    Debugger.println(msg, _general, Debugger.debug2);
-  }
-  
-  public static void printInfo(String msg){
-    Debugger.println(msg, _general, Debugger.info3);
-  }
-  
-  public static void printWarning(String msg) {
-    Debugger.println(msg, _general, Debugger.warning4);
-  }
-
   /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+
   }
 
   /**
@@ -83,7 +80,7 @@ public class Robot extends TimedRobot {
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
+    //  block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
 
@@ -95,14 +92,14 @@ public class Robot extends TimedRobot {
     printInfo("Start disabledInit()");
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
-		LiveWindow.disableAllTelemetry();
+    LiveWindow.disableAllTelemetry();
+    RobotContainer.visionLL.setLimeLightLED(false);
     setState(RobotState.DISABLED);
-    printInfo("End disableInit()");
+    printInfo("End disabledInit()");
   }
 
   @Override
   public void disabledPeriodic() {
-    //Disabled.periodic;
   }
 
   /**
@@ -111,6 +108,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = robotContainer.getAutonomousCommand();
+    initDebugger();//Used to set debug level lower when FMS attached.
     printInfo("Start autonomousInit()");
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
@@ -127,8 +125,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    //Autonomous.periodic(); 
-
+    //HelixLogger.getInstance().saveLogs();
+    //RobotContainer.drivetrain.differentialDrive.feed();
   }
 
   @Override
@@ -138,7 +136,6 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     
-    initDebugger();//Used to set debug level lower when FMS attached.
     printInfo("Start teleopInit()");
     CommandScheduler.getInstance().cancelAll();
 		LiveWindow.setEnabled(false);
@@ -148,8 +145,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     printInfo("End teleopInit()");
-      
-    
   }
 
   /**
@@ -157,6 +152,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    //HelixLogger.getInstance().saveLogs();
     /*if (RobotController.isBrownedOut()){
 			brownOutCtn++;
 		} */
@@ -176,11 +172,32 @@ public class Robot extends TimedRobot {
   }
 
   private static void initDebugger(){
-    Debugger.setLevel(Debugger.info3);
+    if(RobotContainer.DS.isFMSAttached()) {
+      Debugger.setLevel(Debugger.warning4);
+    } else {
+      Debugger.setLevel(Debugger.info3);
+    }
     Debugger.flagOn(_general); //Set all the flags on, comment out ones you want off
-    Debugger.flagOn(_controls);
     Debugger.flagOn(_auton);
-    Debugger.flagOn(_commands);
     Debugger.flagOn(_drive);
+    Debugger.flagOn(_funnel);
+    Debugger.flagOn(_intake);
+    Debugger.flagOn(_shooter);
+    Debugger.flagOn(_tower);
+    Debugger.flagOn(_climber);
+    Debugger.flagOn(_visionLL);
   }
+
+  public static void printDebug(String msg) {
+    Debugger.println(msg, _general, Debugger.debug2);
+  }
+
+  public static void printInfo(String msg) {
+    Debugger.println(msg, _general, Debugger.info3);
+  }
+
+  public static void printWarning(String msg) {
+    Debugger.println(msg, _general, Debugger.warning4);
+  }
+
 }

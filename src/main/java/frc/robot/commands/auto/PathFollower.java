@@ -11,8 +11,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.team2363.commands.HelixFollower;
 import frc.team2363.controller.PIDController;
 import com.team319.trajectory.Path;
-
-import edu.wpi.first.wpilibj.DriverStation;
+import java.lang.Math;
 
 public class PathFollower extends HelixFollower {
 
@@ -42,9 +41,9 @@ public class PathFollower extends HelixFollower {
   }
 
   // Called once the command ends or is interrupted.
-  /*@Override
+  @Override
   public void end(boolean interrupted) {
-  } */
+  }
 
   // Returns true when the command should end.
   @Override
@@ -70,8 +69,10 @@ public class PathFollower extends HelixFollower {
 
   @Override
   public double getCurrentDistance() {
-    return ((m_Drivetrain.rightFrontTalonFX.getSensorCollection().getIntegratedSensorPosition() / 13757)
-        + (m_Drivetrain.leftFrontTalonFX.getSensorCollection().getIntegratedSensorPosition() / 13757)) / 2;
+    return (
+              ticksToFeet(m_Drivetrain.rightFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
+              + ticksToFeet(m_Drivetrain.leftFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
+          ) / 2;
   }
 
   @Override
@@ -82,8 +83,11 @@ public class PathFollower extends HelixFollower {
   @Override
   public void useOutputs(double left, double right) {
     m_Drivetrain.setSetpoint(left, right);
-    System.out.print("running thing");
-
-    DriverStation.reportError("boom", false);
   }
+
+  //Motor encoder ticks(2048) / encoder ticks per motor rotation / low gear ratio * wheel circumference(feet) per wheel rotation 
+  private double ticksToFeet(double ticks) {
+    return ticks / 2048  / 16 * (9 * Math.PI / 12);
+  }
+
 }
