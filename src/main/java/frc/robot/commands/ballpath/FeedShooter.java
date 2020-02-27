@@ -12,7 +12,7 @@ import frc.robot.RobotContainer;
 
 public class FeedShooter extends CommandBase {
 
-  private double percentage = .05;
+  private double percentage = .2;
   /**
    * Creates a new FeedShooter.
    */

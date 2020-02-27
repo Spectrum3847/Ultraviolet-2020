@@ -125,7 +125,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    HelixLogger.getInstance().saveLogs();
+    //HelixLogger.getInstance().saveLogs();
     //RobotContainer.drivetrain.differentialDrive.feed();
   }
 
@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    HelixLogger.getInstance().saveLogs();
+    //HelixLogger.getInstance().saveLogs();
     /*if (RobotController.isBrownedOut()){
 			brownOutCtn++;
 		} */

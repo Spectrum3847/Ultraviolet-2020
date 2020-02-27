@@ -22,8 +22,9 @@ import frc.robot.RobotContainer;
 public class Climber extends SubsystemBase {
 
   public static final class Constants {
-    public static final int kMasterMotor = 50;
+    public static final int kLeaderMotor = 50;
     public static final int kFollowerMotor = 51;
+    public static final int kSBrake = 7;
   }
 
   public final CANSparkMax leaderMotor;
@@ -36,7 +37,7 @@ public class Climber extends SubsystemBase {
    * Creates a new CLimbe.
    */
   public Climber() {
-    leaderMotor = new CANSparkMax(Constants.kMasterMotor, MotorType.kBrushless);
+    leaderMotor = new CANSparkMax(Constants.kLeaderMotor, MotorType.kBrushless);
     leaderMotor.restoreFactoryDefaults();
     leaderMotor.setSmartCurrentLimit(40);
     leaderMotor.setIdleMode(IdleMode.kBrake);

@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(30);
     motor.setIdleMode(IdleMode.kCoast);
-    motor.setInverted(false);
+    motor.setInverted(true);
      /**
      * In order to use PID functionality for a controller, a CANPIDController object
      * is constructed by calling the getPIDController() method on an existing

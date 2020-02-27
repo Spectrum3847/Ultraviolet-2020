@@ -83,7 +83,7 @@ public class RobotContainer {
     DS = DriverStation.getInstance();
     portForwarding();
     initDebugger(); // Init Debugger
-    HelixEvents.getInstance().startLogging();
+    //HelixEvents.getInstance().startLogging();
     printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
 
@@ -103,7 +103,7 @@ public class RobotContainer {
 
     // Driver Controller
     driverController.xButton.whileHeld(DriveCommands.highGear);
-    driverController.rightTriggerButton.whileHeld(new LLAim());
+    driverController.rightBumper.whileHeld(new LLAim());
 
     //Operator Controller
     operatorController.leftTriggerButton.whileHeld(new ParallelCommandGroup(

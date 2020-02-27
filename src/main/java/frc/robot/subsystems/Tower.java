@@ -27,6 +27,8 @@ import frc.team2363.logger.HelixLogger;
 
 public class Tower extends SubsystemBase {
 
+  private final int TowerCompressPort = 0;
+
   public final TalonFX motor;
   public final SpectrumSolenoid compress;
 
@@ -62,7 +64,7 @@ public class Tower extends SubsystemBase {
 
     motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
-    compress = new SpectrumSolenoid(Constants.TowerConstants.kTowerGate);
+    compress = new SpectrumSolenoid(TowerCompressPort);
 
     SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 1000);
 

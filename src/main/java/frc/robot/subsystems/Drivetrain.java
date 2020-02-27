@@ -31,7 +31,7 @@ public class Drivetrain extends SubsystemBase {
     public static final int kRightFrontMotor = 20;
     public static final int kRightRearMotor = 21;
 
-    public static final int kShifter = 1;
+    public static final int kShifter = 7;
 
     public static final double minCommand = 0.05;
   }
@@ -69,8 +69,8 @@ public class Drivetrain extends SubsystemBase {
 
     leftRearTalonFX.setInverted(true);
     leftFrontTalonFX.setInverted(true);
-    rightRearTalonFX.setInverted(true);
-    rightFrontTalonFX.setInverted(true);
+    rightRearTalonFX.setInverted(false);
+    rightFrontTalonFX.setInverted(false);
 
     SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 60, 65, 3);
     leftFrontTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
@@ -125,43 +125,39 @@ public class Drivetrain extends SubsystemBase {
     return value;
   }
 
-  public void arcadeDrive(double rotateSpeed, double moveSpeed) {
-    //Cube rotation speed to give us better low end performance espeically after deadzone
-    //rotateSpeed = Math.copySign(Math.pow(rotateSpeed,2), rotateSpeed);
-
-    moveSpeed = limit(moveSpeed);
-
-    rotateSpeed = limit(rotateSpeed) * 0.55;
+  public void arcadeDrive(double xSpeed, double zRotation) {
+    xSpeed = limit(xSpeed);
 
     //Make the deadzone bigger if we are driving fwd or backwards and not turning in place
-    if (Math.abs(rotateSpeed) > 0.15 && Math.abs(moveSpeed)< 0.1){
-      moveSpeed = 0;
+    if (Math.abs(xSpeed) > 0.1 && Math.abs(zRotation)< 0.05){
+      zRotation = 0;
     }
+
     double leftMotorOutput;
     double rightMotorOutput;
 
-    double maxInput = Math.copySign(Math.max(Math.abs(rotateSpeed), Math.abs(moveSpeed)), rotateSpeed);
-    if (rotateSpeed == 0){
-      leftMotorOutput = moveSpeed;
-      rightMotorOutput = -moveSpeed; 
+    double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
+    if (xSpeed == 0){
+      leftMotorOutput = zRotation;
+      rightMotorOutput = -zRotation;
     } else {
-      if (rotateSpeed >= 0.0) {
+      if (xSpeed >= 0.0) {
         // First quadrant, else second quadrant
-        if (moveSpeed >= 0.0) {
+        if (zRotation >= 0.0) {
           leftMotorOutput = maxInput;
-          rightMotorOutput = rotateSpeed - moveSpeed;
+          rightMotorOutput = xSpeed - zRotation;
         } else {
-          leftMotorOutput = rotateSpeed + moveSpeed;
+          leftMotorOutput = xSpeed + zRotation;
           rightMotorOutput = maxInput;
         }
       } else {
         // Third quadrant, else fourth quadrant
-        if (moveSpeed >= 0.0) {
-          leftMotorOutput = rotateSpeed + moveSpeed;
+        if (zRotation >= 0.0) {
+          leftMotorOutput = xSpeed + zRotation;
           rightMotorOutput = maxInput;
         } else {
           leftMotorOutput = maxInput;
-          rightMotorOutput = rotateSpeed - moveSpeed;
+          rightMotorOutput = xSpeed - zRotation;
         }
       }
     }
@@ -170,32 +166,32 @@ public class Drivetrain extends SubsystemBase {
     rightFrontTalonFX.set(limit(rightMotorOutput));
   }
 
-  public void autoArcadeDrive(double moveSpeed, double rotateSpeed) {
+  public void autoArcadeDrive(double xSpeed, double zRotation) {
     double leftMotorOutput;
     double rightMotorOutput;
 
-    double maxInput = Math.copySign(Math.max(Math.abs(rotateSpeed), Math.abs(moveSpeed)), rotateSpeed);
-    if (rotateSpeed == 0){
-      leftMotorOutput = moveSpeed;
-      rightMotorOutput = -moveSpeed; 
+    double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
+    if (xSpeed == 0){
+      leftMotorOutput = zRotation;
+      rightMotorOutput = -zRotation;
     } else {
-      if (rotateSpeed >= 0.0) {
+      if (xSpeed >= 0.0) {
         // First quadrant, else second quadrant
-        if (moveSpeed >= 0.0) {
+        if (zRotation >= 0.0) {
           leftMotorOutput = maxInput;
-          rightMotorOutput = rotateSpeed - moveSpeed;
+          rightMotorOutput = xSpeed - zRotation;
         } else {
-          leftMotorOutput = rotateSpeed + moveSpeed;
+          leftMotorOutput = xSpeed + zRotation;
           rightMotorOutput = maxInput;
         }
       } else {
         // Third quadrant, else fourth quadrant
-        if (moveSpeed >= 0.0) {
-          leftMotorOutput = rotateSpeed + moveSpeed;
+        if (zRotation >= 0.0) {
+          leftMotorOutput = xSpeed + zRotation;
           rightMotorOutput = maxInput;
         } else {
           leftMotorOutput = maxInput;
-          rightMotorOutput = rotateSpeed - moveSpeed;
+          rightMotorOutput = xSpeed - zRotation;
         }
       }
     }
@@ -206,9 +202,9 @@ public class Drivetrain extends SubsystemBase {
 
   public void useOutput(double output) {
     if(RobotContainer.visionLL.getLLDegToTarget() > 0.2) {
-      RobotContainer.drivetrain.autoArcadeDrive(0, -output + 0.055);
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output + 0.06);
     } else if(RobotContainer.visionLL.getLLDegToTarget() < 0.2) {
-      RobotContainer.drivetrain.autoArcadeDrive(0, -output - 0.055);
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output - 0.06);
     }
   }
 
