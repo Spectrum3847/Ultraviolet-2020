@@ -29,7 +29,7 @@ public class ColorWheel extends CommandBase {
   @Override
   public void execute() {
     m_dj.findColor();
-    m_dj.spin();
+    m_dj.spin(60.0, 4.0);
 
   }
 

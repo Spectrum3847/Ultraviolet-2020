@@ -20,7 +20,6 @@ import frc.lib.drivers.SpectrumSolenoid;
 import frc.lib.util.Debugger;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 
 public class Intake extends SubsystemBase {
 

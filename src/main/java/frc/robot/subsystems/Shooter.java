@@ -176,7 +176,7 @@ public class Shooter extends SubsystemBase {
 
   }
   public void checkMotors(){
-    String result = "";
+    String result = " ";
     double kCurrentThresh = 3;
     double kVelocityThresh = 1000;
     stop();

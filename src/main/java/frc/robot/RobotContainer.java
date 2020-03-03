@@ -29,9 +29,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
-import frc.robot.commands.ColorWheel;
 import frc.robot.commands.ballpath.*;
-import frc.paths.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**

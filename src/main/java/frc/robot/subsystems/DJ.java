@@ -136,6 +136,7 @@ public class DJ extends SubsystemBase {
     }
     CSmartDash();
   }
+  
   public void SmartDash(){
     // display PID coefficients on SmartDashboard
     SmartDashboard.putNumber("DJ P Gain", kP);
@@ -164,58 +165,28 @@ public class DJ extends SubsystemBase {
     SmartDashboard.putNumber("IR", IR);
     SmartDashboard.putNumber("Proximity", proximity);
   }
-  public void spin(){
-    // read PID coefficients from SmartDashboard
-    double p = SmartDashboard.getNumber("P Gain", 0);
-    double i = SmartDashboard.getNumber("I Gain", 0);
-    double d = SmartDashboard.getNumber("D Gain", 0);
-    double iz = SmartDashboard.getNumber("I Zone", 0);
-    double ff = SmartDashboard.getNumber("Feed Forward", 0);
-    double max = SmartDashboard.getNumber("Max Output", 0);
-    double min = SmartDashboard.getNumber("Min Output", 0);
-    double maxV = SmartDashboard.getNumber("Max Velocity", 0);
-    double minV = SmartDashboard.getNumber("Min Velocity", 0);
-    double maxA = SmartDashboard.getNumber("Max Acceleration", 0);
-    double allE = SmartDashboard.getNumber("Allowed Closed Loop Error", 0);
 
-    // if PID coefficients on SmartDashboard have changed, write new values to controller
-    if((p != kP)) { m_pidController.setP(p); kP = p; }
-    if((i != kI)) { m_pidController.setI(i); kI = i; }
-    if((d != kD)) { m_pidController.setD(d); kD = d; }
-    if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
-    if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
-    if((max != kMaxOutput) || (min != kMinOutput)) { 
-      m_pidController.setOutputRange(min, max); 
-      kMinOutput = min; kMaxOutput = max; 
-    }
-    if((maxV != maxVel)) { m_pidController.setSmartMotionMaxVelocity(maxV,0); maxVel = maxV; }
-    if((minV != minVel)) { m_pidController.setSmartMotionMinOutputVelocity(minV,0); minVel = minV; }
-    if((maxA != maxAcc)) { m_pidController.setSmartMotionMaxAccel(maxA,0); maxAcc = maxA; }
-    if((allE != allowedErr)) { m_pidController.setSmartMotionAllowedClosedLoopError(allE,0); allowedErr = allE; }
-
-    double setPoint, processVariable;
-    boolean mode = SmartDashboard.getBoolean("Mode", false);
-    if(mode) {
-      setPoint = SmartDashboard.getNumber("Set Velocity", 0);
-      m_pidController.setReference(setPoint, ControlType.kVelocity);
-      processVariable = m_encoder.getVelocity();
-    } else {
-      setPoint = SmartDashboard.getNumber("Set Position", 0);
-      /**
-       * As with other PID modes, Smart Motion is set by calling the
-       * setReference method on an existing pid object and setting
-       * the control type to kSmartMotion
-       */
-      m_pidController.setReference(setPoint, ControlType.kSmartMotion);
-      processVariable = m_encoder.getPosition();
-    }
+  public void spin(double velocity, double rotations){
+    m_pidController.setP(kP);
+    m_pidController.setI(kI);
+    m_pidController.setD(kD);
+    m_pidController.setIZone(kIz);
+    m_pidController.setFF(kFF);
+    m_pidController.setOutputRange(kMinOutput, kMaxOutput);
     
-    SmartDashboard.putNumber("SetPoint", setPoint);
-    SmartDashboard.putNumber("Process Variable", processVariable);
-    SmartDashboard.putNumber("Output", m_motor.getAppliedOutput());
-  
+    m_pidController.setSmartMotionMaxVelocity(maxVel, 0);
+    m_pidController.setSmartMotionMinOutputVelocity(minVel,0);
+    m_pidController.setSmartMotionMaxAccel(maxAcc, 0);
+    m_pidController.setSmartMotionAllowedClosedLoopError(allowedErr, 0);
+
+    m_pidController.setReference(rotations, ControlType.kSmartMotion);
+
+    SmartDashboard.putNumber("DJ/Rotations", rotations);
+    SmartDashboard.putNumber("DJ/Position", m_encoder.getPosition());
+    SmartDashboard.putNumber(("Output"), m_motor.getAppliedOutput());
     SmartDash();
   }
+
   public void end(){
     m_motor.set(0);
   }
