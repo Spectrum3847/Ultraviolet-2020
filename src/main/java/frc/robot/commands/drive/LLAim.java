@@ -45,7 +45,7 @@ public class LLAim extends ProfiledPIDCommand {
         RobotContainer.drivetrain);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(0.2);
+    getController().setTolerance(0.3);
   }
 
   @Override

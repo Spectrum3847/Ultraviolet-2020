@@ -34,7 +34,7 @@ public class Dashboard {
         RobotContainer.drivetrain.dashboard();
         RobotContainer.shooter.dashboard();
         RobotContainer.tower.Dashboard();
-        //RobotContainer.climber.dashboard();
+        RobotContainer.climber.dashboard();
     }
 
     //Things that don't need to be sent out each cycle

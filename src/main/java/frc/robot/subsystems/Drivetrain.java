@@ -201,10 +201,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void useOutput(double output) {
-    if(RobotContainer.visionLL.getLLDegToTarget() > 0.2) {
-      RobotContainer.drivetrain.autoArcadeDrive(0, -output + 0.06);
-    } else if(RobotContainer.visionLL.getLLDegToTarget() < 0.2) {
-      RobotContainer.drivetrain.autoArcadeDrive(0, -output - 0.06);
+    if(RobotContainer.visionLL.getLLDegToTarget() > 0.3) {
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output + 0.1);
+    } else if(RobotContainer.visionLL.getLLDegToTarget() < 0.3) {
+      RobotContainer.drivetrain.autoArcadeDrive(0, -output - 0.1);
     }
   }
 

@@ -33,6 +33,7 @@ import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.ballpath.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import frc.robot.Autonomous;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -104,6 +105,7 @@ public class RobotContainer {
     // Driver Controller
     driverController.xButton.whileHeld(DriveCommands.highGear);
     driverController.rightBumper.whileHeld(new LLAim());
+    //driverController.bButton.whileHeld(new RunCommand(() -> RobotContainer.visionLL.limeLightLEDOn(), RobotContainer.visionLL));
 
     //Operator Controller
     operatorController.leftTriggerButton.whileHeld(new ParallelCommandGroup(
@@ -111,6 +113,7 @@ public class RobotContainer {
         new FunnelToTowerSensors(), 
         new FunnelStore()), 
       new IntakeBalls()));
+    operatorController.leftTriggerButton.whenReleased(new RunCommand(() -> tower.indexDown(), tower).withTimeout(0.1));
     operatorController.leftBumper.whileHeld(new IntakeBalls());
     //operatorController.rightTriggerButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
 
@@ -148,7 +151,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return Autonomous.sendAutoCommand();
   }
 
   private static void initDebugger(){
