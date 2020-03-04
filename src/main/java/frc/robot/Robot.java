@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
   public static final String _tower = "TOWER";
   public static final String _climber = "CLIMBER";
   public static final String _visionLL = "LIMELIGHT";
+  public static final String _dj = "DJ";
 
   public enum RobotState {
     DISABLED, AUTONOMOUS, TELEOP, TEST
@@ -184,6 +185,7 @@ public class Robot extends TimedRobot {
     Debugger.flagOn(_tower);
     Debugger.flagOn(_climber);
     Debugger.flagOn(_visionLL);
+    Debugger.flagOn(_dj);
   }
 
   public static void printDebug(String msg) {

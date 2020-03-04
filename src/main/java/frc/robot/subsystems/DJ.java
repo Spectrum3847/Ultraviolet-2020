@@ -20,7 +20,9 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.Debugger;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 
 public class DJ extends SubsystemBase {
@@ -139,6 +141,7 @@ public class DJ extends SubsystemBase {
   
   public void SmartDash(){
     // display PID coefficients on SmartDashboard
+    printInfo("Smart Dash");
     SmartDashboard.putNumber("DJ P Gain", kP);
     SmartDashboard.putNumber("DJ I Gain", kI);
     SmartDashboard.putNumber("DJ D Gain", kD);
@@ -156,6 +159,7 @@ public class DJ extends SubsystemBase {
 
   }
   public void CSmartDash(){
+    printInfo("Color Smart Dash");
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
@@ -190,6 +194,16 @@ public class DJ extends SubsystemBase {
   public void end(){
     m_motor.set(0);
   }
-}
-  
 
+  public static void printDebug(String msg){
+    Debugger.println(msg, Robot._dj, Debugger.debug2);
+  }
+  
+  public static void printInfo(String msg){
+    Debugger.println(msg, Robot._dj, Debugger.info3);
+  }
+  
+  public static void printWarning(String msg) {
+    Debugger.println(msg, Robot._dj, Debugger.warning4);
+  }
+}
