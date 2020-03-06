@@ -11,7 +11,6 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,8 +37,7 @@ public class Intake extends SubsystemBase {
     motor = new CANSparkMax(Constants.IntakeConstants.kIntakeMotor, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(30);
-    motor.setIdleMode(IdleMode.kCoast);
-    motor.setInverted(true);
+    motor.setInverted(false);
      /**
      * In order to use PID functionality for a controller, a CANPIDController object
      * is constructed by calling the getPIDController() method on an existing

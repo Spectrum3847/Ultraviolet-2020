@@ -19,15 +19,16 @@ public final class Constants {
     public static int CANconfigTimeOut = 0;
 
     public static final class ShooterConstants{
-        public static final int kShooterMotor = 30;
-        public static final int kFollowerMotor = 31;
-        public static final int kAcceleratorMotor = 32;
+        public static final int kLeftlMotor = 30;
+        public static final int kRightBotMotor = 31;
+        public static final int kAcceleratorMotor = 33;
     } 
 
     public static final class IntakeConstants{
         public static final int kIntakeMotor = 40;
-        public static final int kIntakeUp = 4;
-        public static final int kIntakeDown = 1;
+        
+        public static final int kIntakeUp = 7;
+        public static final int kIntakeDown = 6;
     }
 
     public static final class FunnelConstants{

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Debugger;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 
 public class Funnel extends SubsystemBase {
 
@@ -41,8 +40,7 @@ public class Funnel extends SubsystemBase {
     //Helixlogger setup
     setupLogs();
 
-    //Set Dafault Command to be driven by the operator left stick and divide by 1.75 to reduce speed
-    this.setDefaultCommand(new RunCommand(() -> setSpeed(RobotContainer.operatorController.leftStick.getY() /1.75) , this));
+    this.setDefaultCommand(new RunCommand(() -> stop(), this));
   }
 
   public void periodic() {

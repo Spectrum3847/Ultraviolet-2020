@@ -26,8 +26,8 @@ public class SpectrumXboxController extends Joystick {
 	public SpectrumButton leftStickButton = new SpectrumButton(this, XboxButton.LEFT_STICK);
 	public SpectrumButton rightStickButton = new SpectrumButton(this, XboxButton.RIGHT_STICK);
 	
-	public SpectrumAxisButton leftTriggerButton = new SpectrumAxisButton(this, XboxAxis.LEFT_TRIGGER, .05, ThresholdType.GREATER_THAN);
-	public SpectrumAxisButton rightTriggerButton = new SpectrumAxisButton(this, XboxAxis.RIGHT_TRIGGER, .05, ThresholdType.GREATER_THAN);
+	public SpectrumAxisButton leftTriggerButton = new SpectrumAxisButton(this, XboxAxis.LEFT_TRIGGER, .25, ThresholdType.GREATER_THAN);
+	public SpectrumAxisButton rightTriggerButton = new SpectrumAxisButton(this, XboxAxis.RIGHT_TRIGGER, .25, ThresholdType.GREATER_THAN);
 	public SpectrumDpad Dpad = new SpectrumDpad(this);
 	
 	public SpectrumThumbStick leftStick = new SpectrumThumbStick(this, XboxAxis.LEFT_X, XboxAxis.LEFT_Y);

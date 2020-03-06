@@ -37,7 +37,6 @@ public class Robot extends TimedRobot {
   public static final String _funnel = "FUNNEL";
   public static final String _intake = "INTAKE";
   public static final String _shooter = "SHOOTER";
-
   public static final String _tower = "TOWER";
   public static final String _climber = "CLIMBER";
   public static final String _visionLL = "LIMELIGHT";
@@ -94,8 +93,7 @@ public class Robot extends TimedRobot {
     printInfo("Start disabledInit()");
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
-    LiveWindow.disableAllTelemetry();
-    RobotContainer.visionLL.setLimeLightLED(false);
+		LiveWindow.disableAllTelemetry();
     setState(RobotState.DISABLED);
     printInfo("End disabledInit()");
   }
@@ -127,8 +125,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    //HelixLogger.getInstance().saveLogs();
-    //RobotContainer.drivetrain.differentialDrive.feed();
+    HelixLogger.getInstance().saveLogs();
   }
 
   @Override
@@ -154,7 +151,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    //HelixLogger.getInstance().saveLogs();
+    HelixLogger.getInstance().saveLogs();
     /*if (RobotController.isBrownedOut()){
 			brownOutCtn++;
 		} */

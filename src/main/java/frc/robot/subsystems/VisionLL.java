@@ -17,7 +17,7 @@ import frc.robot.Robot;
 public class VisionLL extends SubsystemBase {
 
   public final LimeLight limelight;
-  private boolean LEDState;
+  private boolean LEDState = true;
 
   private final double TargetHeight = 98.25;// in
   private final double LLHeight = 38.75;// in
@@ -37,8 +37,7 @@ public class VisionLL extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //If disabled and LED-Toggle is false, than leave lights off, else they should be on
-    //if(!SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !(RobotContainer.driverController.aButton.get() && (Robot.s_robot_state == RobotState.TELEOP))){
-    /*if(Robot.s_robot_state == RobotState.DISABLED && !SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !DriverStation.getInstance().isFMSAttached()){
+    if(Robot.s_robot_state == RobotState.DISABLED && !SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !DriverStation.getInstance().isFMSAttached()){
       if (LEDState == true) {
         limeLightLEDOff();
         LEDState = false;
@@ -57,7 +56,6 @@ public class VisionLL extends SubsystemBase {
 
   public double getDistance(){
     return Distance;
-    } */
   }
 
   public void limeLightLEDOff(){
@@ -71,10 +69,8 @@ public class VisionLL extends SubsystemBase {
   public void setLimeLightLED(boolean b){
     if (b){
         limeLightLEDOn();
-        LEDState = true;
     } else{
         limeLightLEDOff();
-        LEDState = false;
     }
   }
 
