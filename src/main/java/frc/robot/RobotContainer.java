@@ -12,10 +12,12 @@ import com.analog.adis16470.frc.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.lib.controllers.SpectrumTwoButton;
 import frc.lib.controllers.SpectrumXboxController;
 import frc.lib.drivers.EForwardableConnections;
 import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
@@ -31,6 +33,7 @@ import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.ballpath.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import frc.robot.Autonomous;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -40,6 +43,9 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  //Create Joysticks first so they can be used in defaultCommands
+  public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
+  public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
   // The robot's subsystems and commands are defined here...
   public static final Drivetrain drivetrain = new Drivetrain();
@@ -48,14 +54,13 @@ public class RobotContainer {
   public static final Funnel funnel = new Funnel();
   public static final Shooter shooter = new Shooter();
   public static final VisionLL visionLL = new VisionLL(); 
+  public static final Climber climber = new Climber();
 
   public static DriverStation DS;
   public static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
   public static SpectrumPreferences prefs = SpectrumPreferences.getInstance();
 
-  public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
-  public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
   public static ADIS16470_IMU adis16470 = new ADIS16470_IMU();
 
@@ -79,7 +84,7 @@ public class RobotContainer {
     DS = DriverStation.getInstance();
     portForwarding();
     initDebugger(); // Init Debugger
-    HelixEvents.getInstance().startLogging();
+    //HelixEvents.getInstance().startLogging();
     printInfo("Start robotInit()");
     Dashboard.intializeDashboard();
 
@@ -98,41 +103,39 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     // Driver Controller
-    driverController.rightBumper.whileHeld(DriveCommands.highGear);
-    /* driverController.leftBumper.whileHeld(new ParallelCommandGroup(
-      new SequentialCommandGroup(
-        new TowerBack(), 
-        new FunnelStore()), 
-      new IntakeBalls())); */
-    
-    //driverController.Dpad.Left.whileHeld(new IntakeBalls());
-    //driverController.Dpad.Right.whileHeld(new FunnelToTower());
-    //driverController.bButton.whileHeld(new FunnelStore());
-    //driverController.yButton.whileHeld(BallPathCommands.feedShooter);
-    //driverController.xButton.whileHeld(new ColorWheel());
-    driverController.aButton.whileHeld(new LLAim());
-    //driverController.Dpad.Right.whileHeld(new IntakeUpRunning());
-    //driverController.Dpad.Down.whileHeld(new IntakeDown());
-    //driverController.Dpad.Up.whileHeld(new TowerPneumatic());
-    //driverController.aButton.whileHeld(new TowerBack());
-    //Set Shooter to the DashboardVelocity when right bumper is pressed.
-    driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+    driverController.xButton.whileHeld(DriveCommands.highGear);
+    driverController.rightBumper.whileHeld(new LLAim());
+    //driverController.bButton.whileHeld(new RunCommand(() -> RobotContainer.visionLL.limeLightLEDOn(), RobotContainer.visionLL));
 
     //Operator Controller
-    operatorController.rightTriggerButton.whileHeld(new TowerBack());
-    operatorController.leftTriggerButton.whileHeld(new IntakeBalls());
-    operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
-    operatorController.Dpad.Up.whileHeld(new RunCommand(() -> intake.reverse(), intake));
-    operatorController.rightBumper.whileHeld(BallPathCommands.feedShooter);
-    operatorController.aButton.whileHeld(new FunnelToTower());
-    operatorController.leftBumper.whileHeld(new ParallelCommandGroup(
+    operatorController.leftTriggerButton.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
-        new TowerBack(), 
+        new FunnelToTowerSensors(), 
         new FunnelStore()), 
       new IntakeBalls()));
-    operatorController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-    operatorController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+    operatorController.leftTriggerButton.whenReleased(new RunCommand(() -> tower.indexDown(), tower).withTimeout(0.1));
+    operatorController.leftBumper.whileHeld(new IntakeBalls());
+    //operatorController.rightTriggerButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
+
+    //Intiantion Line
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.aButton).whileHeld(
+      new RunCommand(()-> shooter.setShooterVelocity(3500), shooter));
+  
+    //Trench
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.bButton).whileHeld(
+      new RunCommand(()-> shooter.setShooterVelocity(3900), shooter));
+
+    //Behind Trench
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.xButton).whileHeld(
+      new RunCommand(()-> shooter.setShooterVelocity(4200), shooter));
+
+    //Dashboard
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.yButton).whileHeld(
+      new RunCommand(()-> shooter.dashboardVelocity(), shooter));
+
+    //operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
+    operatorController.Dpad.Down.whileHeld(new RunCommand(() -> intake.reverse(), intake));
+    operatorController.selectButton.whileHeld(new FeedShooter());
   }
 
   private void portForwarding() {
@@ -148,7 +151,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return Autonomous.sendAutoCommand();
   }
 
   private static void initDebugger(){

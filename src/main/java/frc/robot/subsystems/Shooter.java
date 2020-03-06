@@ -27,24 +27,43 @@ import frc.robot.Robot;
 import frc.team2363.logger.HelixLogger;
 
 public class Shooter extends SubsystemBase {
-
-  public final TalonFX leaderTalonFX;
-
-  public final TalonFX follower2TalonFX;
-  public final TalonFX acceleratorTalonFX;
   /**
    * Creates a new Shooter.
    */
+
+  public final TalonFX leaderTalonFX;
+  public final TalonFX followerTalonFX;
+  public final TalonFX acceleratorTalonFX;
+  
   private double kP, kI, kD, kF;
   private int iZone;
 
   private double AkP, AkI, AkD, AkF;
   private int AiZone;
+
+  private double wheelSetpoint =0;
+  private double accelSetpoint =0;
+
+  /*
+  Protobot working PIDF values
+  kP = 0.0465
+  kI = 0.0005
+  kD = 0
+  kF = 0.048
+  iz = 150
+
+  AkP = 0.045
+  AkI = 0.0005
+  AkD = 0
+  AkF = 0.05
+  iz = 150
+  */
+  
   public Shooter() {
     kP = SpectrumPreferences.getInstance().getNumber("Shooter kP",0.0465);
     kI = SpectrumPreferences.getInstance().getNumber("Shooter kI",0.0005);
     kD = SpectrumPreferences.getInstance().getNumber("Shooter kD",0.0);
-    kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.048);
+    kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.0478);
     iZone = (int) SpectrumPreferences.getInstance().getNumber("Shooter I-Zone", 150);
 
     AkP = SpectrumPreferences.getInstance().getNumber("Accelerator kP",0.045);
@@ -53,26 +72,22 @@ public class Shooter extends SubsystemBase {
     AkF = SpectrumPreferences.getInstance().getNumber("Accelerator kF",0.05);
     AiZone = (int) SpectrumPreferences.getInstance().getNumber("Accelerator I-Zone", 150);
     
-        
-    leaderTalonFX = new TalonFX(Constants.ShooterConstants.kLeftlMotor);
-    follower2TalonFX = new TalonFX(Constants.ShooterConstants.kRightBotMotor);
+    leaderTalonFX = new TalonFX(Constants.ShooterConstants.kShooterMotor);
+    followerTalonFX = new TalonFX(Constants.ShooterConstants.kFollowerMotor);
     acceleratorTalonFX = new TalonFX(Constants.ShooterConstants.kAcceleratorMotor);
-
-
     
     leaderTalonFX.setInverted(false);
-    follower2TalonFX.setInverted(true);
+    followerTalonFX.setInverted(true);
     acceleratorTalonFX.setInverted(true);
     
     SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 40, 45, 0.5);
     leaderTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
-    follower2TalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
+    followerTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
     acceleratorTalonFX.configSupplyCurrentLimit(supplyCurrentLimit);
 
     leaderTalonFX.configClosedloopRamp(0.2);
-    follower2TalonFX.configClosedloopRamp(0.2);
+    followerTalonFX.configClosedloopRamp(0.2);
     acceleratorTalonFX.configClosedloopRamp(0.2);
-
 
     leaderTalonFX.config_kP(0, kP);
     leaderTalonFX.config_kI(0, kI);   
@@ -89,7 +104,7 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     acceleratorTalonFX.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
-    follower2TalonFX.follow(leaderTalonFX);
+    followerTalonFX.follow(leaderTalonFX);
     
     //SmartDashboard.putNumber("Shooter/Setpoint", 5000);
     //SmartDashboard.putNumber("Acceerator/Setpoint", 5000);
@@ -115,55 +130,75 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVelocity(double velocity){
+    wheelSetpoint = velocity;
     leaderTalonFX.set(ControlMode.Velocity, velocity);
   }
 
   public void setAcceleratorVelocity(double velocity){
+    accelSetpoint = velocity;
     acceleratorTalonFX.set(ControlMode.Velocity, velocity);
   }
 
   public void stop(){
+    wheelSetpoint = 0;
+    accelSetpoint = 0;
     leaderTalonFX.set(ControlMode.PercentOutput, 0);
     acceleratorTalonFX.set(ControlMode.PercentOutput, 0);
+  }
+
+  public double getWheelSetpoint(){
+    return wheelSetpoint;
+  }
+
+  public double getAccelSetpoint(){
+    return accelSetpoint;
+  }
+
+  public double getWheelSetpointRPM() {
+    return (wheelSetpoint * 600) / 2048 * 1.5;
+  }
+
+  public double getAccelSetpointRPM() {
+    return (accelSetpoint * 600) / 2048 * 1.5;
   }
 
   public void dashboardVelocity(){
     //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
 
     double wheelRPM = SpectrumPreferences.getInstance().getNumber("Shooter Setpoint",5000);
-    double AwheelRPM = SpectrumPreferences.getInstance().getNumber("Accelerator Setpoint",5000);
+    double AccelRPM = SpectrumPreferences.getInstance().getNumber("Accelerator Setpoint",5000);
     //Motor Velocity in RPM / 600 (ms to min) * Sensor ticks per rev / Gear Ratio
     double motorVelocity = (wheelRPM / 600 * 2048) / 1.5;
-    double AmotorVelocity = (AwheelRPM / 600 * 2048) / 1.5;
-    leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
-    acceleratorTalonFX.set(ControlMode.Velocity, AmotorVelocity);
+    double AccelVelocity = (AccelRPM / 600 * 2048) / 1.5;
+    setVelocity(motorVelocity);
+    setAcceleratorVelocity(AccelVelocity);
   }
-  public void dashboardVelocity(double wheelRPM){
+
+  //Set both wheels to the same velocity
+  public void setShooterVelocity(double wheelRPM){
     //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
-
-
     //Motor Velocity in RPM / 600 (ms to min) * Sensor ticks per rev / Gear Ratio
     double motorVelocity = (wheelRPM / 600 * 2048) / 1.5;
-    double AmotorVelocity = (wheelRPM / 600 * 2048) / 1.5;
-    leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
-    acceleratorTalonFX.set(ControlMode.Velocity, AmotorVelocity);
+    double AccelVelocity = (wheelRPM / 600 * 2048) / 1.5;
+    setVelocity(motorVelocity);
+    setAcceleratorVelocity(AccelVelocity);
   }
-  public void dashboardVelocity(double wheelRPM, double AcceleratorWheelRPM){
-    //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
 
-    double AwheelRPM = AcceleratorWheelRPM;
+  //Velocity for main and accelerator wheels
+  public void setShooterVelocity(double wheelRPM, double AcceleratorWheelRPM){
+    //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
     //Motor Velocity in RPM / 600 (ms to min) * Sensor ticks per rev / Gear Ratio
     double motorVelocity = (wheelRPM / 600 * 2048) / 1.5;
-    double AmotorVelocity = (AwheelRPM / 600 * 2048) / 1.5;
-    leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
-    acceleratorTalonFX.set(ControlMode.Velocity, AmotorVelocity);
+    double AccelVelocity = (AcceleratorWheelRPM / 600 * 2048) / 1.5;
+    setVelocity(motorVelocity);
+    setAcceleratorVelocity(AccelVelocity);
   }
 
   public double getWheelRPM(){
     return (leaderTalonFX.getSelectedSensorVelocity() * 600) / 2048 * 1.5;
   }
 
-  public double getAWheelRPM(){
+  public double getAccelRPM(){
     return (acceleratorTalonFX.getSelectedSensorVelocity() * 600) / 2048 * 1.5;
   }
 
@@ -227,10 +262,10 @@ public class Shooter extends SubsystemBase {
     HelixLogger.getInstance().addSource("SHOOTER RPM", this::getWheelRPM);
     HelixLogger.getInstance().addSource("SHOOTER Output%", leaderTalonFX::getMotorOutputPercent);
     HelixLogger.getInstance().addSource("LEADER Current", leaderTalonFX::getSupplyCurrent);
-    HelixLogger.getInstance().addSource("FOLLOWER Current", follower2TalonFX::getSupplyCurrent);
+    HelixLogger.getInstance().addSource("FOLLOWER Current", followerTalonFX::getSupplyCurrent);
 
     HelixLogger.getInstance().addSource("ACCEL Vel", acceleratorTalonFX::getSelectedSensorVelocity);
-    HelixLogger.getInstance().addSource("ACCEL RPM", this::getAWheelRPM);
+    HelixLogger.getInstance().addSource("ACCEL RPM", this::getAccelRPM);
     HelixLogger.getInstance().addSource("ACCEL Output%", acceleratorTalonFX::getMotorOutputPercent);
     HelixLogger.getInstance().addSource("ACCEL Current", acceleratorTalonFX::getSupplyCurrent);
   }
@@ -240,10 +275,10 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/WheelRPM", getWheelRPM());
     SmartDashboard.putNumber("Shooter/OutputPercentage", leaderTalonFX.getMotorOutputPercent());
     SmartDashboard.putNumber("Shooter/LeftCurrent", leaderTalonFX.getSupplyCurrent());
-    SmartDashboard.putNumber("Shooter/RightCurrent", follower2TalonFX.getSupplyCurrent());
+    SmartDashboard.putNumber("Shooter/RightCurrent", followerTalonFX.getSupplyCurrent());
 
     SmartDashboard.putNumber("Accelerator/Velocity", acceleratorTalonFX.getSelectedSensorVelocity());
-    SmartDashboard.putNumber("Accelerator/WheelRPM", getAWheelRPM());
+    SmartDashboard.putNumber("Accelerator/WheelRPM", getAccelRPM());
     SmartDashboard.putNumber("Accelerator/OutputPercentage", acceleratorTalonFX.getMotorOutputPercent());
     SmartDashboard.putNumber("Accelerator/LeftCurrent", acceleratorTalonFX.getSupplyCurrent());
   }

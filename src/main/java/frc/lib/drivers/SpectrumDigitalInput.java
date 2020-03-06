@@ -4,27 +4,31 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class SpectrumDigitalInput extends DigitalInput{
 	
-	private boolean isPNP = false;
+	private boolean invert = false;
 
 	public SpectrumDigitalInput(int channel){
 		super(channel);
 	}
 	
-	public SpectrumDigitalInput(int channel, boolean isPNP) {
+	public SpectrumDigitalInput(int channel, boolean isInvert) {
 		super(channel);
-		setPNP(isPNP);
+		setInvert(isInvert);
 	}
 	
-	public boolean get(boolean isPNP){
-		return (isPNP)? this.get():!this.get();
+	public boolean get(boolean isInvert){
+		if (isInvert){
+			return !this.get();
+		} else{
+			return this.get();
+		}
 	}
 
-	public boolean isPNP() {
-		return isPNP;
+	public boolean isInvert() {
+		return invert;
 	}
 
-	public void setPNP(boolean isPNP) {
-		this.isPNP = isPNP;
+	public void setInvert(boolean isInvert) {
+		this.invert = isInvert;
 	}
 
 }
