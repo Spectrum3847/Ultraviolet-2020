@@ -24,6 +24,7 @@ import frc.lib.util.Debugger;
 import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.team2363.logger.HelixLogger;
 
 public class Shooter extends SubsystemBase {
@@ -148,7 +149,19 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
     acceleratorTalonFX.set(ControlMode.Velocity, AmotorVelocity);
   }
+<<<<<<< Updated upstream
   public void dashboardVelocity(double wheelRPM, double AcceleratorWheelRPM){
+=======
+
+  public void setShooterLL(){
+    double motorVelocity = (RobotContainer.visionLL.getRPM() / 600 * 2048) / 1.5;
+    double AccelVelocity = (RobotContainer.visionLL.getRPM() / 600 * 2048) / 1.5;
+    setVelocity(motorVelocity);
+    setAcceleratorVelocity(AccelVelocity);
+  }
+  //Velocity for main and accelerator wheels
+  public void setShooterVelocity(double wheelRPM, double AcceleratorWheelRPM){
+>>>>>>> Stashed changes
     //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
 
     double AwheelRPM = AcceleratorWheelRPM;

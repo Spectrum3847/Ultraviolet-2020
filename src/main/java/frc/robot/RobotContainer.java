@@ -131,8 +131,35 @@ public class RobotContainer {
         new TowerBack(), 
         new FunnelStore()), 
       new IntakeBalls()));
+<<<<<<< Updated upstream
     operatorController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
     operatorController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+=======
+    operatorController.leftTriggerButton.whenReleased(new RunCommand(() -> tower.indexDown(), tower).withTimeout(0.1));
+    operatorController.leftBumper.whileHeld(new IntakeBalls());
+    //operatorController.rightTriggerButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
+
+    //Intiantion Line
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.aButton).whileHeld(
+      new RunCommand(()-> shooter.setShooterVelocity(3500), shooter));
+  
+    //Trench
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.bButton).whileHeld(
+      new RunCommand(()-> shooter.setShooterVelocity(3900), shooter));
+
+    //Behind Trench
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.xButton).whileHeld(
+      new RunCommand(()-> shooter.setShooterVelocity(4200), shooter));
+
+    //Dashboard
+    new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.yButton).whileHeld(
+      new RunCommand(()-> shooter.dashboardVelocity(), shooter));
+
+    //operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
+    operatorController.Dpad.Down.whileHeld(new RunCommand(() -> intake.reverse(), intake));
+    operatorController.selectButton.whileHeld(new FeedShooter());
+    operatorController.startButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
+>>>>>>> Stashed changes
   }
 
   private void portForwarding() {

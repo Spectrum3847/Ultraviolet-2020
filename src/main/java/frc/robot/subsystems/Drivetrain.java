@@ -84,10 +84,7 @@ public class Drivetrain extends SubsystemBase {
     leftRearTalonFX.follow(leftFrontTalonFX);
     rightRearTalonFX.follow(rightFrontTalonFX);
 
-    leftFrontTalonFX.setNeutralMode(NeutralMode.Brake);
-    rightFrontTalonFX.setNeutralMode(NeutralMode.Brake);
-    leftRearTalonFX.setNeutralMode(NeutralMode.Coast);
-    rightRearTalonFX.setNeutralMode(NeutralMode.Coast);
+    brakeMode();
 
     //Shifter Setup
     shifter = new SpectrumSolenoid(Constants.kShifter);
@@ -198,6 +195,20 @@ public class Drivetrain extends SubsystemBase {
   public void lowGear(){
     shifter.set(false);
     printDebug("HighGear Disengaged");
+  }
+
+  public void brakeMode() {
+    leftFrontTalonFX.setNeutralMode(NeutralMode.Brake);
+    rightFrontTalonFX.setNeutralMode(NeutralMode.Brake);
+    leftRearTalonFX.setNeutralMode(NeutralMode.Coast);
+    rightRearTalonFX.setNeutralMode(NeutralMode.Coast);
+  }
+
+  public void coastMode() {
+    leftFrontTalonFX.setNeutralMode(NeutralMode.Coast);
+    rightFrontTalonFX.setNeutralMode(NeutralMode.Coast);
+    leftRearTalonFX.setNeutralMode(NeutralMode.Coast);
+    rightRearTalonFX.setNeutralMode(NeutralMode.Coast);
   }
 
   @Override

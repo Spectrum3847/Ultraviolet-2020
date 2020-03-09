@@ -21,7 +21,11 @@ public class VisionLL extends SubsystemBase {
   public final LimeLight limelight;
   private boolean LEDState = true;
 
+<<<<<<< Updated upstream
   private final double TargetHeight = 98.25;// in
+=======
+  private final double TargetHeight = 89.75;// in
+>>>>>>> Stashed changes
   private final double LLHeight = 38.75;// in
   private final double LLAngle = 10;
   private double TargetAngle = 0;
@@ -39,7 +43,11 @@ public class VisionLL extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //If disabled and LED-Toggle is false, than leave lights off, else they should be on
+<<<<<<< Updated upstream
     if(Robot.s_robot_state == RobotState.DISABLED && !SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !DriverStation.getInstance().isFMSAttached()){
+=======
+    /*if(Robot.s_robot_state == RobotState.DISABLED && !SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !DriverStation.getInstance().isFMSAttached()){
+>>>>>>> Stashed changes
       if (LEDState == true) {
         limeLightLEDOff();
         LEDState = false;
@@ -49,6 +57,7 @@ public class VisionLL extends SubsystemBase {
         limeLightLEDOn();
         LEDState = true;
       }
+<<<<<<< Updated upstream
     }
 
     TargetAngle = limelight.getdegVerticalToTarget();
@@ -58,6 +67,32 @@ public class VisionLL extends SubsystemBase {
 
   public double getDistance(){
     return Distance;
+=======
+    }*/
+    limeLightLEDOn();
+
+    TargetAngle = limelight.getdegVerticalToTarget();
+    Distance = ((TargetHeight - LLHeight) / Math.tan(Math.toRadians(LLAngle + TargetAngle)));
+    SmartDashboard.putNumber("LL/LLDistance",Distance/12);
+    SmartDashboard.putNumber("LL/Distance", getActualDistance()); 
+  }
+
+  public double getLLDistance(){
+    return Distance;
+  }
+  public double getActualDistance(){
+    return (Distance/12);
+  }
+  public double getRPM(){
+    if(Distance> 15.71){
+      return ((Distance/12) * 17.28) + 3200;
+    }
+
+    else{
+      return 3200;
+    }
+    
+>>>>>>> Stashed changes
   }
 
   public void limeLightLEDOff(){
