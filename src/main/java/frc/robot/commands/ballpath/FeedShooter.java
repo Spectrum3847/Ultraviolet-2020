@@ -30,17 +30,15 @@ public class FeedShooter extends CommandBase {
   @Override
   public void execute() {
     //If shooter wheels are at speed fire
-    /*if (Math.abs(RobotContainer.shooter.getAccelRPM()/RobotContainer.shooter.getAccelSetpointRPM()) > percentage && 
-        Math.abs(RobotContainer.shooter.getWheelRPM()/RobotContainer.shooter.getWheelSetpointRPM()) > percentage) {
+    if (Math.abs(RobotContainer.shooter.getAccelRPM()/RobotContainer.shooter.getAccelSetpointRPM()) > percentage && 
+        Math.abs(RobotContainer.shooter.getWheelRPM()/RobotContainer.shooter.getShooterSetpointRPM()) > percentage) {
         RobotContainer.tower.feed();
 
         //If there isn't a bottom ball, run the funnel
-        if (!RobotContainer.tower.getBottomBall()){
+        if (!RobotContainer.tower.getBot()){
           RobotContainer.funnel.feed();
         }
-    }*/
-    RobotContainer.tower.feed();
-    RobotContainer.funnel.feed();
+    }
   }
 
   // Called once the command ends or is interrupted.

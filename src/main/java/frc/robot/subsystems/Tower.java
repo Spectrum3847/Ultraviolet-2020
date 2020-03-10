@@ -88,12 +88,12 @@ public class Tower extends SubsystemBase {
 
   public void DashboardVelocity(){
     double wheelRpm = SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 5000);
-    double motorVelocity = (wheelRpm * 30 / 8);
+    double motorVelocity = ((wheelRpm * (15/4)) / 2048) * 600;
     motor.set(ControlMode.Velocity, motorVelocity);
   }
 
   public int getWheelRPM() {
-    return motor.getSelectedSensorVelocity() * 8 / 30;
+    return ((motor.getSelectedSensorVelocity() / 600) * 2048) / (15/4);
   }
   public void feed(){
     setPercentModeOutput(1.0);
@@ -124,9 +124,11 @@ public class Tower extends SubsystemBase {
   }
 
   public Boolean getTop(){
+    //true if blocked, false if not blocked
     return !TowerTop.get();
   }
   public Boolean getBot(){
+        //true if blocked, false if not blocked
     return !TowerBot.get();
   }
 
