@@ -10,10 +10,13 @@ package frc.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Debugger;
+import frc.lib.util.SpectrumPreferences;
 import frc.robot.Robot;
 
 public class Climber extends SubsystemBase {
@@ -25,9 +28,10 @@ public class Climber extends SubsystemBase {
 
   public final CANSparkMax masterMotor;
   public final CANSparkMax followerMotor;
-  private CANEncoder m_encoder;
   private CANPIDController m_pidController;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+  private CANEncoder m_encoder;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr, position, setpoint;
+
 
   /**
    * Creates a new CLimbe.
@@ -52,14 +56,19 @@ public class Climber extends SubsystemBase {
     m_encoder = masterMotor.getEncoder();
 
     //PID coefficients
-    kP = 0;
-    kI = 0;
-    kD = 0;
-    kIz = 0;
-    kFF = 0;
-    kMaxOutput = 0;
-    kMinOutput = 0;
-    maxRPM = 0;
+    kP = SpectrumPreferences.getInstance().addNumber("Climber/ kP", 0);
+    kI = SpectrumPreferences.getInstance().addNumber("Climber/ kI", 0);
+    kD = SpectrumPreferences.getInstance().addNumber("Climber/ kD", 0);
+    kIz = SpectrumPreferences.getInstance().addNumber("Climber/ I Zone", 0);
+    kFF = SpectrumPreferences.getInstance().addNumber("Climber/ Feed Forward", 0);
+    kMaxOutput = SpectrumPreferences.getInstance().addNumber("Climber/ Max Output", 0);
+    kMinOutput = SpectrumPreferences.getInstance().addNumber("Climber/ Min Outout", 0);
+    maxRPM = SpectrumPreferences.getInstance().addNumber("Climber/ maxRPM", 0);
+    maxVel = SpectrumPreferences.getInstance().addNumber("Climber/ Max Velocity", 0);
+    minVel = SpectrumPreferences.getInstance().addNumber("Climber/ Min Velocity", 0);
+    maxAcc = SpectrumPreferences.getInstance().addNumber("Climber/ Max Acceleration", 0);
+    allowedErr = SpectrumPreferences.getInstance().addNumber("Climber/ Allowed Error", 0);
+    setpoint = SpectrumPreferences.getInstance().addNumber("Climber/ setpoint", 0);
 
     //set PID coefficients
     m_pidController.setP(kP);
@@ -68,8 +77,11 @@ public class Climber extends SubsystemBase {
     m_pidController.setIZone(kIz);
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
-
     
+    m_pidController.setSmartMotionMaxVelocity(maxVel, 0);
+    m_pidController.setSmartMotionMinOutputVelocity(minVel, 0);
+    m_pidController.setSmartMotionMaxAccel(maxAcc, 0);
+
 
     //HelixLogger Setup
     setupLogs();
@@ -78,6 +90,16 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    position = m_encoder.getPosition()/m_encoder.getPositionConversionFactor();
+    SmartDashboard.putNumber("Climber/ position", position);
+  }
+
+  public void setPosition(){
+    m_pidController.setReference(setpoint, ControlType.kSmartMotion);
+  }
+
+  public void setPoisition(double Position){
+    m_pidController.setReference(position, ControlType.kSmartMotion);
   }
 
   //Set up HelixLogger sources here
