@@ -149,9 +149,6 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
     acceleratorTalonFX.set(ControlMode.Velocity, AmotorVelocity);
   }
-<<<<<<< Updated upstream
-  public void dashboardVelocity(double wheelRPM, double AcceleratorWheelRPM){
-=======
 
   public void setShooterLL(){
     double motorVelocity = (RobotContainer.visionLL.getRPM() / 600 * 2048) / 1.5;
@@ -161,7 +158,6 @@ public class Shooter extends SubsystemBase {
   }
   //Velocity for main and accelerator wheels
   public void setShooterVelocity(double wheelRPM, double AcceleratorWheelRPM){
->>>>>>> Stashed changes
     //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
 
     double AwheelRPM = AcceleratorWheelRPM;
@@ -171,6 +167,17 @@ public class Shooter extends SubsystemBase {
     leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
     acceleratorTalonFX.set(ControlMode.Velocity, AmotorVelocity);
   }
+    //Velocity for main and accelerator wheels
+    public void setShooterVelocity(double wheelRPM){
+      //Sensor Velocity in ticks per 100ms / Sensor Ticks per Rev * 600 (ms to min) * 1.5 gear ratio to shooter
+  
+      double AwheelRPM = wheelRPM;
+      //Motor Velocity in RPM / 600 (ms to min) * Sensor ticks per rev / Gear Ratio
+      double motorVelocity = (wheelRPM / 600 * 2048) / 1.5;
+      double AmotorVelocity = (AwheelRPM / 600 * 2048) / 1.5;
+      leaderTalonFX.set(ControlMode.Velocity, motorVelocity);
+      acceleratorTalonFX.set(ControlMode.Velocity, AmotorVelocity);
+    }
 
   public double getWheelRPM(){
     return (leaderTalonFX.getSelectedSensorVelocity() * 600) / 2048 * 1.5;

@@ -12,6 +12,7 @@ import com.analog.adis16470.frc.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.lib.controllers.SpectrumTwoButton;
 import frc.lib.controllers.SpectrumXboxController;
 import frc.lib.drivers.EForwardableConnections;
 import frc.lib.util.Debugger;
@@ -116,8 +117,8 @@ public class RobotContainer {
     //driverController.Dpad.Up.whileHeld(new TowerPneumatic());
     //driverController.aButton.whileHeld(new TowerBack());
     //Set Shooter to the DashboardVelocity when right bumper is pressed.
-    driverController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
+    driverController.startButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
+    driverController.selectButton.whileHeld(new RunCommand(()-> shooter.setShooterVelocity(1000.0,750.0), shooter));
 
     //Operator Controller
     operatorController.rightTriggerButton.whileHeld(new TowerBack());
@@ -131,10 +132,6 @@ public class RobotContainer {
         new TowerBack(), 
         new FunnelStore()), 
       new IntakeBalls()));
-<<<<<<< Updated upstream
-    operatorController.startButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-    operatorController.selectButton.whileHeld(new RunCommand(()-> shooter.dashboardVelocity(1000,750), shooter));
-=======
     operatorController.leftTriggerButton.whenReleased(new RunCommand(() -> tower.indexDown(), tower).withTimeout(0.1));
     operatorController.leftBumper.whileHeld(new IntakeBalls());
     //operatorController.rightTriggerButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
@@ -159,7 +156,6 @@ public class RobotContainer {
     operatorController.Dpad.Down.whileHeld(new RunCommand(() -> intake.reverse(), intake));
     operatorController.selectButton.whileHeld(new FeedShooter());
     operatorController.startButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
->>>>>>> Stashed changes
   }
 
   private void portForwarding() {
