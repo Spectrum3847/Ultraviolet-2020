@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Debugger;
@@ -85,7 +87,44 @@ public class Funnel extends SubsystemBase {
     rightMotor.stopMotor();
   }
 
-  public static void checkMotor(){
+  public void checkMotor(){
+    String result = " ";
+    double kCurrentThresh = 3;
+    double kVelocityThresh = 1000;
+    stop();
+    double testSpeed = 0.2;
+    double testTime = 0.5;
+
+    //test leader
+    setSpeed(testSpeed);
+    Timer.delay(testTime);
+    final double currentL = leftMotor.getOutputCurrent();
+    final double velocityL = leftMotor.getEncoder().getVelocity();
+
+    final double currentR = rightMotor.getOutputCurrent();
+    final double velocityR = rightMotor.getEncoder().getVelocity();
+
+    if(currentL >= kCurrentThresh){
+      result = result + "!!!!!LeftFunnelNEO Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/PowerdV/MotorL", false);
+    }
+
+    if(velocityL >= kVelocityThresh){
+      result = result + "!!!!!LeftFunnelNEO Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/PoweredV/MotorL", false);
+    }
+
+    if(currentR >= kCurrentThresh){
+      result = result + "!!!!!RightFunnelNEO Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/PoweredV/MotorR", false);
+    }
+
+    if(velocityR >= kVelocityThresh){
+      result = result + "!!!!!RightFunnelNEO Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/PoweredV/MotorR", false);
+    }
+    stop();
+    printWarning(result);
     
   }
 

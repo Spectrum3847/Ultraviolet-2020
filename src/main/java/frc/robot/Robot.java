@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+//import edu.wpi.first.wpilibj2.command.RunCommand;
+//import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+//import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.util.Debugger;
 import frc.team2363.logger.HelixLogger;
 
@@ -97,13 +97,9 @@ public class Robot extends TimedRobot {
 
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
-<<<<<<< Updated upstream
-		LiveWindow.disableAllTelemetry();
-=======
     LiveWindow.disableAllTelemetry();
     RobotContainer.visionLL.setLimeLightLED(false);
     RobotContainer.drivetrain.coastMode();
->>>>>>> Stashed changes
     setState(RobotState.DISABLED);
     printInfo("End disabledInit()");
   }

@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -111,24 +112,25 @@ public class Tower extends SubsystemBase {
     setVelocity(5000);
   }
 
-  public void stop(){
-    motor.set(ControlMode.PercentOutput,0);
+  public void stop() {
+    motor.set(ControlMode.PercentOutput, 0);
   }
 
-  public void close(){
+  public void close() {
     gate.set(true);
   }
 
-  public void open(){
+  public void open() {
     gate.set(false);
   }
 
-  public Boolean getTop(){
-    //true if blocked, false if not blocked
+  public Boolean getTop() {
+    // true if blocked, false if not blocked
     return !TowerTop.get();
   }
-  public Boolean getBot(){
-        //true if blocked, false if not blocked
+
+  public Boolean getBot() {
+    // true if blocked, false if not blocked
     return !TowerBot.get();
   }
 
@@ -139,12 +141,37 @@ public class Tower extends SubsystemBase {
     SmartDashboard.putNumber("Tower/WheelRPM", getWheelRPM());
     SmartDashboard.putNumber("Tower/OutputPercentage", motor.getMotorOutputPercent());
     SmartDashboard.putNumber("Tower/LeftCurrent", motor.getSupplyCurrent());
+  }
+
+  public void checkMotor() {
+    String result = " ";
+    double kCurrentThresh = 3;
+    double kVelocityThresh = 1000;
+    stop();
+    double testSpeed = 0.2;
+    double testTime = 0.5;
+
+    //test leader
+    motor.set(ControlMode.PercentOutput, testSpeed);
+    Timer.delay(testTime);
+    final double currentLeader = motor.getMotorOutputVoltage();
+    final double velocityLeader = motor.getSelectedSensorVelocity();
+
+
+    if(currentLeader >= kCurrentThresh){
+      result = result + "!!!!!TowerFalcon Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Tower/Motor", false);
     }
-    
-    public static void checkMotor(){
-      
+
+
+
+    if(velocityLeader >= kVelocityThresh){
+      result = result + "!!!!!TowerFalcon Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Tower/Motor", false);
     }
-    
+    stop();
+    printWarning(result);
+  }  
   //Set up Helixlogger sources here
   private void setupLogs() {
     HelixLogger.getInstance().addSource("TOWER Vel", motor::getSelectedSensorVelocity);

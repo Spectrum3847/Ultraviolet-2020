@@ -203,7 +203,33 @@ public class Shooter extends SubsystemBase {
   }
 
   public void checkAcceleratorMotor(){
+    String result = " ";
+    double kCurrentThresh = 3;
+    double kVelocityThresh = 1000;
+    stop();
+    double testSpeed = 0.2;
+    double testTime = 0.5;
 
+    //test leader
+    acceleratorTalonFX.set(ControlMode.PercentOutput, testSpeed);
+    Timer.delay(testTime);
+    final double currentLeader = acceleratorTalonFX.getMotorOutputVoltage();
+    final double velocityLeader = acceleratorTalonFX.getSelectedSensorVelocity();
+
+
+    if(currentLeader >= kCurrentThresh){
+      result = result + "!!!!!AcceleratorFalcon Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Accelerator/Motor", false);
+    }
+
+
+
+    if(velocityLeader >= kVelocityThresh){
+      result = result + "!!!!!AcceleratorFalcon Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Accelerator/Motor", false);
+    }
+    stop();
+    printWarning(result);
   }
   public void checkMotors(){
     String result = " ";
@@ -246,9 +272,9 @@ public class Shooter extends SubsystemBase {
       SmartDashboard.putBoolean("Diagnostics/Shooter/MotorR", false);
     }
 
-    
-    follower2TalonFX.follow(leaderTalonFX);
     stop();
+    follower2TalonFX.follow(leaderTalonFX);
+    printWarning(result);
   }
 
   //Set up helixlogger sources here

@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -162,6 +163,32 @@ public class Intake extends SubsystemBase {
     solUp.set(false);
   }
 
+  public void checkMotor(){
+    String result = " ";
+    double kCurrentThresh = 3;
+    double kVelocityThresh = 1000;
+    stop();
+    double testSpeed = 0.2;
+    double testTime = 0.5;
+
+    //test leader
+    setSpeed(testSpeed);
+    Timer.delay(testTime);
+    final double current = motor.getOutputCurrent();
+    final double velocity = motor.getEncoder().getVelocity();
+
+
+    if(current >= kCurrentThresh){
+      result = result + "!!!!!IntakeNEO Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Intake/Motor", false);
+    }
+
+    if(velocity >= kVelocityThresh){
+      result = result + "!!!!!IntakeNEO Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Intake/Motor", false);
+    }
+  }
+
   //Set up helixlogger sources here
   private void setupLogs() {
 
@@ -179,8 +206,6 @@ public class Intake extends SubsystemBase {
     Debugger.println(msg, Robot._intake, Debugger.warning4);
   }
 
-  public static void checkMotor(){
-    
-  }
+
 
 }
