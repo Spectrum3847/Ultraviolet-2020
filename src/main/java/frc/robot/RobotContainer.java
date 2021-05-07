@@ -22,7 +22,6 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Tower;
 import frc.robot.subsystems.VisionLL;
-import frc.team2363.logger.HelixEvents;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;

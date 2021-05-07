@@ -40,8 +40,8 @@ public class Shooter extends SubsystemBase {
   private double AkP, AkI, AkD, AkF;
   private int AiZone;
 
-  private double wheelSetpoint =0;
-  private double accelSetpoint =0;
+  private double wheelSetpoint = 0;
+  private double accelSetpoint = 0;
 
   /*
   Protobot working PIDF values

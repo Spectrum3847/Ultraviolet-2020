@@ -37,17 +37,16 @@ public class TowerBack extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  if(RobotContainer.tower.getTopBall() && RobotContainer.tower.getBottomBall()){
-    trip = true;
-    RobotContainer.tower.indexDown();
+    if(RobotContainer.tower.getTopBall() && RobotContainer.tower.getBottomBall()){
+      trip = true;
+      RobotContainer.tower.indexDown();
     }
-  else if (trip){
-    RobotContainer.tower.stop();
-    RobotContainer.funnel.stop();
-    RobotContainer.tower.open();
-    isFinished = true;
-  }
-  
+    else if (trip){
+      RobotContainer.tower.stop();
+      RobotContainer.funnel.stop();
+      RobotContainer.tower.open();
+      isFinished = true;
+    }
   }
 
   // Called once the command ends or is interrupted.
