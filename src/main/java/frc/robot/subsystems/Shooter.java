@@ -42,27 +42,12 @@ public class Shooter extends SubsystemBase {
 
   private double wheelSetpoint =0;
   private double accelSetpoint =0;
-
-  /*
-  Protobot working PIDF values
-  kP = 0.0465
-  kI = 0.0005
-  kD = 0
-  kF = 0.048
-  iz = 150
-
-  AkP = 0.045
-  AkI = 0.0005
-  AkD = 0
-  AkF = 0.05
-  iz = 150
-  */
   
   public Shooter() {
     kP = SpectrumPreferences.getInstance().getNumber("Shooter kP",0.0465);
     kI = SpectrumPreferences.getInstance().getNumber("Shooter kI",0.0005);
     kD = SpectrumPreferences.getInstance().getNumber("Shooter kD",0.0);
-    kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.0478);
+    kF = SpectrumPreferences.getInstance().getNumber("Shooter kF",0.048);
     iZone = (int) SpectrumPreferences.getInstance().getNumber("Shooter I-Zone", 150);
 
     AkP = SpectrumPreferences.getInstance().getNumber("Accelerator kP",0.045);
@@ -135,8 +120,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void stop(){
-    wheelSetpoint = 0;
-    accelSetpoint = 0;
     leaderTalonFX.set(ControlMode.PercentOutput, 0);
     acceleratorTalonFX.set(ControlMode.PercentOutput, 0);
   }
@@ -147,14 +130,6 @@ public class Shooter extends SubsystemBase {
 
   public double getAccelSetpoint(){
     return accelSetpoint;
-  }
-
-  public double getWheelSetpointRPM() {
-    return (wheelSetpoint * 600) / 2048 * 1.5;
-  }
-
-  public double getAccelSetpointRPM() {
-    return (accelSetpoint * 600) / 2048 * 1.5;
   }
 
   public void dashboardVelocity(){
