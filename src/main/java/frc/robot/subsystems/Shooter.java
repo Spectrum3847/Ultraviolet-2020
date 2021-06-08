@@ -1,12 +1,9 @@
 /*----------------------------------------------------------------------------*/
 
 /*
-
 Calculate the expect peak sensor velocity (sensor units per 100ms) as:
 (kMaxRPM  / 600) * (kSensorUnitsPerRotation / kGearRatio)
-
 (6380 / 600) * (2048) = 21777.0666667
-
 */
 
 package frc.robot.subsystems;
@@ -59,8 +56,13 @@ public class Shooter extends SubsystemBase {
     shooterSetpoint = 0;
     accelSetpoint = 0;
         
+<<<<<<< Updated upstream
     leaderTalonFX = new TalonFX(Constants.ShooterConstants.kLeftlMotor);
     follower2TalonFX = new TalonFX(Constants.ShooterConstants.kRightBotMotor);
+=======
+    leaderTalonFX = new TalonFX(Constants.ShooterConstants.kShooterMotor);
+    follower2TalonFX = new TalonFX(Constants.ShooterConstants.kFollowerMotor);
+>>>>>>> Stashed changes
     acceleratorTalonFX = new TalonFX(Constants.ShooterConstants.kAcceleratorMotor);
 
 

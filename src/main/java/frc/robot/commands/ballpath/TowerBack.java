@@ -7,7 +7,7 @@
 
 package frc.robot.commands.ballpath;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
@@ -39,10 +39,22 @@ public class TowerBack extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+<<<<<<< Updated upstream
   RobotContainer.tower.SmartDash();
   if(RobotContainer.tower.getTop() && RobotContainer.tower.getBot()){
     trip = true;
     RobotContainer.tower.indexDown();
+=======
+    if(RobotContainer.tower.getTop() && RobotContainer.tower.getBot()){
+      trip = true;
+      RobotContainer.tower.indexDown();
+    }
+    else if (trip){
+      RobotContainer.tower.stop();
+      RobotContainer.funnel.stop();
+      RobotContainer.tower.open();
+      isFinished = true;
+>>>>>>> Stashed changes
     }
   else if (trip){
   RobotContainer.tower.stop();

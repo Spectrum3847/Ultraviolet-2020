@@ -34,8 +34,13 @@ public class Dashboard {
     private static void updatePutShort() {
         RobotContainer.drivetrain.dashboard();
         RobotContainer.shooter.dashboard();
+<<<<<<< Updated upstream
         //SmartDashboard.putBoolean("OperatorButtonPushed", HW.oi.isOperatorButtonPushed());
         //SmartDashboard.putBoolean("DriverButtonPushed", HW.oi.isDriverButtonPushed());
+=======
+        RobotContainer.tower.SmartDash();
+        //RobotContainer.climber.dashboard();
+>>>>>>> Stashed changes
     }
 
     //Things that don't need to be sent out each cycle
