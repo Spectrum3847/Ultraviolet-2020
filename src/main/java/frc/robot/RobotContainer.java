@@ -125,11 +125,7 @@ public class RobotContainer {
     operatorController.leftTriggerButton.whileHeld(new IntakeBalls());
     operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
     operatorController.Dpad.Up.whileHeld(new RunCommand(() -> intake.reverse(), intake));
-<<<<<<< Updated upstream
-    operatorController.rightBumper.whileHeld(BallPathCommands.feedShooter);
-=======
     //operatorController.rightBumper.whileHeld(BallPathCommands.oldFeedShooter);
->>>>>>> Stashed changes
     operatorController.aButton.whileHeld(new FunnelToTower());
     operatorController.leftBumper.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(

@@ -23,8 +23,8 @@ public class Dashboard {
     //Put values that you want to use as use inputs here and set their default state
     public static void intializeDashboard() {
     	if(ENABLE_DASHBOARD){
-            //SmartDashboard.putBoolean("Compressor ENABLE", true);
-            //SmartDashboard.putBoolean("Limelight-LED Toggle", false);
+            SmartDashboard.putBoolean("Compressor ENABLE", true);
+            SmartDashboard.putBoolean("Limelight-LED Toggle", false);
             //SmartDashboard.putBoolean("Drive/BRAKEMODE", true);
         }
         dashThread.startPeriodic(0.02);
@@ -34,13 +34,8 @@ public class Dashboard {
     private static void updatePutShort() {
         RobotContainer.drivetrain.dashboard();
         RobotContainer.shooter.dashboard();
-<<<<<<< Updated upstream
         //SmartDashboard.putBoolean("OperatorButtonPushed", HW.oi.isOperatorButtonPushed());
         //SmartDashboard.putBoolean("DriverButtonPushed", HW.oi.isDriverButtonPushed());
-=======
-        RobotContainer.tower.SmartDash();
-        //RobotContainer.climber.dashboard();
->>>>>>> Stashed changes
     }
 
     //Things that don't need to be sent out each cycle

@@ -19,8 +19,8 @@ public final class Constants {
     public static int CANconfigTimeOut = 0;
 
     public static final class ShooterConstants{
-        public static final int kLeftlMotor = 30;
-        public static final int kRightBotMotor = 31;
+        public static final int kShooterMotor = 30;
+        public static final int kFollowerMotor = 31;
         public static final int kAcceleratorMotor = 33;
     } 
 

@@ -192,8 +192,4 @@ public class Tower extends SubsystemBase {
     Debugger.println(msg, Robot._tower, Debugger.warning4);
   }
 
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

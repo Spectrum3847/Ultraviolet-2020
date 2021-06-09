@@ -56,13 +56,8 @@ public class Shooter extends SubsystemBase {
     shooterSetpoint = 0;
     accelSetpoint = 0;
         
-<<<<<<< Updated upstream
-    leaderTalonFX = new TalonFX(Constants.ShooterConstants.kLeftlMotor);
-    follower2TalonFX = new TalonFX(Constants.ShooterConstants.kRightBotMotor);
-=======
     leaderTalonFX = new TalonFX(Constants.ShooterConstants.kShooterMotor);
     follower2TalonFX = new TalonFX(Constants.ShooterConstants.kFollowerMotor);
->>>>>>> Stashed changes
     acceleratorTalonFX = new TalonFX(Constants.ShooterConstants.kAcceleratorMotor);
 
 
