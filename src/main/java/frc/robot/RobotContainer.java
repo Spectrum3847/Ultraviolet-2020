@@ -58,7 +58,7 @@ public class RobotContainer {
   public static SpectrumXboxController driverController = new SpectrumXboxController(0, .1, .05);
   public static SpectrumXboxController operatorController = new SpectrumXboxController(1, .06, .05);
 
-  public static ADIS16470_IMU adis16470 = new ADIS16470_IMU();
+  public static ADIS16470_IMU _imu = new ADIS16470_IMU();
 
   // Add Debug flags
   // You can have a flag for each subsystem, etc

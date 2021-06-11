@@ -23,7 +23,7 @@ public class VisionLL extends SubsystemBase {
 
   private final double TargetHeight = 89.75;// in
   private final double LLHeight = 38.75;// in
-  private final double LLAngle = 10;
+  private final double LLAngle = 10; //deg
   private double TargetAngle = 0;
   private double Distance = 0;
 

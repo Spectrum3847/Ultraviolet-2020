@@ -45,6 +45,7 @@ public class Drivetrain extends SubsystemBase {
   public final SpectrumSolenoid shifter;
 
   private double kP, kI, kD, kF, kIz;
+  private double imu_kP, imu_kI, imu_kD, imu_kF, imu_kIz, kAngleSetpoint, turningValue;
 
   public Drivetrain() {
 
@@ -59,6 +60,14 @@ public class Drivetrain extends SubsystemBase {
     kD = 0;
     kF = 0.0452;
     kIz = 0;
+
+
+    //imu PID Coefficients
+    imu_kP = 0.042;
+    imu_kI = 0;
+    imu_kD = 0;
+    imu_kF = 0.0452;
+    imu_kIz = 0;
 
     leftRearTalonFX.configFactoryDefault();
     leftFrontTalonFX.configFactoryDefault();
@@ -168,12 +177,22 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getHeading() {
-    final double yaw = RobotContainer.adis16470.getAngle();
+    final double yaw = RobotContainer._imu.getAngle();
     return yaw;
   }
 
   public void setSetpoint(final double left, final double right) {
     setVelocityOutput(fpsToTicksPer100ms(left), fpsToTicksPer100ms(right));
+  }
+
+
+  public void setAngle(final double angle){
+    kAngleSetpoint = angle;
+    turningValue = (kAngleSetpoint - RobotContainer._imu.getAngle()) * imu_kP;
+  }
+
+  public void turn(){
+    arcadeDrive(0, turningValue);
   }
 
   //CHECK AGAIN
@@ -239,6 +258,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drive/LeftVel", leftFrontTalonFX.getSensorCollection().getIntegratedSensorVelocity());
     SmartDashboard.putBoolean("Drive/HighGear", shifter.get());
     SmartDashboard.putBoolean("Limelight-LED Toggle", false);
+    SmartDashboard.putNumber("imu", getHeading());
   }
 
   public static void printDebug(String msg){
