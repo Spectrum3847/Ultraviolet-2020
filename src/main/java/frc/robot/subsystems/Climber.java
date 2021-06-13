@@ -10,66 +10,63 @@ package frc.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Debugger;
-import frc.lib.util.SpectrumPreferences;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class Climber extends SubsystemBase {
 
   public static final class Constants {
-    public static final int kMasterMotor = 50;
+    public static final int kLeaderMotor = 50;
     public static final int kFollowerMotor = 51;
+    public static final int kSBrake = 7;
   }
 
-  public final CANSparkMax masterMotor;
+  public final CANSparkMax leaderMotor;
   public final CANSparkMax followerMotor;
-  private CANPIDController m_pidController;
   private CANEncoder m_encoder;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr, position, setpoint;
-  public double top, bot;
-
+  private CANPIDController m_pidController;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
 
   /**
    * Creates a new CLimbe.
    */
   public Climber() {
-    masterMotor = new CANSparkMax(Constants.kMasterMotor, MotorType.kBrushless);
-    masterMotor.restoreFactoryDefaults();
-    masterMotor.setSmartCurrentLimit(40);
+    leaderMotor = new CANSparkMax(Constants.kLeaderMotor, MotorType.kBrushless);
+    leaderMotor.restoreFactoryDefaults();
+    leaderMotor.setSmartCurrentLimit(40);
+    leaderMotor.setIdleMode(IdleMode.kBrake);
     //masterMotor.setInverted();
-    masterMotor.burnFlash();
+    leaderMotor.burnFlash();
 
     followerMotor = new CANSparkMax(Constants.kFollowerMotor, MotorType.kBrushless);
     followerMotor.restoreFactoryDefaults();
     followerMotor.setSmartCurrentLimit(40);
+    followerMotor.setIdleMode(IdleMode.kBrake);
     //followerMotor.setInverted();
+    followerMotor.follow(leaderMotor);
     followerMotor.burnFlash();
 
-    followerMotor.follow(masterMotor);
+    m_pidController = leaderMotor.getPIDController();
 
-    m_pidController = masterMotor.getPIDController();
-
-    m_encoder = masterMotor.getEncoder();
+    m_encoder = leaderMotor.getEncoder();
 
     //PID coefficients
-    kP = SpectrumPreferences.getInstance().addNumber("Climber/ kP", 0);
-    kI = SpectrumPreferences.getInstance().addNumber("Climber/ kI", 0);
-    kD = SpectrumPreferences.getInstance().addNumber("Climber/ kD", 0);
-    kIz = SpectrumPreferences.getInstance().addNumber("Climber/ I Zone", 0);
-    kFF = SpectrumPreferences.getInstance().addNumber("Climber/ Feed Forward", 0);
-    kMaxOutput = SpectrumPreferences.getInstance().addNumber("Climber/ Max Output", 0);
-    kMinOutput = SpectrumPreferences.getInstance().addNumber("Climber/ Min Outout", 0);
-    maxRPM = SpectrumPreferences.getInstance().addNumber("Climber/ maxRPM", 0);
-    maxVel = SpectrumPreferences.getInstance().addNumber("Climber/ Max Velocity", 0);
-    minVel = SpectrumPreferences.getInstance().addNumber("Climber/ Min Velocity", 0);
-    maxAcc = SpectrumPreferences.getInstance().addNumber("Climber/ Max Acceleration", 0);
-    allowedErr = SpectrumPreferences.getInstance().addNumber("Climber/ Allowed Error", 0);
-    setpoint = SpectrumPreferences.getInstance().addNumber("Climber/ setpoint", 0);
+    kP = 0;
+    kI = 0;
+    kD = 0;
+    kIz = 0;
+    kFF = 0;
+    kMaxOutput = 0;
+    kMinOutput = 0;
+    maxRPM = 0;
 
     //set PID coefficients
     m_pidController.setP(kP);
@@ -78,34 +75,43 @@ public class Climber extends SubsystemBase {
     m_pidController.setIZone(kIz);
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
-    
-    m_pidController.setSmartMotionMaxVelocity(maxVel, 0);
-    m_pidController.setSmartMotionMinOutputVelocity(minVel, 0);
-    m_pidController.setSmartMotionMaxAccel(maxAcc, 0);
-
 
     //HelixLogger Setup
     setupLogs();
+
+    m_encoder.setPosition(0);
+
+    leaderMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    leaderMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+    leaderMotor.setSoftLimit(SoftLimitDirection.kForward, 240);
+    leaderMotor.setSoftLimit(SoftLimitDirection.kReverse, 0);
+
+    //Setup Default Command
+    this.setDefaultCommand(new RunCommand(() -> setManualOutput(RobotContainer.operatorController.rightStick.getY()), this));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    position = m_encoder.getPosition()/m_encoder.getPositionConversionFactor();
-    SmartDashboard.putNumber("Climber/ position", position);
   }
 
-  public void setPosition(){
-    m_pidController.setReference(setpoint, ControlType.kSmartMotion);
+  public void setManualOutput(double speed){
+    leaderMotor.set(speed);
   }
 
-  public void setPoisition(double Position){
-    m_pidController.setReference(position, ControlType.kSmartMotion);
+  public void stop(){
+    leaderMotor.stopMotor();
   }
 
   //Set up HelixLogger sources here
   private void setupLogs() {
 
+  }
+
+  public void dashboard() {
+    SmartDashboard.putNumber("Climber/Posiition", m_encoder.getPosition());
+    SmartDashboard.putNumber("Climber/Velocity", m_encoder.getVelocity());
   }
 
   public static void printDebug(String msg){

@@ -113,6 +113,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    RobotContainer._imu.reset();
     m_autonomousCommand = robotContainer.getAutonomousCommand();
     initDebugger();//Used to set debug level lower when FMS attached.
     printInfo("Start autonomousInit()");
