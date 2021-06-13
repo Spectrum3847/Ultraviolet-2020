@@ -25,8 +25,7 @@ import frc.robot.Robot;
 public class Intake extends SubsystemBase {
 
   public final CANSparkMax motor;
-  public final SpectrumSolenoid solUp;
-  public final SpectrumSolenoid solDown;
+  public final SpectrumSolenoid intakeGate;
   private CANPIDController m_pidController;
   private CANEncoder m_encoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
@@ -77,9 +76,7 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Intake/Min Output", kMinOutput);
     motor.burnFlash();
 
-    solUp = new SpectrumSolenoid(Constants.IntakeConstants.
-    kIntakeUp);
-    solDown = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeDown);
+      intakeGate = new SpectrumSolenoid(Constants.IntakeConstants.kIntakegate);
 
 
     //Helixlogger setup
@@ -138,15 +135,15 @@ public class Intake extends SubsystemBase {
   }
 
   public void setSpeed(double speed){
-    motor.set(speed);
+    motor.set(-speed);
   }
 
   public void collect(){
-    setVelocity(5000);
+    setVelocity(-5000);
   }
 
   public void reverse(){
-    setVelocity(-5000);
+    setVelocity(5000);
   }
 
   public void stop(){
@@ -154,13 +151,11 @@ public class Intake extends SubsystemBase {
   }
 
   public void up(){
-    solDown.set(false);
-    solUp.set(true);
+    intakeGate.set(false);
   }
 
   public void down(){
-    solDown.set(true);
-    solUp.set(false);
+    intakeGate.set(true);
   }
 
   public void checkMotor(){

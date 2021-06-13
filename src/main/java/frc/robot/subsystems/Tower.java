@@ -97,7 +97,7 @@ public class Tower extends SubsystemBase {
     return ((motor.getSelectedSensorVelocity() / 600) * 2048) / (15/4);
   }
   public void feed(){
-    setPercentModeOutput(1.0);
+    setPercentModeOutput(0.7);
   }
 
   public void fullDown(){

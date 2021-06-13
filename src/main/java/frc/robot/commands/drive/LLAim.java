@@ -29,7 +29,7 @@ public class LLAim extends ProfiledPIDCommand {
         // The ProfiledPIDController used by the command
         new ProfiledPIDController(
             // The PID gains
-            0.01625, 0, 0,
+            0.0165, 0.02, 0.0005,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(360, 360)),
         // This should return the measurement

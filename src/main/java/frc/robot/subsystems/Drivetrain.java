@@ -131,7 +131,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void arcadeDrive(double moveSpeed, double rotateSpeed) {
     //Cube rotation speed to give us better low end performance espeically after deadzone
-    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,3), rotateSpeed);
+    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,3), rotateSpeed)*0.8;
     //rotateSpeed = limit(rotateSpeed) * 0.6;
     
     moveSpeed = limit(moveSpeed);
@@ -181,18 +181,42 @@ public class Drivetrain extends SubsystemBase {
     return yaw;
   }
 
+  public double getAngleSetpoint(){
+    return kAngleSetpoint;
+  }
+
   public void setSetpoint(final double left, final double right) {
     setVelocityOutput(fpsToTicksPer100ms(left), fpsToTicksPer100ms(right));
   }
+  
+  public void resetDistance() {
+    rightFrontTalonFX.getSensorCollection().setIntegratedSensorPosition(0, 0);
+    leftFrontTalonFX.getSensorCollection().setIntegratedSensorPosition(0, 0);
+  }
+
+
+  public double getCurrentDistance() {
+    return (
+              ticksToFeet(rightFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
+              + ticksToFeet(leftFrontTalonFX.getSensorCollection().getIntegratedSensorPosition())
+          ) / 2;
+  }
+
+
+  //Motor encoder ticks(2048) / encoder ticks per motor rotation / low gear ratio * wheel circumference(feet) per wheel rotation 
+  private double ticksToFeet(double ticks) {
+    return ticks / 2048  / 16 * (9 * Math.PI / 12);
+  }
+
 
 
   public void setAngle(final double angle){
-    kAngleSetpoint = angle;
-    turningValue = (kAngleSetpoint - RobotContainer._imu.getAngle()) * imu_kP;
+    kAngleSetpoint = angle - RobotContainer._imu.getAngle();
+    turningValue = (kAngleSetpoint * imu_kP);
   }
 
   public void turn(){
-    arcadeDrive(0, turningValue);
+    arcadeDrive(turningValue, 0);
   }
 
   //CHECK AGAIN
@@ -205,7 +229,14 @@ public class Drivetrain extends SubsystemBase {
     leftFrontTalonFX.set(TalonFXControlMode.Velocity, leftVelocity);
     rightFrontTalonFX.set(TalonFXControlMode.Velocity, rightVelocity);
   }
-
+  public void setPositionOutput(final double leftPosition, final double rightPosition){
+    leftFrontTalonFX.set(TalonFXControlMode.Position, fpsToTicksPer100ms(leftPosition));
+    rightFrontTalonFX.set(TalonFXControlMode.Position, fpsToTicksPer100ms(-rightPosition));
+  }
+  public void stop(){
+    leftFrontTalonFX.set(TalonFXControlMode.PercentOutput, 0);
+    rightFrontTalonFX.set(TalonFXControlMode.PercentOutput, 0);
+  }
   public void highGear(){
     shifter.set(true);
     printDebug("HighGear Engaged");
