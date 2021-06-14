@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.auto.TrenchRun;
-import frc.robot.commands.auto.TrenchRunWittry;
+import frc.robot.commands.auto.TrenchRunNew;
 import frc.robot.commands.ballpath.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
@@ -176,7 +176,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new TrenchRunWittry();
+    return new TrenchRunNew();
   }
 
   private static void initDebugger(){
