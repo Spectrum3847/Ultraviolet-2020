@@ -131,8 +131,8 @@ public class Drivetrain extends SubsystemBase {
 
   public void arcadeDrive(double moveSpeed, double rotateSpeed) {
     //Cube rotation speed to give us better low end performance espeically after deadzone
-    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,3), rotateSpeed)*0.8;
-    //rotateSpeed = limit(rotateSpeed) * 0.6;
+    rotateSpeed = Math.copySign(Math.pow(rotateSpeed,3), rotateSpeed);
+    rotateSpeed = limit(rotateSpeed) * 0.6;
     
     moveSpeed = limit(moveSpeed);
 
