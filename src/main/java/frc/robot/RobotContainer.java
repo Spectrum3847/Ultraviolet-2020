@@ -176,7 +176,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new TrenchRun();
+    return new TrenchRunWittry();
   }
 
   private static void initDebugger(){
@@ -184,7 +184,7 @@ public class RobotContainer {
       Debugger.setLevel(Debugger.warning4);
     } else {
       Debugger.setLevel(Debugger.info3);
-    }
+    } 
     Debugger.flagOn(_general); //Set all the flags on, comment out ones you want off
     Debugger.flagOn(_auton);
     Debugger.flagOn(_drive);

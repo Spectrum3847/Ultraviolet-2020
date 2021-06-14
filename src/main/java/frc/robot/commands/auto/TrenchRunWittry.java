@@ -11,6 +11,7 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.ballpath.FeedShooter;
 import frc.robot.commands.ballpath.FunnelStore;
 import frc.robot.commands.ballpath.IntakeBalls;
+import frc.robot.commands.ballpath.TowerBack;
 import frc.robot.commands.ballpath.shooterVel;
 import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.drive.Turn;
@@ -34,8 +35,8 @@ public class TrenchRunWittry extends SequentialCommandGroup {
         ) //End Sequential
       ).withTimeout(5), //End Parallel
 
-      new ParallelCommandGroup( //Reset subsystems
-        new RunCommand(() -> RobotContainer.tower.stop()),
+      new ParallelCommandGroup( //Reset subsystems  
+      new RunCommand(() -> RobotContainer.tower.stop()),
         new RunCommand(() -> RobotContainer.shooter.stop()),
         //new RunCommand(() -> RobotContainer.intake.stop()),
         new RunCommand(() -> RobotContainer.intake.up()),
@@ -43,9 +44,9 @@ public class TrenchRunWittry extends SequentialCommandGroup {
       ).withTimeout(0.1), //End Parallel
 
       new ParallelCommandGroup(  //Shooter to newSpeed, prep & start intake, collect trench balls, 
-        new shooterVel(3900), //New shooter speed
+        new shooterVel(0), //New shooter speed
         new SequentialCommandGroup( //prep intake
-          new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(0.35)).withTimeout(2),
+          new TowerBack(),
           new FunnelStore()
         ), //End Sequential
         new IntakeBalls(), //start intake
@@ -54,15 +55,27 @@ public class TrenchRunWittry extends SequentialCommandGroup {
           new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
           new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -1)).withTimeout(1), //Shooting Position
           new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
-          new RunCommand(() -> RobotContainer.tower.stop()),
-          new Turn(15).withTimeout(1),          //turn to tower
+          new RunCommand(() -> RobotContainer.tower.stop())
+        )
+      ).withTimeout(8),
+
+      new ParallelCommandGroup( //Reset subsystems  
+      new RunCommand(() -> RobotContainer.tower.stop()),
+        new RunCommand(() -> RobotContainer.shooter.stop()),
+        //new RunCommand(() -> RobotContainer.intake.stop()),
+        new RunCommand(() -> RobotContainer.intake.up()),
+        new RunCommand(() -> RobotContainer.drivetrain.stop())
+      ).withTimeout(0.1), //End Parallel
+
+      new ParallelCommandGroup(
+        new SequentialCommandGroup(
+          new shooterVel(3900),
+          new Turn(15).withTimeout(1), //turn to tower
           new LLAim().withTimeout(1), //limelight takeover
           new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(1.0)).withTimeout(2)
-          ) //End Sequential
-      ).withTimeout(8), //End Parallel
+        )
+      ).withTimeout(5), //End Parallel
       
-
-
       new ParallelCommandGroup( //Reset subsystems
         new RunCommand(() -> RobotContainer.tower.stop()),
         new RunCommand(() -> RobotContainer.shooter.stop()),
