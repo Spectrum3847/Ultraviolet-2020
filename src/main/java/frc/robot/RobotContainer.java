@@ -12,7 +12,6 @@ import com.analog.adis16470.frc.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.lib.controllers.SpectrumTwoButton;
 import frc.lib.controllers.SpectrumXboxController;
 import frc.lib.drivers.EForwardableConnections;
 import frc.lib.util.Debugger;
@@ -32,8 +31,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.auto.ThreeBall;
-import frc.robot.commands.auto.TrenchRun;
 import frc.robot.commands.auto.TrenchRunNew;
+import frc.robot.commands.auto.TrenchRunTexasCup;
 import frc.robot.commands.ballpath.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
@@ -199,9 +198,18 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new TrenchRunNew();
-    //return new ThreeBall();
+    //Default is 3 ball
+    if (prefs.getNumber("Auto", 3)==3){
+      return new ThreeBall();
+    }
+    else if (prefs.getNumber("Auto", 3)==6){
+      return new TrenchRunNew();
+    }
+    else if (prefs.getNumber("Auto", 3)==6.1){
+      return new TrenchRunTexasCup();
+    }
+    else return new ThreeBall();
+
   }
 
   private static void initDebugger(){

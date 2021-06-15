@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
     RobotContainer._imu.calibrate();
-
+    RobotContainer.prefs.addNumber("Auto",3);
   }
 
   /**
@@ -101,6 +101,17 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
     RobotContainer.visionLL.setLimeLightLED(false);
     RobotContainer.drivetrain.coastMode();
+    if(RobotContainer.prefs.getNumber("Auto",3)==3){
+      RobotContainer.prefs.addString("AutoName", "3 Ball");
+    }
+    else if(RobotContainer.prefs.getNumber("Auto",3)==6){
+      RobotContainer.prefs.addString("AutoName", "6 ball old");
+    }
+    else if(RobotContainer.prefs.getNumber("Auto",3)==6.1){
+      RobotContainer.prefs.addString("AutoName", "6 ball new");
+    }
+    else RobotContainer.prefs.addString("AutoName", "3ball");
+    
     setState(RobotState.DISABLED);
     printInfo("End disabledInit()");
   }

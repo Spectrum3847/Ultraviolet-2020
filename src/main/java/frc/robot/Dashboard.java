@@ -40,6 +40,9 @@ public class Dashboard {
 
     //Things that don't need to be sent out each cycle
     private static void updatePutLong(){
+        SmartDashboard.putString("Auto",
+        RobotContainer.prefs.getString("AutoName", "3 Ball")
+        );
     	//SmartDashboard.putBoolean("Compressor On?", RobotContainer.pneumatics.compressor.enabled());
 		
 		//Can change to show a different message than "Yes" and "No"
