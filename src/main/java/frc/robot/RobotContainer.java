@@ -133,8 +133,8 @@ public class RobotContainer {
     //operatorController.leftTriggerButton.whileHeld(new IntakeBalls());
     operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
     operatorController.Dpad.Up.whileHeld(new ParallelCommandGroup(
-      new RunCommand(() -> intake.down(), intake),
-      new RunCommand(() -> intake.reverse(), intake)));
+      new RunCommand(() -> intake.down()),
+      new RunCommand(() -> intake.reverse())));
     //operatorController.rightBumper.whileHeld(BallPathCommands.oldFeedShooter);
     //operatorController.aButton.whileHeld(new FunnelToTower());
     operatorController.leftTriggerButton.whileHeld(new ParallelCommandGroup(
@@ -146,7 +146,7 @@ public class RobotContainer {
     operatorController.startButton.whileHeld(
       new ParallelCommandGroup(
         new RunCommand(() -> intake.down()),
-        new RunCommand(() -> intake.reverse(), intake),
+        new RunCommand(() -> intake.reverse()),
         new RunCommand(() -> funnel.intakeHold()),
         new RunCommand(() -> tower.indexDown())
         
@@ -201,6 +201,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return new TrenchRunNew();
+    //return new ThreeBall();
   }
 
   private static void initDebugger(){

@@ -28,9 +28,9 @@ public class ThreeBall extends SequentialCommandGroup {
           new FeedShooter().withTimeout(2) //tower feed
 
         )).withTimeout(2),
-        new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -1)).withTimeout(0.5), //Collect Balls
+        new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -0.8)).withTimeout(0.5), //Collect Balls
         new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
-        new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, 1)).withTimeout(1), //Collect Balls
+        new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, 0.8)).withTimeout(1), //Collect Balls
         new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1)
     );
   }
