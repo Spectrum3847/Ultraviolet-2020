@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
+import frc.robot.commands.auto.ThreeBall;
 import frc.robot.commands.auto.TrenchRun;
 import frc.robot.commands.auto.TrenchRunNew;
 import frc.robot.commands.ballpath.*;
@@ -104,6 +105,9 @@ public class RobotContainer {
 
     // Driver Controller
     driverController.rightBumper.whileHeld(DriveCommands.highGear);
+    driverController.aButton.whileHeld(new LLAim());
+    driverController.startButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
+
     /* driverController.leftBumper.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
         new TowerBack(), 
@@ -115,32 +119,52 @@ public class RobotContainer {
     //driverController.bButton.whileHeld(new FunnelStore());
     //driverController.yButton.whileHeld(BallPathCommands.feedShooter);
     //driverController.xButton.whileHeld(new ColorWheel());
-    driverController.aButton.whileHeld(new LLAim());
     //driverController.Dpad.Right.whileHeld(new IntakeUpRunning());
     //driverController.Dpad.Down.whileHeld(new IntakeDown());
     //driverController.Dpad.Up.whileHeld(new TowerPneumatic());
     //driverController.aButton.whileHeld(new TowerBack());
     //Set Shooter to the DashboardVelocity when right bumper is pressed.
-    driverController.startButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
     //driverController.selectButton.whileHeld(new RunCommand(()-> shooter.setShooterVelocity(1000.0,750.0), shooter));
     //driverController.bButton.whileHeld(new TrenchRun());
     
     //Operator Controller
-    //operatorController.rightTriggerButton.whileHeld(new TowerBack());
-    operatorController.leftTriggerButton.whileHeld(new IntakeBalls());
+    operatorController.rightBumper.whileHeld(new TowerBack());
+    operatorController.leftBumper.whenReleased(new RunCommand(() -> tower.setPercentModeOutput(-0.5), tower).withTimeout(0.3));
+    //operatorController.leftTriggerButton.whileHeld(new IntakeBalls());
     operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
-    operatorController.Dpad.Up.whileHeld(new RunCommand(() -> intake.reverse(), intake));
+    operatorController.Dpad.Up.whileHeld(new ParallelCommandGroup(
+      new RunCommand(() -> intake.down(), intake),
+      new RunCommand(() -> intake.reverse(), intake)));
     //operatorController.rightBumper.whileHeld(BallPathCommands.oldFeedShooter);
     //operatorController.aButton.whileHeld(new FunnelToTower());
-    operatorController.leftBumper.whileHeld(new ParallelCommandGroup(
+    operatorController.leftTriggerButton.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
         new TowerBack(), 
         new FunnelStore()), 
       new IntakeBalls()));
-    operatorController.leftTriggerButton.whenReleased(new RunCommand(() -> tower.setPercentModeOutput(-0.5), tower).withTimeout(0.3));
+    //operatorController.leftTriggerButton.whenReleased(new RunCommand(() -> tower.setPercentModeOutput(-0.5), tower).withTimeout(0.3));
+    operatorController.startButton.whileHeld(
+      new ParallelCommandGroup(
+        new RunCommand(() -> intake.down()),
+        new RunCommand(() -> intake.reverse(), intake),
+        new RunCommand(() -> funnel.intakeHold()),
+        new RunCommand(() -> tower.indexDown())
+        
+      )
+    );
+    operatorController.selectButton.whileHeld(
+      new ParallelCommandGroup(
+        new RunCommand(() -> funnel.intakeHold()),
+        new RunCommand(() -> tower.indexDown())
+      )
+    );
+    operatorController.bButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
+    operatorController.aButton.whileHeld(new RunCommand(()-> shooter.setShooterVelocity(3500), shooter));
+    operatorController.rightTriggerButton.whileHeld(new FeedShooter());
+   
     //operatorController.leftBumper.whileHeld(new IntakeBalls());
     //operatorController.rightTriggerButton.whileHeld(new RunCommand(() -> shooter.dashboardVelocity(), shooter));
-
+    /*
     //Intiantion Line
     new SpectrumTwoButton(operatorController.rightTriggerButton, operatorController.aButton).whileHeld(
       new RunCommand(()-> shooter.setShooterVelocity(3500), shooter));
@@ -160,7 +184,7 @@ public class RobotContainer {
     //operatorController.Dpad.Down.whileHeld(new RunCommand(() -> tower.setPercentModeOutput(-.35), tower));
     //operatorController.Dpad.Down.whileHeld(new RunCommand(() -> intake.reverse(), intake));
     operatorController.selectButton.whileHeld(new FeedShooter());
-    operatorController.startButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
+  */
   }
 
   private void portForwarding() {

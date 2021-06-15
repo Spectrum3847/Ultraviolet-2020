@@ -109,7 +109,7 @@ public class Tower extends SubsystemBase {
   }
 
   public void indexDown(){
-    setVelocity(5000);
+    setVelocity(-5000);
   }
 
   public void stop() {

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
+import frc.robot.commands.ballpath.FeedShooter;
 import frc.robot.commands.ballpath.shooterVel;
 import frc.robot.commands.drive.LLAim;
 
@@ -24,12 +25,13 @@ public class ThreeBall extends SequentialCommandGroup {
         new shooterVel(4000),  //Shooter spinup
         new SequentialCommandGroup(
           new LLAim().withTimeout(1),
-          new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(1.0)).withTimeout(2), //tower feed
-          new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -0.5)).withTimeout(0.5), //Collect Balls
-          new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
-          new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, 1)).withTimeout(1), //Collect Balls
-          new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1)
-        ))
+          new FeedShooter().withTimeout(2) //tower feed
+
+        )).withTimeout(2),
+        new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -1)).withTimeout(0.5), //Collect Balls
+        new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
+        new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, 1)).withTimeout(1), //Collect Balls
+        new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1)
     );
   }
 }
