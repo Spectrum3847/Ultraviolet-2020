@@ -45,7 +45,7 @@ public class Drivetrain extends SubsystemBase {
   public final SpectrumSolenoid shifter;
 
   private double kP, kI, kD, kF, kIz;
-  private double imu_kP, kAngleSetpoint, turningValue;
+  private double imu_kP, imu_kI, imu_kD, imu_kF, imu_kIz, kAngleSetpoint, turningValue;
 
   public Drivetrain() {
 
@@ -54,15 +54,22 @@ public class Drivetrain extends SubsystemBase {
     rightRearTalonFX = new WPI_TalonFX(Constants.kRightRearMotor);
     rightFrontTalonFX = new WPI_TalonFX(Constants.kRightFrontMotor);
 
-    // PID Coefficients
+    //PID Coefficients
     kP = 0.042;
     kI = 0;
     kD = 0;
     kF = 0.0452;
     kIz = 0;
 
-    // imu PID Coefficients
-    imu_kP = 0.042;
+
+    //imu PID Coefficients
+
+    imu_kP = 0.016;
+    imu_kI = 0.075;
+    imu_kD = 0.0005;
+    imu_kF = 0.0452;
+    imu_kIz = 0;
+
     leftRearTalonFX.configFactoryDefault();
     leftFrontTalonFX.configFactoryDefault();
     rightRearTalonFX.configFactoryDefault();

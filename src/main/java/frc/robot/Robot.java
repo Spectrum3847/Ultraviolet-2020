@@ -71,6 +71,9 @@ public class Robot extends TimedRobot {
     robotContainer = new RobotContainer();
     RobotContainer._imu.calibrate();
     RobotContainer.prefs.addNumber("Auto",3);
+    RobotContainer.visionLL.limeLightLEDOn();
+
+
   }
 
   /**
@@ -99,19 +102,9 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
     LiveWindow.disableAllTelemetry();
-    RobotContainer.visionLL.setLimeLightLED(false);
+    //RobotContainer.visionLL.setLimeLightLED(false); DON"T USE THIS!
+    //RobotContainer.visionLL.limeLightLEDOff();
     RobotContainer.drivetrain.coastMode();
-    if(RobotContainer.prefs.getNumber("Auto",3)==3){
-      RobotContainer.prefs.addString("AutoName", "3 Ball");
-    }
-    else if(RobotContainer.prefs.getNumber("Auto",3)==6){
-      RobotContainer.prefs.addString("AutoName", "6 ball old");
-    }
-    else if(RobotContainer.prefs.getNumber("Auto",3)==6.1){
-      RobotContainer.prefs.addString("AutoName", "6 ball new");
-    }
-    else RobotContainer.prefs.addString("AutoName", "3ball");
-    
     setState(RobotState.DISABLED);
     printInfo("End disabledInit()");
   }
