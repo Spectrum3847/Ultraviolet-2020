@@ -22,21 +22,19 @@ public class TrenchRunNew extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      //new Turn(25).withInterrupt(visionLL.getLimelightHasValidTarget))
       new ParallelCommandGroup( //Spin up shooter, turn, shoot, turn back
-        new shooterVel(4000),  //Shooter spinup
+        new shooterVel(3700),  //Shooter spinup
         new SequentialCommandGroup(
           new Turn(20).withTimeout(1), //turn to tower
           new LLAim().withTimeout(1), //limelight takeover
+          new WaitCommand(0.5),
           new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(1.0)).withTimeout(2), //tower feed
           new Turn(0).withTimeout(1) //turn back to start
         ) //End Sequential
       ).withTimeout(5), //End Parallel
 
       new ParallelCommandGroup( //Reset subsystems  
-        //new RunCommand(() -> RobotContainer.tower.stop()),
         new RunCommand(() -> RobotContainer.shooter.stop()),
-        //new RunCommand(() -> RobotContainer.intake.stop()),
         new RunCommand(() -> RobotContainer.intake.up()),
         new RunCommand(() -> RobotContainer.drivetrain.stop())
       ).withTimeout(0.1), //End Parallel
@@ -50,31 +48,28 @@ public class TrenchRunNew extends SequentialCommandGroup {
           new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, 1)).withTimeout(2.6), //Collect Balls
           new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
           new WaitCommand(0.25),
+          new Turn(20).withTimeout(0.5), //turn to tower
           new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -1)).withTimeout(1), //Shooting Position
           new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1)
-          //new RunCommand(() -> RobotContainer.tower.stop())
         )
-      ).withTimeout(4),
+      ).withTimeout(5),
 
       new ParallelCommandGroup( //Reset subsystems  
-        //new RunCommand(() -> RobotContainer.tower.stop()),
         new RunCommand(() -> RobotContainer.shooter.stop()),
-        //new RunCommand(() -> RobotContainer.intake.stop()),
-        //new RunCommand(() -> RobotContainer.intake.up()),
         new RunCommand(() -> RobotContainer.drivetrain.stop())
       ).withTimeout(0.1), //End Parallel
       
       new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(-0.1)).withTimeout(0.2),
 
       new ParallelCommandGroup(
-        new shooterVel(3900),
+        new shooterVel(4000),
         new RunCommand(() -> RobotContainer.tower.open()),
         new SequentialCommandGroup(
-          new Turn(20).withTimeout(0.5), //turn to tower
           new LLAim().withTimeout(1), //limelight takeover
+          new WaitCommand(1),
           new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(1.0)).withTimeout(2)
         )
-      ).withTimeout(5), //End Parallel
+      ).withTimeout(4), //End Parallel
       
       new ParallelCommandGroup( //Reset subsystems
         new RunCommand(() -> RobotContainer.tower.stop()),

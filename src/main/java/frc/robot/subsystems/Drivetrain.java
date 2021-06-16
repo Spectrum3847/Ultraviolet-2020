@@ -63,9 +63,10 @@ public class Drivetrain extends SubsystemBase {
 
 
     //imu PID Coefficients
-    imu_kP = 0.042;
-    imu_kI = 0;
-    imu_kD = 0;
+
+    imu_kP = 0.016;
+    imu_kI = 0.075;
+    imu_kD = 0.0005;
     imu_kF = 0.0452;
     imu_kIz = 0;
 

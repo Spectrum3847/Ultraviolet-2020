@@ -39,7 +39,7 @@ public class VisionLL extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //If disabled and LED-Toggle is false, than leave lights off, else they should be on
-    if(Robot.s_robot_state == RobotState.DISABLED && !SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !DriverStation.getInstance().isFMSAttached()){
+   /*if(Robot.s_robot_state == RobotState.DISABLED && !SmartDashboard.getBoolean("Limelight-LED Toggle", false) && !DriverStation.getInstance().isFMSAttached()){
       if (LEDState == true) {
         limeLightLEDOff();
         LEDState = false;
@@ -49,7 +49,7 @@ public class VisionLL extends SubsystemBase {
         limeLightLEDOn();
         LEDState = true;
       }
-    }
+    }*/
 
     TargetAngle = limelight.getdegVerticalToTarget();
     Distance = ((TargetHeight - LLHeight) / Math.tan(Math.toRadians(LLAngle + TargetAngle)));

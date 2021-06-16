@@ -32,8 +32,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.drive.LLAim;
 import frc.robot.commands.auto.ThreeBall;
-import frc.robot.commands.auto.TrenchRun;
+import frc.robot.commands.auto.ThreeBallWait;
 import frc.robot.commands.auto.TrenchRunNew;
+import frc.robot.commands.auto.TrenchRunWait;
 import frc.robot.commands.ballpath.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
@@ -199,8 +200,22 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    if (prefs.getNumber("Auto", 3)==3){
+      return new ThreeBall();
+    }
+    else if (prefs.getNumber("Auto", 3)==6){
+      return new TrenchRunNew();
+    }
+    else if (prefs.getNumber("Auto", 3) == 3.5){
+      return new ThreeBallWait();
+    }
+    else if (prefs.getNumber("Auto",3) == 6.1){
+      return new TrenchRunWait();
+    }
+    else{
+      return new ThreeBall();
+    }
     // An ExampleCommand will run in autonomous
-    return new TrenchRunNew();
     //return new ThreeBall();
   }
 

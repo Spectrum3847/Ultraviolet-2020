@@ -70,6 +70,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
     RobotContainer._imu.calibrate();
+    RobotContainer.prefs.addNumber("Auto",3);
+    RobotContainer.visionLL.limeLightLEDOn();
+
 
   }
 
@@ -99,7 +102,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
     LiveWindow.disableAllTelemetry();
-    RobotContainer.visionLL.setLimeLightLED(false);
+    //RobotContainer.visionLL.setLimeLightLED(false); DON"T USE THIS!
+    //RobotContainer.visionLL.limeLightLEDOff();
     RobotContainer.drivetrain.coastMode();
     setState(RobotState.DISABLED);
     printInfo("End disabledInit()");
