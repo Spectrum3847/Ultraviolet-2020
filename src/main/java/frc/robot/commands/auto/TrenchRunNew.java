@@ -23,13 +23,13 @@ public class TrenchRunNew extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new ParallelCommandGroup( //Spin up shooter, turn, shoot, turn back
-        new shooterVel(3700),  //Shooter spinup
+        new shooterVel(3900),  //Shooter spinup
         new SequentialCommandGroup(
           new Turn(20).withTimeout(1), //turn to tower
           new LLAim().withTimeout(1), //limelight takeover
           new WaitCommand(0.5),
           new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(1.0)).withTimeout(2), //tower feed
-          new Turn(0).withTimeout(1) //turn back to start
+          new Turn(-5).withTimeout(1) //turn back to start
         ) //End Sequential
       ).withTimeout(5), //End Parallel
 
@@ -45,14 +45,15 @@ public class TrenchRunNew extends SequentialCommandGroup {
         new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(0.35)),
         new IntakeBalls(),
         new SequentialCommandGroup( //collect & shoot trench balls
-          new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, 1)).withTimeout(2.6), //Collect Balls
+          new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, 1)).withTimeout(2), //Collect Balls
           new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
-          new WaitCommand(0.25),
-          new Turn(20).withTimeout(0.5), //turn to tower
-          new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -1)).withTimeout(1), //Shooting Position
-          new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1)
+          new WaitCommand(0.5),
+          new Turn(23).withTimeout(1), //turn to tower
+          new RunCommand(() -> RobotContainer.drivetrain.arcadeDrive(0, -0.9)).withTimeout(1), //Shooting Position
+          new RunCommand(() -> RobotContainer.drivetrain.stop()).withTimeout(0.1),
+          new Turn(0).withTimeout(1)
         )
-      ).withTimeout(5),
+      ).withTimeout(7),
 
       new ParallelCommandGroup( //Reset subsystems  
         new RunCommand(() -> RobotContainer.shooter.stop()),
@@ -65,11 +66,11 @@ public class TrenchRunNew extends SequentialCommandGroup {
         new shooterVel(4000),
         new RunCommand(() -> RobotContainer.tower.open()),
         new SequentialCommandGroup(
-          new LLAim().withTimeout(1), //limelight takeover
-          new WaitCommand(1),
+          new LLAim().withTimeout(1),
+          new WaitCommand(0.5),
           new RunCommand(() -> RobotContainer.tower.setPercentModeOutput(1.0)).withTimeout(2)
         )
-      ).withTimeout(4), //End Parallel
+      ).withTimeout(5), //End Parallel
       
       new ParallelCommandGroup( //Reset subsystems
         new RunCommand(() -> RobotContainer.tower.stop()),

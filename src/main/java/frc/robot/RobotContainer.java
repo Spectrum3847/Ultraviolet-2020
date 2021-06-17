@@ -35,6 +35,7 @@ import frc.robot.commands.auto.ThreeBall;
 import frc.robot.commands.auto.ThreeBallWait;
 import frc.robot.commands.auto.TrenchRunNew;
 import frc.robot.commands.auto.TrenchRunWait;
+import frc.robot.commands.auto.MrStealYoGirl;
 import frc.robot.commands.ballpath.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
@@ -108,7 +109,7 @@ public class RobotContainer {
     driverController.rightBumper.whileHeld(DriveCommands.highGear);
     driverController.aButton.whileHeld(new LLAim());
     driverController.startButton.whileHeld(new RunCommand(() -> shooter.setShooterLL(), shooter));
-
+    driverController.bButton.whileHeld(new MrStealYoGirl());
     /* driverController.leftBumper.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
         new TowerBack(), 
@@ -149,8 +150,9 @@ public class RobotContainer {
         new RunCommand(() -> intake.down()),
         new RunCommand(() -> intake.reverse()),
         new RunCommand(() -> funnel.intakeHold()),
-        new RunCommand(() -> tower.indexDown())
-        
+        new RunCommand(() -> tower.indexDown()),
+        new RunCommand(() -> shooter.setVelocity(-120)),
+        new RunCommand(() -> shooter.setAcceleratorVelocity(-120))
       )
     );
     operatorController.selectButton.whileHeld(
