@@ -1,5 +1,6 @@
 package frc.lib.drivers;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Robot;
 
@@ -14,7 +15,7 @@ public class SpectrumSolenoid extends Solenoid {
 
     //Allen - Allows the use of 0-13 to set solenoid number, ports 0-7 on module 2 or solenoids 8-13.
     public SpectrumSolenoid(int channel) {
-        super((channel > 7 ? 1 : 0), (channel > 7 ? channel - 8 : channel));
+        super((channel > 7 ? 1 : 0), PneumaticsModuleType.CTREPCM,  (channel > 7 ? channel - 8 : channel));
     }
 
     @Override

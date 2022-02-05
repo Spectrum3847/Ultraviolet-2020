@@ -12,7 +12,9 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Debugger;
@@ -77,6 +79,14 @@ public class Climber extends SubsystemBase {
     //HelixLogger Setup
     setupLogs();
 
+    m_encoder.setPosition(0);
+
+    leaderMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    leaderMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+    leaderMotor.setSoftLimit(SoftLimitDirection.kForward, 240);
+    leaderMotor.setSoftLimit(SoftLimitDirection.kReverse, 0);
+
     //Setup Default Command
     this.setDefaultCommand(new RunCommand(() -> setManualOutput(RobotContainer.operatorController.rightStick.getY()), this));
   }
@@ -99,8 +109,9 @@ public class Climber extends SubsystemBase {
 
   }
 
-  private void dashboard() {
-
+  public void dashboard() {
+    SmartDashboard.putNumber("Climber/Posiition", m_encoder.getPosition());
+    SmartDashboard.putNumber("Climber/Velocity", m_encoder.getVelocity());
   }
 
   public static void printDebug(String msg){
