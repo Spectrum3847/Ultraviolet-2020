@@ -7,11 +7,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+//import edu.wpi.first.wpilibj2.command.RunCommand;
+//import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+//import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.util.Debugger;
+import frc.team2363.logger.HelixLogger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,6 +44,7 @@ public class Robot extends TimedRobot {
   public static final String _tower = "TOWER";
   public static final String _climber = "CLIMBER";
   public static final String _visionLL = "LIMELIGHT";
+  public static final String _dj = "DJ";
 
   public enum RobotState {
     DISABLED, AUTONOMOUS, TELEOP, TEST
@@ -64,7 +70,7 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-
+    RobotContainer.prefs.addNumber("Auto",3);
   }
 
   /**
@@ -89,10 +95,23 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     printInfo("Start disabledInit()");
+
     CommandScheduler.getInstance().cancelAll();
     LiveWindow.setEnabled(false);
     LiveWindow.disableAllTelemetry();
     RobotContainer.visionLL.setLimeLightLED(false);
+    RobotContainer.drivetrain.coastMode();
+    if(RobotContainer.prefs.getNumber("Auto",3)==3){
+      RobotContainer.prefs.addString("AutoName", "3 Ball");
+    }
+    else if(RobotContainer.prefs.getNumber("Auto",3)==6){
+      RobotContainer.prefs.addString("AutoName", "6 ball old");
+    }
+    else if(RobotContainer.prefs.getNumber("Auto",3)==6.1){
+      RobotContainer.prefs.addString("AutoName", "6 ball new");
+    }
+    else RobotContainer.prefs.addString("AutoName", "3ball");
+    
     setState(RobotState.DISABLED);
     printInfo("End disabledInit()");
   }
@@ -124,8 +143,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    //HelixLogger.getInstance().saveLogs();
-    //RobotContainer.drivetrain.differentialDrive.feed();
+    HelixLogger.getInstance().saveLogs();
   }
 
   @Override
@@ -136,6 +154,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     
     printInfo("Start teleopInit()");
+    RobotContainer.drivetrain.brakeMode();
     CommandScheduler.getInstance().cancelAll();
 		LiveWindow.setEnabled(false);
 		LiveWindow.disableAllTelemetry();
@@ -151,7 +170,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    //HelixLogger.getInstance().saveLogs();
+    HelixLogger.getInstance().saveLogs();
     /*if (RobotController.isBrownedOut()){
 			brownOutCtn++;
 		} */
@@ -171,7 +190,7 @@ public class Robot extends TimedRobot {
   }
 
   private static void initDebugger(){
-    if(RobotContainer.DS.isFMSAttached()) {
+    if(DriverStation.isFMSAttached()) {
       Debugger.setLevel(Debugger.warning4);
     } else {
       Debugger.setLevel(Debugger.info3);
@@ -185,6 +204,7 @@ public class Robot extends TimedRobot {
     Debugger.flagOn(_tower);
     Debugger.flagOn(_climber);
     Debugger.flagOn(_visionLL);
+    Debugger.flagOn(_dj);
   }
 
   public static void printDebug(String msg) {

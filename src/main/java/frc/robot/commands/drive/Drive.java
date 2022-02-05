@@ -33,7 +33,8 @@ public class Drive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.drivetrain.arcadeDrive(RobotContainer.driverController.triggers.getTwist(), RobotContainer.driverController.leftStick.getX());
+    RobotContainer.drivetrain.arcadeDrive(RobotContainer.driverController.leftStick.getX(), RobotContainer.driverController.triggers.getTwist());
+    //RobotContainer.drivetrain.rightFrontTalonFX.set(TalonFXControlMode.Velocity, RobotContainer.driverController.getTwist()*10000);
   }
 
   // Called once the command ends or is interrupted.

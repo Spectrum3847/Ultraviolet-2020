@@ -1,7 +1,0 @@
-[NetworkTables Storage 3.0]
-string "/Preferences/.type"="RobotPreferences"
-double "/Preferences/Tower I-Zone"=150
-double "/Preferences/Tower kD"=0.07
-double "/Preferences/Tower kF"=0.0472
-double "/Preferences/Tower kI"=0.001
-double "/Preferences/Tower kP"=0.05

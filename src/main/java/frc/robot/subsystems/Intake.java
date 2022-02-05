@@ -11,9 +11,9 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,8 +25,7 @@ import frc.robot.Robot;
 public class Intake extends SubsystemBase {
 
   public final CANSparkMax motor;
-  public final SpectrumSolenoid solUp;
-  public final SpectrumSolenoid solDown;
+  public final SpectrumSolenoid intakeGate;
   private CANPIDController m_pidController;
   private CANEncoder m_encoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
@@ -38,8 +37,7 @@ public class Intake extends SubsystemBase {
     motor = new CANSparkMax(Constants.IntakeConstants.kIntakeMotor, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(30);
-    motor.setIdleMode(IdleMode.kCoast);
-    motor.setInverted(true);
+    motor.setInverted(false);
      /**
      * In order to use PID functionality for a controller, a CANPIDController object
      * is constructed by calling the getPIDController() method on an existing
@@ -51,14 +49,14 @@ public class Intake extends SubsystemBase {
     m_encoder = motor.getEncoder();
 
     // PID coefficients
-    kP = 6e-5; 
+    kP = 0.00015; 
     kI = 0;
-    kD = 0; 
+    kD = 0.001; 
     kIz = 0; 
-    kFF = 0.000015; 
+    kFF = 0.000175; 
     kMaxOutput = 1; 
     kMinOutput = -1;
-    maxRPM = 5700;
+    maxRPM = 500;
 
     // set PID coefficients
     m_pidController.setP(kP);
@@ -78,8 +76,8 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Intake/Min Output", kMinOutput);
     motor.burnFlash();
 
-    solUp = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeUp);
-    solDown = new SpectrumSolenoid(Constants.IntakeConstants.kIntakeDown);
+      intakeGate = new SpectrumSolenoid(Constants.IntakeConstants.kIntakegate);
+
 
     //Helixlogger setup
     setupLogs();
@@ -90,6 +88,7 @@ public class Intake extends SubsystemBase {
 
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Intake/Velocity", m_encoder.getVelocity());
   }
 
   public void setVelocity(double velocity){
@@ -111,6 +110,7 @@ public class Intake extends SubsystemBase {
         if((max != kMaxOutput) || (min != kMinOutput)) { 
           m_pidController.setOutputRange(min, max); 
           kMinOutput = min; kMaxOutput = max; 
+          
         }
     
         /**
@@ -119,8 +119,8 @@ public class Intake extends SubsystemBase {
          * 
          * The first parameter is the value of the set point, whose units vary
          * depending on the control type set in the second parameter.
-         * 
-         * The second parameter is the control type can be set to one of four 
+         * .
+         *       * The second parameter is the control type can be set to one of four 
          * parameters:
          *  com.revrobotics.ControlType.kDutyCycle
          *  com.revrobotics.ControlType.kPosition
@@ -128,23 +128,22 @@ public class Intake extends SubsystemBase {
          *  com.revrobotics.ControlType.kVoltage
          */
         m_pidController.setReference(velocity, ControlType.kVelocity);
-        
         SmartDashboard.putNumber("Intake/Setpoint", velocity);
-        SmartDashboard.putNumber("Intake/Velocity", m_encoder.getVelocity());
+
+        
+
   }
 
   public void setSpeed(double speed){
-    motor.set(speed);
+    motor.set(-speed);
   }
 
   public void collect(){
-    //setVelocity(1000);
-    setSpeed(0.75);
+    setVelocity(-5000);
   }
 
   public void reverse(){
-    //setVelocity(-1000);
-    setSpeed(-0.75);
+    setVelocity(5000);
   }
 
   public void stop(){
@@ -152,13 +151,37 @@ public class Intake extends SubsystemBase {
   }
 
   public void up(){
-    solDown.set(false);
-    solUp.set(true);
+    intakeGate.set(false);
   }
 
   public void down(){
-    solDown.set(true);
-    solUp.set(false);
+    intakeGate.set(true);
+  }
+
+  public void checkMotor(){
+    String result = " ";
+    double kCurrentThresh = 3;
+    double kVelocityThresh = 1000;
+    stop();
+    double testSpeed = 0.2;
+    double testTime = 0.5;
+
+    //test leader
+    setSpeed(testSpeed);
+    Timer.delay(testTime);
+    final double current = motor.getOutputCurrent();
+    final double velocity = motor.getEncoder().getVelocity();
+
+
+    if(current >= kCurrentThresh){
+      result = result + "!!!!!IntakeNEO Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Intake/Motor", false);
+    }
+
+    if(velocity >= kVelocityThresh){
+      result = result + "!!!!!IntakeNEO Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Intake/Motor", false);
+    }
   }
 
   //Set up helixlogger sources here
@@ -177,5 +200,7 @@ public class Intake extends SubsystemBase {
   public static void printWarning(String msg) {
     Debugger.println(msg, Robot._intake, Debugger.warning4);
   }
+
+
 
 }

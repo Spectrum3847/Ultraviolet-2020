@@ -26,8 +26,7 @@ public final class Constants {
 
     public static final class IntakeConstants{
         public static final int kIntakeMotor = 40;
-        public static final int kIntakeUp = 4;
-        public static final int kIntakeDown = 1;
+        public static final int kIntakegate = 6;
     }
 
     public static final class FunnelConstants{
@@ -38,7 +37,7 @@ public final class Constants {
     public static final class TowerConstants{
         public static final int kTowerMotor = 43;
 
-        public static final int kTowerGate = 5;
+        public static final int kTowerGate = 7;
     }
 
     public static final class RobotConstants {

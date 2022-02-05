@@ -42,6 +42,6 @@ public class FunnelToTowerSensors extends CommandBase {
   @Override
   public boolean isFinished() {
     //If we have a ball at both spots stop the motion
-    return (RobotContainer.tower.getBottomBall() && RobotContainer.tower.getTopBall());
+    return (RobotContainer.tower.getBot() && RobotContainer.tower.getTop());
   }
 }

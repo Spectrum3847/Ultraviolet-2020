@@ -13,13 +13,12 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.drivers.SpectrumDigitalInput;
 import frc.lib.drivers.SpectrumSolenoid;
 import frc.lib.util.Debugger;
-import frc.lib.util.SpectrumPreferences;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -27,13 +26,11 @@ import frc.team2363.logger.HelixLogger;
 
 public class Tower extends SubsystemBase {
 
-  private final int TowerCompressPort = 0;
-
   public final TalonFX motor;
-  public final SpectrumSolenoid compress;
+  public final SpectrumSolenoid gate;
 
-  public final DigitalInput TowerTop = new SpectrumDigitalInput(0);
-  public final DigitalInput TowerBottom = new SpectrumDigitalInput(1);
+  public final DigitalInput TowerTop = new DigitalInput(0);
+  public final DigitalInput TowerBot = new DigitalInput(1);
 
   private double kP, kI, kD, kF;
   private int iZone;
@@ -42,13 +39,14 @@ public class Tower extends SubsystemBase {
    * Creates a new Intake.
    */
   public Tower() {
+    
     //Pid
 
-    kP = SpectrumPreferences.getInstance().getNumber("Tower kP",0.05);
-    kI = SpectrumPreferences.getInstance().getNumber("Tower kI",0.001);
-    kD = SpectrumPreferences.getInstance().getNumber("Tower kD",0.07);
-    kF = SpectrumPreferences.getInstance().getNumber("Tower kF",0.0472);
-    iZone = (int) SpectrumPreferences.getInstance().getNumber("Tower I-Zone", 150);
+    kP = RobotContainer.prefs.getNumber("Tower kP",0.001);
+    kI = RobotContainer.prefs.getNumber("Tower kI",0);
+    kD = RobotContainer.prefs.getNumber("Tower kD",0);
+    kF = RobotContainer.prefs.getNumber("Tower kF",0.06);
+    iZone = (int) RobotContainer.prefs.getNumber("Tower I-Zone", 150);
 
     
     motor = new TalonFX(Constants.TowerConstants.kTowerMotor);
@@ -64,19 +62,21 @@ public class Tower extends SubsystemBase {
 
     motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
-    compress = new SpectrumSolenoid(TowerCompressPort);
+    gate = new SpectrumSolenoid(Constants.TowerConstants.kTowerGate);
 
-    SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 1000);
+    RobotContainer.prefs.getNumber("Tower Setpoint", 1000);
 
     //Helixlogger setup
     setupLogs();
 
-    //Set Dafault Command to be driven by the operator left stick and divide by 1.75 to reduce speed
-    this.setDefaultCommand(new RunCommand(() -> setPercentModeOutput(RobotContainer.operatorController.leftStick.getY() /1.75) , this));
+    this.setDefaultCommand(new RunCommand(() -> stop(), this));
+
+    SmartDash();
   }
 
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDash();
   }
 
   public void setPercentModeOutput(double speed){
@@ -88,13 +88,13 @@ public class Tower extends SubsystemBase {
   }
 
   public void DashboardVelocity(){
-    double wheelRpm = SpectrumPreferences.getInstance().getNumber("Tower Setpoint", 1000);
-    double motorVelocity = (wheelRpm * 30 / 8);
+    double wheelRpm = RobotContainer.prefs.getNumber("Tower Setpoint", 5000);
+    double motorVelocity = ((wheelRpm * (15/4)) / 2048) * 600;
     motor.set(ControlMode.Velocity, motorVelocity);
   }
 
-  public int getWheelRPM() {
-    return motor.getSelectedSensorVelocity() * 8 / 30;
+  public double getWheelRPM() {
+    return ((motor.getSelectedSensorVelocity() / 600) * 2048) / (15/4);
   }
   public void feed(){
     setPercentModeOutput(1.0);
@@ -105,49 +105,79 @@ public class Tower extends SubsystemBase {
   }
 
   public void indexUp(){
-    //setVelocity(500);
-    setPercentModeOutput(0.4);
+    setVelocity(5000);
   }
 
   public void indexDown(){
-    //setVelocity(500);
-    setPercentModeOutput(-0.4);
+    setVelocity(-5000);
   }
 
-  public void stop(){
-    motor.set(ControlMode.PercentOutput,0);
+  public void stop() {
+    motor.set(ControlMode.PercentOutput, 0);
   }
 
-  public void close(){
-    compress.set(false);
+  public void close() {
+    gate.set(true);
   }
 
-  public void open(){
-    compress.set(true);
+  public void open() {
+    gate.set(false);
   }
 
-  public Boolean getTopBall(){
+  public Boolean getTop() {
+    // true if blocked, false if not blocked
     return !TowerTop.get();
   }
-  public Boolean getBottomBall(){
-    return !TowerBottom.get();
+
+  public Boolean getBot() {
+    // true if blocked, false if not blocked
+    return !TowerBot.get();
   }
 
+  public void SmartDash() {
+    SmartDashboard.putBoolean("Tower/TopSensorTower", getTop());
+    SmartDashboard.putBoolean("Tower/BotSensorTower", getBot());
+    SmartDashboard.putNumber("Tower/Velocity", motor.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Tower/WheelRPM", getWheelRPM());
+    SmartDashboard.putNumber("Tower/OutputPercentage", motor.getMotorOutputPercent());
+    SmartDashboard.putNumber("Tower/LeftCurrent", motor.getSupplyCurrent());
+  }
+
+  public void checkMotor() {
+    String result = " ";
+    double kCurrentThresh = 3;
+    double kVelocityThresh = 1000;
+    stop();
+    double testSpeed = 0.2;
+    double testTime = 0.5;
+
+    //test leader
+    motor.set(ControlMode.PercentOutput, testSpeed);
+    Timer.delay(testTime);
+    final double currentLeader = motor.getMotorOutputVoltage();
+    final double velocityLeader = motor.getSelectedSensorVelocity();
+
+
+    if(currentLeader >= kCurrentThresh){
+      result = result + "!!!!!TowerFalcon Voltage Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Tower/Motor", false);
+    }
+
+
+
+    if(velocityLeader >= kVelocityThresh){
+      result = result + "!!!!!TowerFalcon Velocity Low!!!!!";
+      SmartDashboard.putBoolean("Diagnostics/Tower/Motor", false);
+    }
+    stop();
+    printWarning(result);
+  }  
   //Set up Helixlogger sources here
   private void setupLogs() {
     HelixLogger.getInstance().addSource("TOWER Vel", motor::getSelectedSensorVelocity);
     HelixLogger.getInstance().addSource("TOWER RPM", this::getWheelRPM);
     HelixLogger.getInstance().addSource("TOWER Output%", motor::getMotorOutputPercent);
     HelixLogger.getInstance().addSource("TOWER Current", motor::getSupplyCurrent);
-  }
-
-  public void Dashboard() {
-  SmartDashboard.putBoolean("isTowerTopBall", getTopBall());
-  SmartDashboard.putBoolean("isTowerBottomBall", getBottomBall());
-  SmartDashboard.putNumber("Tower/Velocity", motor.getSelectedSensorVelocity());
-  SmartDashboard.putNumber("Tower/WheelRPM", getWheelRPM());
-  SmartDashboard.putNumber("Tower/OutputPercentage", motor.getMotorOutputPercent());
-  SmartDashboard.putNumber("Tower/LeftCurrent", motor.getSupplyCurrent());
   }
 
   public static void printDebug(String msg){
@@ -161,4 +191,5 @@ public class Tower extends SubsystemBase {
   public static void printWarning(String msg) {
     Debugger.println(msg, Robot._tower, Debugger.warning4);
   }
+
 }
